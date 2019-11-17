@@ -1,7 +1,7 @@
 jwt:
   secret: IzSE2A5hlNetgD3XTooA
 file:
-  upload-dir: "client_data"
+  upload-dir: "data"
 server:
   port: 8085
 spring:
