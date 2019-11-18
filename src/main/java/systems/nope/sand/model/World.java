@@ -6,15 +6,15 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-public class Session {
+public class World {
     @Id
     @GeneratedValue
     private int id;
 
-    public Session() {
+    public World() {
     }
 
-    public Session(@NotBlank String name, String description) {
+    public World(@NotBlank String name, String description) {
         this.name = name;
         this.description = description;
     }
