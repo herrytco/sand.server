@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4e81fdf8-cda0-4de5-8edd-aea535382b98" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/constants/PlayerConstants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/controller/PlayerCharacterController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/model/CharacterOwnership.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/model/PlayerCharacter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/model/request/PlayerCharacterCreationRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/repository/CharacterOwnershipRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/repository/PlayerCharacterRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/systems/nope/sand/controller/SessionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/controller/WorldController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/systems/nope/sand/model/Session.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/model/World.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/systems/nope/sand/repository/SessionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/systems/nope/sand/repository/WorldRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/systems/nope/sand/controller/SessionController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/systems/nope/sand/model/Session.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/systems/nope/sand/repository/SessionRepository.class" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -105,8 +91,16 @@
       <workItem from="1572437041789" duration="86000" />
       <workItem from="1573936588237" duration="157000" />
       <workItem from="1573983738605" duration="73000" />
-      <workItem from="1574068941431" duration="5663000" />
+      <workItem from="1574068941431" duration="6057000" />
     </task>
+    <task id="LOCAL-00001" summary="added character creation and ownership">
+      <created>1574078242535</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1574078242535</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -124,5 +118,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="added character creation and ownership" />
+    <option name="LAST_COMMIT_MESSAGE" value="added character creation and ownership" />
   </component>
 </project>
