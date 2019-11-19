@@ -63,8 +63,8 @@ public class CharacterOwnership {
 
         this.id = new Pk(
                 user.getId(),
-                playerCharacter.getId(),
-                world.getId()
+                world.getId(),
+                playerCharacter.getId()
         );
     }
 

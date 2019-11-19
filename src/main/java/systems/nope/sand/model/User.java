@@ -1,10 +1,10 @@
 package systems.nope.sand.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Entity
 public class User {
@@ -22,7 +22,12 @@ public class User {
     @NotBlank
     private String username;
 
-    public User() {}
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<WorldAssignment> worlds;
+
+    public User() {
+    }
 
     public User(@NotBlank String email, @NotBlank String password, @NotBlank String username) {
         this.email = email;
@@ -60,5 +65,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<WorldAssignment> getWorlds() {
+        return worlds;
+    }
+
+    public void setWorlds(List<WorldAssignment> worlds) {
+        this.worlds = worlds;
     }
 }
