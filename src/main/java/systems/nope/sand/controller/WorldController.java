@@ -3,26 +3,87 @@ package systems.nope.sand.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.sand.model.User;
 import systems.nope.sand.model.World;
+import systems.nope.sand.model.WorldAssignment;
 import systems.nope.sand.model.request.SessionAddRequest;
+import systems.nope.sand.repository.UserRepository;
+import systems.nope.sand.repository.WorldAssignmentRepository;
 import systems.nope.sand.repository.WorldRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/worlds")
 public class WorldController {
 
-    private WorldRepository worldRepository;
-
-    public WorldController(WorldRepository worldRepository) {
+    public WorldController(WorldRepository worldRepository, UserRepository userRepository, WorldAssignmentRepository worldAssignmentRepository) {
         this.worldRepository = worldRepository;
+        this.userRepository = userRepository;
+        this.worldAssignmentRepository = worldAssignmentRepository;
     }
+
+    private final WorldRepository worldRepository;
+    private final UserRepository userRepository;
+    private final WorldAssignmentRepository worldAssignmentRepository;
 
     @GetMapping
     public List<World> all() {
         return worldRepository.findAll();
+    }
+
+    @GetMapping("/seed/{seed}")
+    public ResponseEntity<World> getBySeed(
+            @PathVariable String seed
+    ) {
+        Optional<World> optionalTargetWorld = worldRepository.findBySeed(seed);
+
+        if (optionalTargetWorld.isPresent())
+            return ResponseEntity.ok().body(optionalTargetWorld.get());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    /**
+     * @param worldId
+     * @param userId
+     * @return
+     */
+    @PostMapping("/world/{worldId}/user/{userId}")
+    public ResponseEntity<?> assignUserToWorld(
+            @PathVariable("worldId") Integer worldId,
+            @PathVariable("userId") Integer userId
+    ) {
+        try {
+            World targetWorld = worldRepository.getOne(worldId);
+            User user = userRepository.getOne(userId);
+
+            WorldAssignment assignment = new WorldAssignment(targetWorld, user);
+            worldAssignmentRepository.save(assignment);
+
+            return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User or world does not exist");
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> allForUser(
+            @PathVariable("userId") Integer userId
+    ) {
+        try {
+            User user = userRepository.getOne(userId);
+
+            List<World> worlds = user.getWorlds().stream().map(WorldAssignment::getWorld).collect(Collectors.toList());
+
+            return ResponseEntity.ok(worlds);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("User with the id '%d' does not exist", userId));
+        }
     }
 
     @PostMapping
