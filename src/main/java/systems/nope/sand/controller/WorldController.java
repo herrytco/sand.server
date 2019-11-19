@@ -49,9 +49,11 @@ public class WorldController {
     }
 
     /**
-     * @param worldId
-     * @param userId
-     * @return
+     * assigns a user to a world s.t. he is able to see its contents in the client
+     *
+     * @param worldId - unique ID of the world
+     * @param userId  - unique ID for the user
+     * @return 200 if ok, 403 else
      */
     @PostMapping("/world/{worldId}/user/{userId}")
     public ResponseEntity<?> assignUserToWorld(

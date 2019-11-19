@@ -1,5 +1,7 @@
 package systems.nope.sand.service;
 
+import systems.nope.sand.config.SpringUser;
+
 public interface ITokenService {
-    String generateToken(String username);
+    String generateToken(SpringUser user);
 }

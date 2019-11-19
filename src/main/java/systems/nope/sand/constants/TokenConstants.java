@@ -11,5 +11,6 @@ public final class TokenConstants {
     public static final String TOKEN_TYPE = "JWT";
     public static final String TOKEN_ISSUER = "sand.server";
     public static final String TOKEN_AUDIENCE = "sand.app";
+    public static final String CLAIM_ID = "id";
     public static final int TOKEN_VALIDITY = 86400000;  // = 1 day
 }

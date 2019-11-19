@@ -6,8 +6,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.sand.config.SpringUser;
 import systems.nope.sand.model.request.LoginRequest;
 import systems.nope.sand.model.responses.TokenResponse;
 import systems.nope.sand.service.ITokenService;
@@ -31,7 +31,6 @@ public class TokenController {
     public ResponseEntity<TokenResponse> getToken(
             @RequestBody LoginRequest request
     ) {
-
         try {
             authenticate(request.getEmail(), request.getPassword());
         } catch (BadCredentialsException e) {
@@ -40,8 +39,8 @@ public class TokenController {
             return ResponseEntity.status(HttpStatus.LOCKED).build();
         }
 
-        UserDetails userDetails = userService.loadUserByUsername(request.getEmail());
-        return ResponseEntity.ok(new TokenResponse(tokenService.generateToken(userDetails.getUsername())));
+        SpringUser userDetails = userService.loadUserByUsername(request.getEmail());
+        return ResponseEntity.ok(new TokenResponse(tokenService.generateToken(userDetails)));
     }
 
     private void authenticate(String username, String password) throws BadCredentialsException, DisabledException {
