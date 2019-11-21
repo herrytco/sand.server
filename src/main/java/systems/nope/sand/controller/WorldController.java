@@ -2,7 +2,11 @@ package systems.nope.sand.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.sand.config.SpringUser;
+import systems.nope.sand.constants.WorldConstants;
 import systems.nope.sand.model.User;
 import systems.nope.sand.model.World;
 import systems.nope.sand.model.WorldAssignment;
@@ -12,6 +16,7 @@ import systems.nope.sand.repository.WorldAssignmentRepository;
 import systems.nope.sand.repository.WorldRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +34,7 @@ public class WorldController {
     private final WorldRepository worldRepository;
     private final UserRepository userRepository;
     private final WorldAssignmentRepository worldAssignmentRepository;
+    private char[] alphabet = "1234567890abcdef".toCharArray();
 
     @GetMapping
     public List<World> all() {
@@ -101,8 +107,9 @@ public class WorldController {
 
     /**
      * adds a new world to the system
-     * @param request
-     * @return
+     *
+     * @param request - holding the data from the client
+     * @return new created world
      */
     @PostMapping
     public ResponseEntity<?> add(
@@ -113,9 +120,33 @@ public class WorldController {
         if (possibleExistingSession.isPresent())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        World worldNew = new World(request.getName(), request.getDescription(), request.getWorldAnvilLink());
-        worldRepository.save(worldNew);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
 
-        return ResponseEntity.ok().build();
+        Optional<User> authenticatedUser = userRepository.findByEmail(name);
+
+        if(authenticatedUser.isPresent()) {
+            World worldNew = new World(authenticatedUser.get(), request.getName(), request.getDescription(), request.getWorldAnvilLink());
+
+            // calculate the seed for the new world
+            String seed = "";
+            Optional<World> worldWithSeed;
+
+            do {
+                SecureRandom srng = new SecureRandom();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < WorldConstants.seedLength; i++)
+                    sb.append(alphabet[srng.nextInt(alphabet.length)]);
+                seed = sb.toString();
+                worldWithSeed = worldRepository.findBySeed(seed);
+            } while(worldWithSeed.isPresent());
+
+            worldNew.setSeed(seed);
+            worldRepository.save(worldNew);
+
+            return ResponseEntity.ok().body(worldNew);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

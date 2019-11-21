@@ -1,15 +1,12 @@
 package systems.nope.sand.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import systems.nope.sand.config.SpringUser;
 import systems.nope.sand.exceptions.ObjectAlreadyExistsException;
-import systems.nope.sand.exceptions.ObjectNotFoundException;
 import systems.nope.sand.model.User;
 import systems.nope.sand.repository.UserRepository;
 
@@ -18,11 +15,10 @@ import java.util.Optional;
 @Component
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.encoder = encoder;
     }
 
     @Override

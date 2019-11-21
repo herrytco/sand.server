@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -27,13 +28,19 @@ public class World {
     @JsonIgnore
     private List<WorldAssignment> users;
 
+    @ManyToOne
+    @JoinColumn(name = "owner")
+    @JsonIgnore
+    private User owner;
+
     public World() {
     }
 
-    public World(@NotBlank String name, String description, String worldAnvilLink) {
+    public World(@NotNull User owner, @NotBlank String name, String description, String worldAnvilLink) {
         this.name = name;
         this.description = description;
         this.worldAnvilLink = worldAnvilLink;
+        this.owner = owner;
     }
 
     public int getId() {
@@ -82,5 +89,13 @@ public class World {
 
     public void setWorldAnvilLink(String worldAnvilLink) {
         this.worldAnvilLink = worldAnvilLink;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }
