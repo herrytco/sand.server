@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.sand.model.User;
 import systems.nope.sand.model.World;
 import systems.nope.sand.model.WorldAssignment;
-import systems.nope.sand.model.request.SessionAddRequest;
+import systems.nope.sand.model.request.WorldAddRequest;
 import systems.nope.sand.repository.UserRepository;
 import systems.nope.sand.repository.WorldAssignmentRepository;
 import systems.nope.sand.repository.WorldRepository;
@@ -14,7 +14,6 @@ import systems.nope.sand.repository.WorldRepository;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,6 +35,12 @@ public class WorldController {
         return worldRepository.findAll();
     }
 
+    /**
+     * searches for a world
+     *
+     * @param seed - unique 6-digit String assigned to a world
+     * @return 200 with the World in the body, 404 else
+     */
     @GetMapping("/seed/{seed}")
     public ResponseEntity<World> getBySeed(
             @PathVariable String seed
@@ -73,6 +78,12 @@ public class WorldController {
         }
     }
 
+    /**
+     * gets the list of worlds where the user is assigned to
+     *
+     * @param userId - specifies the requesting user
+     * @return List of World's or 403
+     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> allForUser(
             @PathVariable("userId") Integer userId
@@ -88,16 +99,21 @@ public class WorldController {
         }
     }
 
+    /**
+     * adds a new world to the system
+     * @param request
+     * @return
+     */
     @PostMapping
     public ResponseEntity<?> add(
-            @RequestBody SessionAddRequest request
+            @RequestBody WorldAddRequest request
     ) {
         Optional<World> possibleExistingSession = worldRepository.findByName(request.getName());
 
         if (possibleExistingSession.isPresent())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        World worldNew = new World(request.getName(), request.getDescription());
+        World worldNew = new World(request.getName(), request.getDescription(), request.getWorldAnvilLink());
         worldRepository.save(worldNew);
 
         return ResponseEntity.ok().build();

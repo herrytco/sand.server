@@ -2,10 +2,7 @@ package systems.nope.sand.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -23,6 +20,9 @@ public class World {
     @NotBlank
     private String seed;
 
+    @Column(name = "link_world_anvil")
+    private String worldAnvilLink;
+
     @OneToMany(mappedBy = "world")
     @JsonIgnore
     private List<WorldAssignment> users;
@@ -30,9 +30,10 @@ public class World {
     public World() {
     }
 
-    public World(@NotBlank String name, String description) {
+    public World(@NotBlank String name, String description, String worldAnvilLink) {
         this.name = name;
         this.description = description;
+        this.worldAnvilLink = worldAnvilLink;
     }
 
     public int getId() {
@@ -73,5 +74,13 @@ public class World {
 
     public void setSeed(String seed) {
         this.seed = seed;
+    }
+
+    public String getWorldAnvilLink() {
+        return worldAnvilLink;
+    }
+
+    public void setWorldAnvilLink(String worldAnvilLink) {
+        this.worldAnvilLink = worldAnvilLink;
     }
 }

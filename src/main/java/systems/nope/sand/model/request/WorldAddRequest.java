@@ -1,8 +1,9 @@
 package systems.nope.sand.model.request;
 
-public class SessionAddRequest {
+public class WorldAddRequest {
     private String name;
     private String description;
+    private String worldAnvilLink;
 
     public String getName() {
         return name;
@@ -18,5 +19,13 @@ public class SessionAddRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getWorldAnvilLink() {
+        return worldAnvilLink;
+    }
+
+    public void setWorldAnvilLink(String worldAnvilLink) {
+        this.worldAnvilLink = worldAnvilLink;
     }
 }
