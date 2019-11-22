@@ -32,6 +32,14 @@ public class PlayerCharacterController {
     private final UserRepository userRepository;
     private final CharacterOwnershipRepository characterOwnershipRepository;
 
+    /**
+     * assigns a character to a player (as in he can control the character from this point forward)
+     *
+     * @param worldIdString - world ID
+     * @param charIdString  - ID of the character in the world
+     * @param ownerIdString - ID of the player who gets the control
+     * @return 202, if everything went good, 403 else
+     */
     @PostMapping("/world/{worldId}/character/{charId}/owner/{ownerId}")
     public ResponseEntity<?> addOwnership(
             @PathVariable("worldId") String worldIdString,
@@ -76,6 +84,14 @@ public class PlayerCharacterController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
+    /**
+     * adds a new character to the world. this does NOT mean that the character can be controlled by the
+     * creator
+     *
+     * @param worldIdString - world ID
+     * @param request       - contains all information about the new character
+     * @return 202 if everything went ok, 403 else
+     */
     @PostMapping("/world/{worldId}")
     public ResponseEntity<?> add(
             @PathVariable("worldId") String worldIdString,
