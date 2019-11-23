@@ -1,21 +1,15 @@
 package systems.nope.sand.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.sand.constants.PlayerConstants;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class PlayerCharacter {
-    @Id
-    @GeneratedValue
-    private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "world_id")
-    private World world;
-
     public PlayerCharacter() {
     }
 
@@ -27,6 +21,15 @@ public class PlayerCharacter {
         energyCurr = PlayerConstants.defaultEnergyMax;
         energyMax = PlayerConstants.defaultEnergyMax;
     }
+
+    @Id
+    @GeneratedValue
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "world_id")
+    @JsonIgnore
+    private World world;
 
     @NotBlank
     private String name;

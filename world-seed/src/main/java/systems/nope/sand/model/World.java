@@ -33,6 +33,9 @@ public class World {
     @JsonIgnore
     private User owner;
 
+    @OneToMany(mappedBy = "world")
+    private List<PlayerCharacter> characters;
+
     public World() {
     }
 
@@ -97,5 +100,13 @@ public class World {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public List<PlayerCharacter> getCharacters() {
+        return characters;
+    }
+
+    public void setCharacters(List<PlayerCharacter> characters) {
+        this.characters = characters;
     }
 }
