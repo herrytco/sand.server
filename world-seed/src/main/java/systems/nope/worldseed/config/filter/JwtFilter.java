@@ -1,5 +1,6 @@
 package systems.nope.worldseed.config.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        String username=null, jwtToken;
+        String username = null, jwtToken;
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
@@ -56,9 +57,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            } catch(SignatureException e) {
+            } catch (SignatureException e) {
                 //log error
                 System.out.println("signature was not valid");
+            } catch (ExpiredJwtException e) {
+                System.out.println("token was expired");
             }
         }
 

@@ -32,6 +32,7 @@ public class JwtTokenService implements ITokenService {
 
     @Override
     public String getUsername(String jwtToken) throws SignatureException {
+
         return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(jwtToken).getBody().getSubject();
     }
 }

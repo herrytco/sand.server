@@ -28,6 +28,9 @@ public class World {
     @JsonIgnore
     private List<WorldAssignment> users;
 
+    @OneToMany(mappedBy = "world")
+    private List<Document> documents;
+
     @ManyToOne
     @JoinColumn(name = "owner")
     @JsonIgnore
@@ -108,5 +111,13 @@ public class World {
 
     public void setCharacters(List<PlayerCharacter> characters) {
         this.characters = characters;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
     }
 }

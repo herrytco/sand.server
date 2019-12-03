@@ -3,7 +3,7 @@ package systems.nope.discord;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import systems.nope.discord.eventlistener.DiceHandler;
+import systems.nope.discord.eventlistener.dice.DiceHandler;
 
 import javax.security.auth.login.LoginException;
 
