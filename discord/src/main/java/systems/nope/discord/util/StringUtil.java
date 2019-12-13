@@ -7,6 +7,8 @@ public class StringUtil {
                 return "1st";
             case 2:
                 return "2nd";
+            case 3:
+                return "3rd";
             default:
                 return String.format("%sth", k);
         }

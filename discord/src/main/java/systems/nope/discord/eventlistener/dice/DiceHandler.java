@@ -20,6 +20,7 @@ public class DiceHandler extends ListenerAdapter {
     private Map<User, Integer> nTries = new HashMap<>();
     private Map<User, Integer> sum = new HashMap<>();
     private Map<User, Integer> diceTypes = new HashMap<>();
+    private Map<User, Integer> difficulties = new HashMap<>();
 
     private String getEmojiForResult(int result) {
         switch (result) {
@@ -51,6 +52,22 @@ public class DiceHandler extends ListenerAdapter {
         return result;
     }
 
+    private String getCalculation(User author, int result) {
+        if (!difficulties.containsKey(author) || difficulties.get(author) == 0)
+            return String.format(ServerConstants.singleResult, getEmojiForResult(result), result);
+
+        String sign = difficulties.get(author) < 0 ? "-" : "+";
+
+        return String.format(
+                ServerConstants.calculation,
+                getEmojiForResult(result),
+                result,
+                sign,
+                Math.abs(difficulties.get(author)),
+                result + difficulties.get(author)
+        );
+    }
+
     private String getSingleRoll(MessageReceivedEvent event, int k) {
         String message;
 
@@ -62,9 +79,9 @@ public class DiceHandler extends ListenerAdapter {
             int result = rollOnce(author);
 
             if (k < 0)
-                message = String.format("%s rolled a %s %d", event.getAuthor().getName(), getEmojiForResult(result), result);
+                message = String.format(ServerConstants.regularRoll, event.getAuthor().getName(), getCalculation(author, result));
             else
-                message = String.format("%s's %s dice: %s %d", event.getAuthor().getName(), StringUtil.integerToOrderedString(k), getEmojiForResult(result), result);
+                message = String.format(ServerConstants.kthRoll, event.getAuthor().getName(), StringUtil.integerToOrderedString(k), getCalculation(author, result));
         }
 
         return message;
@@ -127,16 +144,23 @@ public class DiceHandler extends ListenerAdapter {
                 result = r;
         }
 
-        String all = Arrays.toString(rolls).replaceAll("\\[", "(").replaceAll("]", ")");
+        StringBuilder all = new StringBuilder("(");
+
+        for (int i = 0; i < rolls.length; i++) {
+            all.append(getCalculation(event.getAuthor(), rolls[i]));
+
+            if (i < rolls.length - 1)
+                all.append(", ");
+        }
+        all.append(")");
 
         sendMessage(event, String.format(
-                "%s rolled %d dice, the %s result is %s %d!\nAll rolls were:%s",
+                "%s rolled %d dice, the %s result is %s!\nAll rolls were:%s",
                 event.getAuthor().getName(),
                 x,
                 maximum ? "best" : "worst",
-                getEmojiForResult(result),
-                result,
-                all
+                getCalculation(event.getAuthor(), result),
+                all.toString()
         ));
     }
 
@@ -158,8 +182,11 @@ public class DiceHandler extends ListenerAdapter {
             int singleResult = rollOnce(event.getAuthor());
 
             resultCumulative += singleResult;
-            sb.append(String.format("%s's %s dice: %s %d\n", event.getAuthor().getName(), StringUtil.integerToOrderedString(i + 1), getEmojiForResult(singleResult), singleResult));
+            sb.append(String.format("%s's %s dice: %s\n", event.getAuthor().getName(), StringUtil.integerToOrderedString(i + 1), getCalculation(event.getAuthor(), singleResult)));
         }
+
+        if (difficulties.containsKey(event.getAuthor()))
+            resultCumulative += difficulties.get(event.getAuthor()) * x;
 
         sb.append(String.format("The total sum is ... *furiously typing on calculator* ... %d!", resultCumulative));
 
@@ -285,7 +312,6 @@ public class DiceHandler extends ListenerAdapter {
             return -1;
     }
 
-
     private boolean handleSingleCommands(@Nonnull MessageReceivedEvent event, String command) {
         switch (command) {
             case "!roll":
@@ -303,6 +329,10 @@ public class DiceHandler extends ListenerAdapter {
             case "!savgreset":
                 savgreset(event);
                 return true;
+            case "!help":
+                removeMessage(event);
+                sendMessage(event, ServerConstants.help);
+                return true;
             default:
                 return false;
         }
@@ -311,6 +341,16 @@ public class DiceHandler extends ListenerAdapter {
     private boolean handleMultiCommands(@Nonnull MessageReceivedEvent event, String... command) {
         if (command.length > 0) {
             switch (command[0]) {
+                case "!umod":
+                    try {
+                        removeMessage(event);
+                        int x = Integer.parseInt(command[1]);
+                        difficulties.put(event.getAuthor(), x);
+                        sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getAuthor().getName(), x));
+                    } catch (NumberFormatException e) {
+                        sendMessage(event, String.format("'%s' is not a number sir.", command[1]));
+                    }
+                    return true;
                 case "!udice":
                     if (command.length == 2) {
                         try {
