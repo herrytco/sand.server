@@ -348,7 +348,7 @@ public class DiceHandler extends ListenerAdapter {
                         difficulties.put(event.getAuthor(), x);
                         sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getAuthor().getName(), x));
                     } catch (NumberFormatException e) {
-                        sendMessage(event, String.format("'%s' is not a number sir.", command[1]));
+                        sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getAuthor().getName(), command[1]));
                     }
                     return true;
                 case "!udice":

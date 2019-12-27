@@ -11,6 +11,7 @@ import systems.nope.worldseed.repository.WorldRepository;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/documents")
@@ -50,8 +51,8 @@ public class DocumentController {
         );
     }
 
-    @GetMapping("/world/{worldId}/id/{id}")
-    public ResponseEntity<?> one(
+    @GetMapping("/world/{worldId}/id/{id}/version/latest")
+    public ResponseEntity<?> latest(
             @PathVariable int worldId,
             @PathVariable int id
     ) {
@@ -66,11 +67,32 @@ public class DocumentController {
         try {
             LastDocument docData = documentRepository.getLatest(id, targetWorld);
 
-            return ResponseEntity.ok(
-                    documentRepository.getOne(
-                            new Document.Pk(docData.getDocumentId(), docData.getVersion())
-                    )
-            );
+            return ResponseEntity.ok(documentRepository.getOne(new Document.Pk(docData.getDocumentId(), docData.getVersion())));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/world/{worldId}/id/{id}/version/all")
+    public ResponseEntity<?> one(
+            @PathVariable int worldId,
+            @PathVariable int id
+    ) {
+        World targetWorld;
+
+        try {
+            targetWorld = worldRepository.getOne(worldId);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("World with ID '%d' not found.", worldId));
+        }
+
+        try {
+            List<LastDocument> docVersions = documentRepository.getVersionsVorDocument(id, targetWorld);
+
+            List<Document> documents = docVersions.stream().map((LastDocument docData) -> documentRepository.getOne(
+                    new Document.Pk(docData.getDocumentId(), docData.getVersion()))).collect(Collectors.toList());
+
+            return ResponseEntity.ok(documents);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
