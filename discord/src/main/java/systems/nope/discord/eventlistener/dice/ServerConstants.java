@@ -11,5 +11,5 @@ public final class ServerConstants {
     public static final String singleResult = "%s %d";
     public static final String calculation = "%s %d %s %d = %d";
 
-    public static final String help = "!roll ... rolls once\n!uavg ... prints your average (which is hopefully good)\n!rollx [x] ... rolls [x0] dice\n!umod [x] ... sets the modifier for a user to [x] which gets added/subtracted to each roll\n!udice [x] ... continues to roll with an [x]-sided dice\n!rollc [x] ... rolls [x] dice and sums the result\n!uavgreset ... resets your average\n!savg ... prints the average of the whole server\n!savgreset ... prints the average of the whole server\n!help ... prints the help, but I guess you knew that already";
+    public static final String help = "!roll ... rolls once\n!uavg ... prints your average (which is hopefully good)\n!rollx [x] ... rolls [x] dice\n!rollt [target0] [x0] [target1] [x1] etc. ... rolls [x] dice for each [target]\n!umod [x] ... sets the modifier for a user to [x] which gets added/subtracted to each roll\n!udice [x] ... continues to roll with an [x]-sided dice\n!rollc [x] ... rolls [x] dice and sums the result\n!uavgreset ... resets your average\n!savg ... prints the average of the whole server\n!savgreset ... prints the average of the whole server\n!help ... prints the help, but I guess you knew that already";
 }

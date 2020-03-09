@@ -8,9 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import systems.nope.discord.util.StringUtil;
 
 import javax.annotation.Nonnull;
-import javax.swing.*;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,6 +85,27 @@ public class DiceHandler extends ListenerAdapter {
         return message;
     }
 
+
+    private String getSingleRoll(MessageReceivedEvent event, int k, String name) {
+        String message;
+
+        User author = event.getMessage().getAuthor();
+
+        if (event.getChannelType() == ChannelType.PRIVATE)
+            message = "Between us? You rolled a marvellous 20!";
+        else {
+            int result = rollOnce(author);
+
+            if (k < 0)
+                message = String.format(ServerConstants.regularRoll, name, getCalculation(author, result));
+            else
+                message = String.format(ServerConstants.kthRoll, name, StringUtil.integerToOrderedString(k), getCalculation(author, result));
+        }
+
+        return message;
+    }
+
+
     /**
      * rolls a single d20 dice and prints the result in the chat
      *
@@ -121,6 +140,20 @@ public class DiceHandler extends ListenerAdapter {
 
         String message = sb.toString();
         sendMessage(event, message);
+    }
+
+    private String tRolls(MessageReceivedEvent event, String name, int nr) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("%s is targeted by %d dice:\n", name, nr));
+
+        for (int i = 0; i < nr; i++) {
+            sb.append(getSingleRoll(event, i + 1, name));
+            sb.append("\n");
+        }
+
+        String message = sb.toString();
+        return message;
     }
 
     private void xRollExtreme(MessageReceivedEvent event, int x, boolean maximum) {
@@ -165,7 +198,7 @@ public class DiceHandler extends ListenerAdapter {
     }
 
     /**
-     * rolles x dice and calculates the cumulative result, which gets printed in the channel
+     * rolls x dice and calculates the cumulative result, which gets printed in the channel
      *
      * @param event - message which triggered the command - gets deleted in the process
      * @param x     - number of rolls
@@ -342,15 +375,29 @@ public class DiceHandler extends ListenerAdapter {
         if (command.length > 0) {
             switch (command[0]) {
                 case "!umod":
-                    try {
-                        removeMessage(event);
-                        int x = Integer.parseInt(command[1]);
-                        difficulties.put(event.getAuthor(), x);
-                        sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getAuthor().getName(), x));
-                    } catch (NumberFormatException e) {
-                        sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getAuthor().getName(), command[1]));
+                    if (command.length == 2) {
+                        try {
+                            removeMessage(event);
+                            int x = Integer.parseInt(command[1]);
+                            difficulties.put(event.getAuthor(), x);
+                            sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getAuthor().getName(), x));
+                        } catch (NumberFormatException e) {
+                            sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getAuthor().getName(), command[1]));
+                            return false;
+                        }
+                        return true;
                     }
-                    return true;
+                    else if (command.length > 2) {
+                        sendMessage(event, "If you want two modifiers, just add them together. I'm not your buttler or something");
+                        return false;
+                    }
+                    else {
+                        sendMessage(event, "I think you forgot to tell me something.");
+                        return false;
+                    }
+
+
+
                 case "!udice":
                     if (command.length == 2) {
                         try {
@@ -360,11 +407,23 @@ public class DiceHandler extends ListenerAdapter {
                             sendMessage(event, String.format("%s, now uses a %d-sided dice.", event.getAuthor().getName(), x));
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Roll your '%s'-sided dice yourself, sir.", command[1]));
+                            return false;
                         }
+                        return true;
                     }
-                    return true;
+                    else if (command.length == 1){
+                        sendMessage(event, "If you don't want to throw a die, just don't!");
+                        return false;
+                    }
+                    else {
+                        sendMessage(event, "Sorry, but you'll have to decide how many sides you want.");
+                        return false;
+                    }
+
+
+
                 case "!rollx":
-                    if (command.length >= 2)
+                    if (command.length >= 2) {
                         try {
                             int x = Integer.parseInt(command[1]);
 
@@ -384,18 +443,71 @@ public class DiceHandler extends ListenerAdapter {
                             }
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Please give me a detailed explanation about how I am able to roll a dice '%s' times.", command[1]));
+                            return false;
                         }
-                    return true;
+                        return true;
+                    }
+                    else {
+                        sendMessage(event, "I think you forgot to tell me something.");
+                        return false;
+                    }
+
+
+                case "!rollt":
+                    //Syntax: !rollt [target] [nr] [tame] [nr] ...
+                    //so command.length has to be uneven and not one
+                    if ((command.length % 2) == 1 && command.length != 1) {
+
+                        StringBuilder messageBuilder = new StringBuilder();//Final message is build by this
+
+                        //Iterate over names
+                        for (int i = 1; i < command.length; i = i + 2){
+
+                            messageBuilder.append("\n");//does not get shown at the start of a message sadly
+                            //try converting nr to int
+                            try {
+                                //Roll [nr] times
+                                messageBuilder.append(tRolls(event, command[i], Integer.parseInt(command[i + 1])));
+
+                            } catch (NumberFormatException e) {
+                                sendMessage(event, String.format("Please give me a detailed explanation about how I am able to roll a dice '%s' times.", command[i+1]));
+                                return false;
+
+                            }
+                        }
+
+                        removeMessage(event);//We have to delete at the end so we can roll more than once
+                        String message = messageBuilder.toString();
+                        sendMessage(event, message);
+                        return true;
+                    }
+                    else if (command.length == 1) {
+                        sendMessage(event, "I think you forgot to tell me something.");
+                        return false;
+                    }
+                    else {
+                        sendMessage(event, "I need a name and a number corresponding to it.");
+                        return false;
+                    }
+
 
                 case "!rollc":
-                    if (command.length >= 2)
+                    if (command.length >= 2) {
                         try {
                             int x = Integer.parseInt(command[1]);
                             cRolls(event, x);
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Please give me a detailed explanation about how I am able to roll a dice '%s' times.", command[1]));
+                            return false;
                         }
-                    return true;
+                        return true;
+                    }
+                    else {
+                        sendMessage(event, "I think you forgot to tell me something.");
+                        return false;
+                    }
+
+
                 default:
                     return false;
             }
