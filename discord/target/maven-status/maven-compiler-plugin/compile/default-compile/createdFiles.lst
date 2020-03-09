@@ -1,0 +1,5 @@
+systems\nope\discord\DiscordConstants.class
+systems\nope\discord\eventlistener\dice\DiceHandler.class
+systems\nope\discord\eventlistener\dice\ServerConstants.class
+systems\nope\discord\DiscordApplication.class
+systems\nope\discord\util\StringUtil.class
