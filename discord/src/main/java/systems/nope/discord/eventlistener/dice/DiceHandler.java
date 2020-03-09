@@ -120,7 +120,7 @@ public class DiceHandler extends ListenerAdapter {
     }
 
     /**
-     * rolles x dice and prints the respective result in the console
+     * rolls x dice and prints the respective result in the console
      *
      * @param event - message which triggered the command - gets deleted in the process
      * @param x     - number of rolls
