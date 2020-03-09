@@ -1,8 +1,6 @@
 package systems.nope.worldseed.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.Authenticator;
-import systems.nope.worldseed.user.requests.RegistrationRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,9 +28,8 @@ public class UserTest {
     @Autowired
     private UserRepository userRepository;
 
-
     private String getNewUserDetails() throws JsonProcessingException {
-        return builder.build().writeValueAsString(Authenticator.getNewUserDetails());
+        return builder.build().writeValueAsString(Authenticator.getTestuserRegistrationRequest());
     }
 
     @BeforeEach
