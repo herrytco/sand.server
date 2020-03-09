@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
+import systems.nope.worldseed.Authenticator;
 import systems.nope.worldseed.user.requests.RegistrationRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,14 +32,9 @@ public class UserTest {
     @Autowired
     private UserRepository userRepository;
 
-    private String getNewUserDetails() throws JsonProcessingException {
-        RegistrationRequest request = new RegistrationRequest(
-                UserConstants.name,
-                UserConstants.nonExistingEmail,
-                UserConstants.password
-        );
 
-        return builder.build().writeValueAsString(request);
+    private String getNewUserDetails() throws JsonProcessingException {
+        return builder.build().writeValueAsString(Authenticator.getNewUserDetails());
     }
 
     @BeforeEach

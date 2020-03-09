@@ -10,6 +10,9 @@ import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

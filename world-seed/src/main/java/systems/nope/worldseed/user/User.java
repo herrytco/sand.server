@@ -1,21 +1,37 @@
 package systems.nope.worldseed.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import systems.nope.worldseed.world.World;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
     @Id
     @GeneratedValue
     private int id;
+
+    @OneToMany
+    @JoinTable(
+            name = "user_world_role",
+            joinColumns = @JoinColumn(
+                    name = "user_id",
+                    referencedColumnName = "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "world_id",
+                    referencedColumnName = "id"
+            )
+    )
+    private List<World> worlds;
 
     @NotBlank
     private String name;
@@ -120,5 +136,13 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return !activated;
+    }
+
+    public List<World> getWorlds() {
+        return worlds;
+    }
+
+    public void setWorlds(List<World> worlds) {
+        this.worlds = worlds;
     }
 }

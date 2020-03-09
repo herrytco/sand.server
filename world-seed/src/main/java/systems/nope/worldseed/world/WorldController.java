@@ -1,8 +1,9 @@
 package systems.nope.worldseed.world;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.world.requests.NewWorldRequest;
 
 import java.util.List;
 
@@ -10,14 +11,19 @@ import java.util.List;
 @RequestMapping("/worlds")
 public class WorldController {
 
-    private final WorldRepository worldRepository;
+    private final WorldService worldService;
 
-    public WorldController(WorldRepository worldRepository) {
-        this.worldRepository = worldRepository;
+    public WorldController(WorldService worldService) {
+        this.worldService = worldService;
     }
 
-    @GetMapping
-    public List<World> all() {
-        return worldRepository.findAll();
+    @PostMapping
+    public ResponseEntity<?> add(
+            @RequestBody NewWorldRequest request
+    ) {
+        if (worldService.add(request.name, request.description)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

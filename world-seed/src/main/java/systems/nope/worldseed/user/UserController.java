@@ -16,6 +16,13 @@ public class UserController {
         this.userService = userService;
     }
 
+    @RequestMapping("/id/{id}")
+    public User one(
+            @PathVariable int id
+    ) {
+        return userService.getUserRepository().getOne(id);
+    }
+
     @PostMapping
     public ResponseEntity<?> add(
             @RequestBody RegistrationRequest request
