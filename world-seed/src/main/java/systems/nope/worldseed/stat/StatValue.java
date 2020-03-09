@@ -1,6 +1,7 @@
 package systems.nope.worldseed.stat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import systems.nope.worldseed.world.World;
 
 import javax.persistence.*;
 
@@ -21,6 +22,11 @@ public class StatValue {
     private String nameShort;
 
     private String unit;
+
+    @ManyToOne
+    @JoinColumn(name = "world")
+    @JsonIgnore
+    private World world;
 
     public StatValue() {
     }
@@ -71,5 +77,13 @@ public class StatValue {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 }

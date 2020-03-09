@@ -1,15 +1,15 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import systems.nope.worldseed.document.Document;
 import systems.nope.worldseed.world.World;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 
 @Entity
-@Table(name = "stat_sheet")
-public class StatSheet {
+public class Item {
+
     @Id
     @GeneratedValue
     private int id;
@@ -17,21 +17,22 @@ public class StatSheet {
     @NotBlank
     private String name;
 
-    @OneToMany
-    @JoinColumn(name = "id")
-    private List<StatValue> statValues;
+    @OneToOne
+    @JoinColumn(name = "document")
+    private Document document;
 
     @ManyToOne
     @JoinColumn(name = "world")
     @JsonIgnore
     private World world;
 
-    public StatSheet() {
+    public Item(String name, Document document, World world) {
+        this.name = name;
+        this.document = document;
+        this.world = world;
     }
 
-    public StatSheet(int id, String name) {
-        this.id = id;
-        this.name = name;
+    public Item() {
     }
 
     public int getId() {
@@ -50,12 +51,12 @@ public class StatSheet {
         this.name = name;
     }
 
-    public List<StatValue> getStatValues() {
-        return statValues;
+    public Document getDocument() {
+        return document;
     }
 
-    public void setStatValues(List<StatValue> statValues) {
-        this.statValues = statValues;
+    public void setDocument(Document document) {
+        this.document = document;
     }
 
     public World getWorld() {

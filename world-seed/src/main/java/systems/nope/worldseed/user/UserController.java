@@ -1,28 +1,29 @@
 package systems.nope.worldseed.user;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.user.requests.RegistrationRequest;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final UserRepository userRepository;
+    final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping
-    public List<User> all() {
-        return userRepository.findAll();
-    }
-
-    @GetMapping("/add")
-    public void add() {
-        User userNew = new User("a", "b", "c");
-        userRepository.save(userNew);
+    @PostMapping
+    public ResponseEntity<?> add(
+            @RequestBody RegistrationRequest request
+    ) {
+        System.out.println(String.format("UserAddRequest %s", request));
+        if (userService.addUser(request.name, request.email, request.password)) {
+            return ResponseEntity.ok().build();
+        } else
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
