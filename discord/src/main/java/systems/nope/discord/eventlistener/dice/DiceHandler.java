@@ -1,16 +1,19 @@
 package systems.nope.discord.eventlistener.dice;
 
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import systems.nope.discord.util.StringUtil;
 
 import javax.annotation.Nonnull;
+import java.nio.channels.Channel;
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DiceHandler extends ListenerAdapter {
     private static final SecureRandom rng = new SecureRandom();
@@ -19,6 +22,9 @@ public class DiceHandler extends ListenerAdapter {
     private Map<User, Integer> sum = new HashMap<>();
     private Map<User, Integer> diceTypes = new HashMap<>();
     private Map<User, Integer> difficulties = new HashMap<>();
+    private Map<Member, Party> parties = new HashMap<>();
+
+
 
     private String getEmojiForResult(int result) {
         switch (result) {
@@ -345,23 +351,79 @@ public class DiceHandler extends ListenerAdapter {
             return -1;
     }
 
+    private void createParty(MessageReceivedEvent event){
+        //Create party and add it to parties
+        Party party = new Party();
+        party.leader = event.getMember();
+        party.members = new ArrayList<Member>(event.getMember().getVoiceState().getChannel().getMembers()); //Cast to list so we can mutate it
+
+        StringBuilder messageBuilder = new StringBuilder();
+
+        int memberCount;
+        for (memberCount = 0; memberCount < party.members.size(); memberCount++){ //foreach party member
+
+            if (party.members.get(memberCount).getUser().isBot()){ //bots are not fun to party with
+
+                party.members.remove(memberCount);
+                memberCount--; //if this was not here when memberCount will be incremented we would skip one member
+            }
+            else if (party.members.get(memberCount).getUser().equals(event.getAuthor())) { //hosts also ruin the fun
+
+                party.members.remove(memberCount);
+                memberCount--; //if this was not here when memberCount will be incremented we would skip one member
+            }
+            else {
+
+                if (memberCount != 0)
+                    messageBuilder.append(", "); //Seperate party members after the first one
+                messageBuilder.append(party.members.get(memberCount).getUser().getName());
+            }
+        }
+
+        if (memberCount == 0){
+            sendMessage(event, "There is no one to party with T-T");
+        }
+        else if (memberCount == 1){
+
+            messageBuilder.append(" is now partying\uD83C\uDF89");
+        }
+        else {
+
+            messageBuilder.append(" are now partying\uD83C\uDF89");
+        }
+
+        parties.put(party.leader, party);
+
+        sendMessage(event, messageBuilder.toString());
+        removeMessage(event);
+    }
+
     private boolean handleSingleCommands(@Nonnull MessageReceivedEvent event, String command) {
         switch (command) {
             case "!roll":
                 regularRoll(event);
                 return true;
+
             case "!uavg":
                 avg(event);
                 return true;
+
             case "!uavgreset":
                 reset(event);
                 return true;
+
             case "!savg":
                 savg(event);
                 return true;
+
             case "!savgreset":
                 savgreset(event);
                 return true;
+
+            case "!party":
+                createParty(event);
+                return true;
+
             case "!help":
                 removeMessage(event);
                 sendMessage(event, ServerConstants.help);
@@ -383,17 +445,16 @@ public class DiceHandler extends ListenerAdapter {
                             sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getAuthor().getName(), x));
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getAuthor().getName(), command[1]));
-                            return false;
                         }
                         return true;
                     }
                     else if (command.length > 2) {
                         sendMessage(event, "If you want two modifiers, just add them together. I'm not your buttler or something");
-                        return false;
+                        return true;
                     }
                     else {
                         sendMessage(event, "I think you forgot to tell me something.");
-                        return false;
+                        return true;
                     }
 
 
@@ -407,17 +468,16 @@ public class DiceHandler extends ListenerAdapter {
                             sendMessage(event, String.format("%s, now uses a %d-sided dice.", event.getAuthor().getName(), x));
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Roll your '%s'-sided dice yourself, sir.", command[1]));
-                            return false;
                         }
                         return true;
                     }
                     else if (command.length == 1){
                         sendMessage(event, "If you don't want to throw a die, just don't!");
-                        return false;
+                        return true;
                     }
                     else {
                         sendMessage(event, "Sorry, but you'll have to decide how many sides you want.");
-                        return false;
+                        return true;
                     }
 
 
@@ -443,14 +503,13 @@ public class DiceHandler extends ListenerAdapter {
                             }
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Please give me a detailed explanation about how I am able to roll a dice '%s' times.", command[1]));
-                            return false;
+                            return true;
                         }
-                        return true;
                     }
                     else {
                         sendMessage(event, "I think you forgot to tell me something.");
-                        return false;
                     }
+                    return true;
 
 
                 case "!rollt":
@@ -471,7 +530,7 @@ public class DiceHandler extends ListenerAdapter {
 
                             } catch (NumberFormatException e) {
                                 sendMessage(event, String.format("Please give me a detailed explanation about how I am able to roll a dice '%s' times.", command[i+1]));
-                                return false;
+                                return true;
 
                             }
                         }
@@ -483,29 +542,28 @@ public class DiceHandler extends ListenerAdapter {
                     }
                     else if (command.length == 1) {
                         sendMessage(event, "I think you forgot to tell me something.");
-                        return false;
+                        return true;
                     }
                     else {
                         sendMessage(event, "I need a name and a number corresponding to it.");
-                        return false;
+                        return true;
                     }
 
 
                 case "!rollc":
+
                     if (command.length >= 2) {
                         try {
                             int x = Integer.parseInt(command[1]);
                             cRolls(event, x);
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Please give me a detailed explanation about how I am able to roll a dice '%s' times.", command[1]));
-                            return false;
                         }
-                        return true;
                     }
                     else {
                         sendMessage(event, "I think you forgot to tell me something.");
-                        return false;
                     }
+                    return true;
 
 
                 default:
