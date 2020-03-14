@@ -13,10 +13,11 @@ import systems.nope.worldseed.user.UserConstants;
 import systems.nope.worldseed.user.UserRepository;
 import systems.nope.worldseed.user.requests.RegistrationRequest;
 import systems.nope.worldseed.user.requests.TokenRequest;
+import systems.nope.worldseed.user.responses.TokenResponse;
 
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,7 +51,7 @@ public class Authenticator {
 
     public String authenticateTestUser() throws Exception {
         MvcResult result = mockMvc.perform(
-                get(TokenConstants.endpoint)
+                post(TokenConstants.endpoint)
                         .content(builder.build().writeValueAsBytes(getTestuserTokenRequest()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -58,7 +59,11 @@ public class Authenticator {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        return result.getResponse().getContentAsString();
+
+        String response = result.getResponse().getContentAsString();
+        TokenResponse tokenResponse = builder.build().readValue(response, TokenResponse.class);
+
+        return tokenResponse.getToken();
     }
 
     public static TokenRequest getTestuserTokenRequest() {

@@ -2,6 +2,7 @@ package systems.nope.worldseed.token;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +22,8 @@ public class TokenTest {
 
     @Test
     public void validCredentialsTokenTest() throws Exception {
-        System.out.println(authenticator.authenticateTestUser());
+        String token = authenticator.authenticateTestUser();
+
+        assert StringUtils.isNotBlank(token);
     }
-
-
 }
