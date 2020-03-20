@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface WorldRepository extends JpaRepository<World, Integer> {
     Optional<World> findByName(String name);
 
+    Optional<World> findBySeed(String seed);
+
     @Transactional
     void deleteAllByName(String name);
 }

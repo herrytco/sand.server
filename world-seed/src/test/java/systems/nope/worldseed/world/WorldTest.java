@@ -9,11 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
-import systems.nope.worldseed.user.User;
-import systems.nope.worldseed.user.UserConstants;
-import systems.nope.worldseed.user.UserRepository;
+import systems.nope.worldseed.Authenticator;
 import systems.nope.worldseed.world.requests.NewWorldRequest;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,10 +28,10 @@ public class WorldTest {
     private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
-    private UserRepository userRepository;
+    private WorldRepository worldRepository;
 
     @Autowired
-    private WorldRepository worldRepository;
+    private Authenticator authenticator;
 
     private String newWorldContent() throws JsonProcessingException {
         NewWorldRequest request = new NewWorldRequest(
@@ -45,19 +44,43 @@ public class WorldTest {
 
     @BeforeEach
     public void createTestUser() {
-        userRepository.deleteByEmail(UserConstants.nonExistingEmail);
-        User userJunit = new User(UserConstants.name, UserConstants.nonExistingEmail, UserConstants.password);
-        userRepository.save(userJunit);
-
+        authenticator.ensureTestuserExists();
         worldRepository.deleteAllByName(WorldConstants.nonExistingWorldName);
     }
 
+    @Test
+    public void seedTest() throws Exception {
+        World worldTest = new World("Testworld", "World used in JUnit Tests", "111111");
+        worldRepository.save(worldTest);
+
+        mockMvc.perform(
+                get(String.format("%s/seed/%s", WorldConstants.endpoint, "111111"))
+                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
+
+        worldRepository.delete(worldTest);
+    }
+
+    @Test
+    public void createWorldWithoutTokenUnauthorized() throws Exception {
+        mockMvc.perform(
+                post(WorldConstants.endpoint)
+                        .content(newWorldContent())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     public void createWorldTest() throws Exception {
         mockMvc.perform(
                 post(WorldConstants.endpoint)
                         .content(newWorldContent())
+                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
@@ -69,19 +92,19 @@ public class WorldTest {
         mockMvc.perform(
                 post(WorldConstants.endpoint)
                         .content(newWorldContent())
+                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
                 .andExpect(status().isOk());
-        
+
         mockMvc.perform(
                 post(WorldConstants.endpoint)
                         .content(newWorldContent())
+                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
                 .andExpect(status().isBadRequest());
     }
-
-
 }

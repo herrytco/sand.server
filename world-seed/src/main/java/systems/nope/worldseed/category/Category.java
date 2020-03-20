@@ -1,4 +1,4 @@
-package systems.nope.worldseed.person;
+package systems.nope.worldseed.category;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
@@ -6,7 +6,8 @@ import systems.nope.worldseed.world.World;
 import javax.persistence.*;
 
 @Entity
-public class Person {
+@Table(name = "category")
+public class Category {
 
     @Id
     @GeneratedValue
@@ -19,12 +20,15 @@ public class Person {
 
     private String name;
 
-    public Person(World world, String name) {
+    private String color;
+
+    public Category(World world, String name, String color) {
         this.world = world;
         this.name = name;
+        this.color = color;
     }
 
-    public Person() {
+    public Category() {
     }
 
     public int getId() {
@@ -49,5 +53,13 @@ public class Person {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

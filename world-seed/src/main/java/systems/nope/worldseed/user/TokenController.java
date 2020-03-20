@@ -4,11 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.user.requests.TokenRequest;
+import systems.nope.worldseed.user.responses.TokenResponse;
 
 @RestController
 @RequestMapping("/tokens")
@@ -21,7 +19,7 @@ public class TokenController {
     private final TokenService tokenService;
     private final UserService userService;
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<?> token(
             @RequestBody TokenRequest tokenRequest
     ) {
@@ -30,7 +28,14 @@ public class TokenController {
 
             if (requestingUser instanceof User) {
                 User user = (User) requestingUser;
-                return ResponseEntity.ok(tokenService.generateToken(user));
+                return ResponseEntity.ok(
+                        new TokenResponse(
+                                user.getId(),
+                                tokenService.generateToken(user),
+                                user.getName(),
+                                user.getEmail()
+                        )
+                );
             }
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username not found!");

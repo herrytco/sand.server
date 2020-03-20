@@ -1,8 +1,10 @@
 package systems.nope.worldseed.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import systems.nope.worldseed.world.UserWorldRole;
 import systems.nope.worldseed.world.World;
 
 import javax.persistence.*;
@@ -17,21 +19,11 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue
+    @JsonIgnore
     private int id;
 
-    @OneToMany
-    @JoinTable(
-            name = "user_world_role",
-            joinColumns = @JoinColumn(
-                    name = "user_id",
-                    referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "world_id",
-                    referencedColumnName = "id"
-            )
-    )
-    private List<World> worlds;
+    @OneToMany(mappedBy = "user")
+    private List<UserWorldRole> worldRoles;
 
     @NotBlank
     private String name;
@@ -138,11 +130,11 @@ public class User implements UserDetails {
         return !activated;
     }
 
-    public List<World> getWorlds() {
-        return worlds;
+    public void setWorldRoles(List<UserWorldRole> worldRoles) {
+        this.worldRoles = worldRoles;
     }
 
-    public void setWorlds(List<World> worlds) {
-        this.worlds = worlds;
+    public List<UserWorldRole> getWorldRoles() {
+        return worldRoles;
     }
 }
