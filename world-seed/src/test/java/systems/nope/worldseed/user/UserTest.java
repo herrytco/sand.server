@@ -1,6 +1,7 @@
 package systems.nope.worldseed.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,17 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.Authenticator;
 
+import java.util.Optional;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Tests for the UserController only. All tests require the test user to NOT exist before and only involve
+ * the User* classes
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserTest {
@@ -28,14 +36,69 @@ public class UserTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private Authenticator authenticator;
+
     private String getNewUserDetails() throws JsonProcessingException {
         return builder.build().writeValueAsString(Authenticator.getTestuserRegistrationRequest());
     }
 
     @BeforeEach
     public void deleteJUnitUser() {
-        System.out.println(String.format("Deleting User with Email '%s'", UserConstants.nonExistingEmail));
         userRepository.deleteByEmail(UserConstants.nonExistingEmail);
+    }
+
+    @AfterEach
+    public void deleteJUnitUserAfter() {
+        deleteJUnitUser();
+    }
+
+    /**
+     * tests if the statuscode for my worlds is correct (200)
+     * does NOT test the content
+     *
+     * @throws Exception
+     */
+    @Test
+    public void myWorldTest() throws Exception {
+        authenticator.ensureTestuserExists();
+
+        Optional<User> testUser = userRepository.findByEmail(UserConstants.nonExistingEmail);
+        assert testUser.isPresent();
+
+        String token = authenticator.authenticateTestUser();
+
+        mockMvc.perform(
+                get(String.format("%s/id/%d/worlds", UserConstants.endpoint, testUser.get().getId()))
+                        .header("Authorization", String.format("Bearer %s", token))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getToken() throws Exception {
+        authenticator.ensureTestuserExists();
+        String token = authenticator.authenticateTestUser();
+        System.out.println("TOKEN: " + token);
+    }
+
+    @Test
+    public void getUser() throws Exception {
+        authenticator.ensureTestuserExists();
+        String token = authenticator.authenticateTestUser();
+
+        Optional<User> testUser = userRepository.findByEmail(UserConstants.nonExistingEmail);
+        assert testUser.isPresent();
+
+        mockMvc.perform(
+                get(String.format("%s/id/%d", UserConstants.endpoint, testUser.get().getId()))
+                        .header("Authorization", String.format("Bearer %s", token))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test

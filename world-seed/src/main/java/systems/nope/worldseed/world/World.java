@@ -4,6 +4,7 @@ import systems.nope.worldseed.person.Person;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -18,15 +19,19 @@ public class World {
     private String description;
 
     @OneToMany
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "world")
     private List<Person> persons;
+
+    @NotNull
+    String seed;
 
     public World() {
     }
 
-    public World(String name, String description) {
+    public World(String name, String description, String seed) {
         this.name = name;
         this.description = description;
+        this.seed = seed;
     }
 
     public int getId() {
@@ -59,5 +64,13 @@ public class World {
 
     public void setPersons(List<Person> persons) {
         this.persons = persons;
+    }
+
+    public String getSeed() {
+        return seed;
+    }
+
+    public void setSeed(String seed) {
+        this.seed = seed;
     }
 }

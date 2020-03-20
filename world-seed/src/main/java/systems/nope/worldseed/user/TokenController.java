@@ -29,7 +29,9 @@ public class TokenController {
             if (requestingUser instanceof User) {
                 User user = (User) requestingUser;
                 return ResponseEntity.ok(
-                        new TokenResponse(tokenService.generateToken(user),
+                        new TokenResponse(
+                                user.getId(),
+                                tokenService.generateToken(user),
                                 user.getName(),
                                 user.getEmail()
                         )

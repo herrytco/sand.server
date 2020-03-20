@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.Authenticator;
 import systems.nope.worldseed.world.requests.NewWorldRequest;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +46,22 @@ public class WorldTest {
     public void createTestUser() {
         authenticator.ensureTestuserExists();
         worldRepository.deleteAllByName(WorldConstants.nonExistingWorldName);
+    }
+
+    @Test
+    public void seedTest() throws Exception {
+        World worldTest = new World("Testworld", "World used in JUnit Tests", "111111");
+        worldRepository.save(worldTest);
+
+        mockMvc.perform(
+                get(String.format("%s/seed/%s", WorldConstants.endpoint, "111111"))
+                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
+
+        worldRepository.delete(worldTest);
     }
 
     @Test
@@ -90,6 +107,4 @@ public class WorldTest {
         ).andDo(print())
                 .andExpect(status().isBadRequest());
     }
-
-
 }

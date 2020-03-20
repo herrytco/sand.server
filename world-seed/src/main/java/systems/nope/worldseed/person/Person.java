@@ -7,12 +7,13 @@ import javax.persistence.*;
 
 @Entity
 public class Person {
+
     @Id
     @GeneratedValue
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "world", insertable = false, updatable = false)
+    @JoinColumn(name = "world")
     @JsonIgnore
     private World world;
 

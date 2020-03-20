@@ -36,17 +36,43 @@ public class Authenticator {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void ensureTestuserExists() {
+    public User ensureTestuserExists() {
+        return ensureUserExists(UserConstants.name, UserConstants.nonExistingEmail, passwordEncoder.encode(UserConstants.password));
+    }
+
+    public User ensureUserExists(String name, String username, String password) {
         Optional<User> user = userRepository.findByEmail(UserConstants.nonExistingEmail);
 
         if (user.isEmpty()) {
             User userNew = new User(
-                    UserConstants.name,
-                    UserConstants.nonExistingEmail,
-                    passwordEncoder.encode(UserConstants.password)
+                    name,
+                    username,
+                    passwordEncoder.encode(password)
             );
             userRepository.save(userNew);
+
+            return userNew;
+        } else
+            return user.get();
+    }
+
+    public Optional<String> authenticateUser(String email, String password) throws Exception {
+        MvcResult result = mockMvc.perform(
+                post(TokenConstants.endpoint)
+                        .content(builder.build().writeValueAsBytes(new TokenRequest(email, password)))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andReturn();
+
+        if (result.getResponse().getStatus() == 200) {
+            String response = result.getResponse().getContentAsString();
+            TokenResponse tokenResponse = builder.build().readValue(response, TokenResponse.class);
+
+            return Optional.of(tokenResponse.getToken());
         }
+
+        return Optional.empty();
     }
 
     public String authenticateTestUser() throws Exception {

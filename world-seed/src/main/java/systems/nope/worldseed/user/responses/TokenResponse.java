@@ -1,6 +1,8 @@
 package systems.nope.worldseed.user.responses;
 
 public class TokenResponse {
+    private int id;
+
     private String token;
 
     private String name;
@@ -10,7 +12,8 @@ public class TokenResponse {
     public TokenResponse() {
     }
 
-    public TokenResponse(String token, String name, String email) {
+    public TokenResponse(int id, String token, String name, String email) {
+        this.id = id;
         this.token = token;
         this.name = name;
         this.email = email;
@@ -38,5 +41,13 @@ public class TokenResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
