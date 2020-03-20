@@ -1,5 +1,6 @@
 package systems.nope.worldseed.world;
 
+import systems.nope.worldseed.category.Category;
 import systems.nope.worldseed.person.Person;
 
 import javax.persistence.*;
@@ -21,6 +22,10 @@ public class World {
     @OneToMany
     @JoinColumn(name = "world")
     private List<Person> persons;
+
+    @OneToMany
+    @JoinColumn(name = "world")
+    private List<Category> categories;
 
     @NotNull
     String seed;
@@ -72,5 +77,13 @@ public class World {
 
     public void setSeed(String seed) {
         this.seed = seed;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

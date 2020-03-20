@@ -45,13 +45,12 @@ public class UserWorldTest {
         Optional<World> worldPrime = worldService.getWorldRepository().findBySeed(WorldConstants.nonExistingWorldSeed);
 
         if (worldPrime.isEmpty()) {
-            World worldTest = new World(
-                    WorldConstants.nonExistingWorldName,
+            User testUser = authenticator.ensureTestuserExists();
+
+            worldService.add(testUser, WorldConstants.nonExistingWorldName,
                     WorldConstants.worldDescription,
                     WorldConstants.nonExistingWorldSeed
             );
-
-            worldService.getWorldRepository().save(worldTest);
         }
     }
 

@@ -1,6 +1,7 @@
 package systems.nope.worldseed.world;
 
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.category.CategoryService;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
 import systems.nope.worldseed.role.RoleType;
@@ -16,15 +17,17 @@ public class WorldService {
     private final WorldRepository worldRepository;
     private final RoleService roleService;
     private final UserWorldRoleRepository userWorldRoleRepository;
+    private final CategoryService categoryService;
 
     public WorldRepository getWorldRepository() {
         return worldRepository;
     }
 
-    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository) {
+    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService) {
         this.worldRepository = worldRepository;
         this.roleService = roleService;
         this.userWorldRoleRepository = userWorldRoleRepository;
+        this.categoryService = categoryService;
     }
 
     private String findSeed() {
@@ -53,6 +56,16 @@ public class WorldService {
         return seed.toString();
     }
 
+    /**
+     * Adds a new world to the system. The user creating the world will automatically added as owner of this world.
+     * All default article categories are added to the system tied to this world as well.
+     *
+     * @param creator
+     * @param name
+     * @param description
+     * @param seed
+     * @return
+     */
     public WorldOwnership add(User creator, String name, String description, String seed) {
         Optional<World> reference = worldRepository.findByName(name);
 
@@ -68,6 +81,9 @@ public class WorldService {
         Role owner = roleService.getRoleForType(RoleType.Owner);
         UserWorldRole userWorldRole = new UserWorldRole(creator, worldNew, owner);
         userWorldRoleRepository.save(userWorldRole);
+
+        // add default categories
+        categoryService.addDefaultCategories(worldNew);
 
         return new WorldOwnership(
                 worldNew,
