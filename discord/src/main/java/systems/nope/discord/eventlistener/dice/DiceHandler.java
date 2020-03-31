@@ -192,7 +192,7 @@ public class DiceHandler extends ListenerAdapter {
     private String singleXRolls(MessageReceivedEvent event, String name, int nr) { //in your area
         StringBuilder messageBuilder = new StringBuilder();
 
-        messageBuilder.append("\n");//header
+        messageBuilder.append(String.format("%s's rolls:\n", name));//header
 
         for (int i = 0; i < nr; i++) {
             messageBuilder.append(getSingleRoll(event, i + 1, name));
