@@ -83,9 +83,16 @@ public class DiceHandler extends ListenerAdapter {
             int result = rollOnce(author);
 
             if (k < 0)
-                message = String.format(ServerConstants.regularRoll, event.getMember().getEffectiveName(), getCalculation(author, result));
+                if (event.getMember().getNickname() != null)
+                    message = String.format(ServerConstants.regularRoll, event.getMember().getNickname(), getCalculation(author, result));
+                else
+                    message = String.format(ServerConstants.regularRoll, event.getMember().getUser().getName(), getCalculation(author, result));
             else
-                message = String.format(ServerConstants.kthRoll, event.getMember().getEffectiveName(), getCalculation(author, result));       }
+                if (event.getMember().getNickname() != null)
+                    message = String.format(ServerConstants.kthRoll, event.getMember().getNickname(), StringUtil.integerToOrderedString(k), getCalculation(author, result));
+                else
+                    message = String.format(ServerConstants.kthRoll, event.getMember().getUser().getName(), StringUtil.integerToOrderedString(k), getCalculation(author, result));
+        }
 
         return message;
     }
@@ -150,7 +157,10 @@ public class DiceHandler extends ListenerAdapter {
         removeMessage(event);
 
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s rolls %d dice:\n", event.getMember().getEffectiveName(), x));
+        if (event.getMember().getNickname() != null)
+            sb.append(String.format("%s rolls %d dice:\n", event.getMember().getNickname(), x));
+        else
+            sb.append(String.format("%s rolls %d dice:\n", event.getMember().getUser().getName(), x));
 
         for (int i = 0; i < x; i++) {
             sb.append(getSingleRoll(event, i + 1));
@@ -261,14 +271,24 @@ public class DiceHandler extends ListenerAdapter {
         }
         all.append(")");
 
-        sendMessage(event, String.format(
-                "%s rolled %d dice, the %s result is %s!\nAll rolls were:%s",
-                event.getMember().getEffectiveName(),
-                x,
-                maximum ? "best" : "worst",
-                getCalculation(event.getMember(), result),
-                all.toString()
-        ));
+        if (event.getMember().getNickname() != null)
+            sendMessage(event, String.format(
+                    "%s rolled %d dice, the %s result is %s!\nAll rolls were:%s",
+                    event.getMember().getNickname(),
+                    x,
+                    maximum ? "best" : "worst",
+                    getCalculation(event.getMember(), result),
+                    all.toString()
+            ));
+        else
+            sendMessage(event, String.format(
+                    "%s rolled %d dice, the %s result is %s!\nAll rolls were:%s",
+                    event.getMember().getUser().getName(),
+                    x,
+                    maximum ? "best" : "worst",
+                    getCalculation(event.getMember(), result),
+                    all.toString()
+            ));
     }
 
     /**
@@ -282,7 +302,10 @@ public class DiceHandler extends ListenerAdapter {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format("%s rolls %d culative dice:\n", event.getMember().getEffectiveName(), x));
+        if (event.getMember().getNickname() != null)
+            sb.append(String.format("%s rolls %d culative dice:\n", event.getMember().getNickname(), x));
+        else
+            sb.append(String.format("%s rolls %d culative dice:\n", event.getMember().getUser().getName(), x));
         int resultCumulative = 0;
 
         for (int i = 0; i < x; i++) {
@@ -290,7 +313,10 @@ public class DiceHandler extends ListenerAdapter {
 
             resultCumulative += singleResult;
 
-            sb.append(String.format("%s's %s dice: %s\n", event.getMember().getEffectiveName(), StringUtil.integerToOrderedString(i + 1), getCalculation(event.getMember(), singleResult)));
+            if (event.getMember().getNickname() != null)
+                sb.append(String.format("%s's %s dice: %s\n", event.getMember().getNickname(), StringUtil.integerToOrderedString(i + 1), getCalculation(event.getMember(), singleResult)));
+            else
+                sb.append(String.format("%s's %s dice: %s\n", event.getMember().getUser().getName(), StringUtil.integerToOrderedString(i + 1), getCalculation(event.getMember(), singleResult)));
         }
 
         if (difficulties.containsKey(event.getMember()))
@@ -328,9 +354,15 @@ public class DiceHandler extends ListenerAdapter {
 
         if (avg >= 0)
 
-            message = String.format("%s' average: <:d20rng:433634881118142465> %.2f", author.getEffectiveName(), avg);
+            if (event.getMember().getNickname() != null)
+                message = String.format("%s' average: <:d20rng:433634881118142465> %.2f", author.getNickname(), avg);
+            else
+                message = String.format("%s' average: <:d20rng:433634881118142465> %.2f", author.getUser().getName(), avg);
         else
-            message = String.format("%s should do some rolls first before bossing me around...", author.getEffectiveName());
+            if (event.getMember().getNickname() != null)
+                message = String.format("%s should do some rolls first before bossing me around...", author.getNickname());
+            else
+                message = String.format("%s should do some rolls first before bossing me around...", author.getUser().getName());
 
         removeMessage(event);
         sendMessage(event, message);
@@ -391,7 +423,10 @@ public class DiceHandler extends ListenerAdapter {
         removeMessage(event);
 
         String message;
-        message = String.format("I forgot everything what %s rolled.", author.getEffectiveName());
+        if (author.getNickname() != null)
+            message = String.format("I forgot everything what %s rolled.", author.getNickname());
+        else
+            message = String.format("I forgot everything what %s rolled.", author.getUser().getName());
 
         sendMessage(event, message);
     }
@@ -490,7 +525,10 @@ public class DiceHandler extends ListenerAdapter {
                         //iterate over partyMembers
                         for (Member member : partyMembers) {
 
-                            messageBuilder.append(getSingleRoll(event, member.getEffectiveName()));
+                            if (member.getNickname() != null)
+                                messageBuilder.append(getSingleRoll(event, member.getNickname()));
+                            else
+                                messageBuilder.append(getSingleRoll(event, member.getUser().getName()));
                             messageBuilder.append('\n');
                         }
                         sendMessage(event, messageBuilder.toString());
@@ -544,15 +582,21 @@ public class DiceHandler extends ListenerAdapter {
                             int x = Integer.parseInt(command[1]);
                             difficulties.put(event.getMember(), x);
 
-                            sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getMember().getEffectiveName(), x));
+                            if (event.getMember().getNickname() != null)
+                                sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getMember().getNickname(), x));
+                            else
+                                sendMessage(event, String.format("%s, has now a difficulty of %d.", event.getMember().getUser().getName(), x));
                         } catch (NumberFormatException e) {
 
-                            sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getMember().getEffectiveName(), command[1]));
+                            if (event.getMember().getNickname() != null)
+                                sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getMember().getNickname(), command[1]));
+                            else
+                                sendMessage(event, String.format("%s, '%s' is not a number sir.", event.getMember().getUser().getName(), command[1]));
                         }
                         return true;
                     }
                     else if (command.length > 2) {
-                        sendMessage(event, "If you want two modifiers, just add them together. I'm not your butler or something");
+                        sendMessage(event, "If you want two modifiers, just add them together. I'm not your buttler or something");
                         return true;
                     }
                     else {
@@ -569,7 +613,10 @@ public class DiceHandler extends ListenerAdapter {
                             int x = Integer.parseInt(command[1]);
                             diceTypes.put(event.getMember(), x);
 
-                            sendMessage(event, String.format("%s, now uses a %d-sided dice.", event.getMember().getEffectiveName(), x));
+                            if (event.getMember().getNickname() != null)
+                                sendMessage(event, String.format("%s, now uses a %d-sided dice.", event.getMember().getNickname(), x));
+                            else
+                                sendMessage(event, String.format("%s, now uses a %d-sided dice.", event.getMember().getUser().getName(), x));
                         } catch (NumberFormatException e) {
                             sendMessage(event, String.format("Roll your '%s'-sided dice yourself, sir.", command[1]));
                         }
