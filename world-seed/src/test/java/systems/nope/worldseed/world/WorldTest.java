@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.Authenticator;
+import systems.nope.worldseed.Worldinator;
 import systems.nope.worldseed.world.requests.NewWorldRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,12 +32,15 @@ public class WorldTest {
     private WorldRepository worldRepository;
 
     @Autowired
+    private Worldinator worldinator;
+
+    @Autowired
     private Authenticator authenticator;
 
     private String newWorldContent() throws JsonProcessingException {
         NewWorldRequest request = new NewWorldRequest(
                 WorldConstants.nonExistingWorldName,
-                WorldConstants.worldDescription.substring(0, 256)
+                WorldConstants.worldDescription
         );
 
         return builder.build().writeValueAsString(request);
@@ -50,8 +54,9 @@ public class WorldTest {
 
     @Test
     public void seedTest() throws Exception {
-        World worldTest = new World("Testworld", "World used in JUnit Tests", "111111");
-        worldRepository.save(worldTest);
+        worldRepository.deleteBySeed("111111");
+
+        World worldTest = worldinator.ensureWorldExists("Testworld", "World used in JUnit Tests", "111111");
 
         mockMvc.perform(
                 get(String.format("%s/seed/%s", WorldConstants.endpoint, "111111"))
