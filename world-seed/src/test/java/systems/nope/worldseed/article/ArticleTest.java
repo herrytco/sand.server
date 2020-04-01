@@ -1,5 +1,6 @@
 package systems.nope.worldseed.article;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.Authenticator;
 import systems.nope.worldseed.Worldinator;
 import systems.nope.worldseed.article.requests.CreateArticleRequest;
+import systems.nope.worldseed.article.requests.UpdateArticleRequest;
 import systems.nope.worldseed.category.Category;
 import systems.nope.worldseed.world.World;
 
@@ -41,6 +44,58 @@ public class ArticleTest {
         authenticator.ensureTestuserExists();
         worldinator.ensureTestWorldExists();
         articleService.getArticleRepository().deleteByTitle(ArticleConstants.articleName);
+    }
+
+    @AfterEach
+    public void wipeArticle() {
+        articleService.getArticleRepository().deleteByTitle(ArticleConstants.articleName);
+        articleService.getArticleRepository().deleteByTitle(ArticleConstants.articleName2);
+    }
+
+    @Test
+    public void updateArticleTest() throws Exception {
+        World testWorld = worldinator.ensureTestWorldExists();
+        String token = authenticator.authenticateTestUser();
+
+        assert testWorld.getCategories().size() > 0;
+
+        Category category = testWorld.getCategories().get(0);
+
+        CreateArticleRequest createArticleRequest = new CreateArticleRequest(
+                ArticleConstants.articleName,
+                category.getId(),
+                ArticleConstants.articleContent
+        );
+
+        MvcResult result = mockMvc.perform(
+                post(String.format("/articles/world/%d", testWorld.getId()))
+                        .header("Authorization", String.format("Bearer %s", token))
+                        .content(builder.build().writeValueAsString(createArticleRequest))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Article addedArticle = builder.build().readerFor(Article.class).readValue(result.getResponse().getContentAsString());
+
+        Integer id = addedArticle.getId();
+
+        UpdateArticleRequest updateArticleRequest = new UpdateArticleRequest(
+                category.getId(),
+                ArticleConstants.articleName2,
+                ArticleConstants.articleContent + "-" + ArticleConstants.articleContent
+        );
+
+        // update request
+        mockMvc.perform(
+                post(String.format("/articles/id/%d", id))
+                        .header("Authorization", String.format("Bearer %s", token))
+                        .content(builder.build().writeValueAsString(updateArticleRequest))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test

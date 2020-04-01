@@ -11,6 +11,18 @@ public class DocumentService {
         this.documentRepository = documentRepository;
     }
 
+    public Document update(Document documentOld, String contentNew) {
+        Document documentNew = new Document(
+                contentNew,
+                documentOld.getWorld(),
+                documentOld.getVersion() + 1
+        );
+
+        documentRepository.save(documentNew);
+
+        return documentNew;
+    }
+
     public Document add(World world, String richtext) {
         return add(world, richtext, 1);
     }

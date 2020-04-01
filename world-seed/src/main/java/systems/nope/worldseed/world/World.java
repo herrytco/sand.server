@@ -1,6 +1,7 @@
 package systems.nope.worldseed.world;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import systems.nope.worldseed.article.Article;
 import systems.nope.worldseed.category.Category;
 import systems.nope.worldseed.person.Person;
 
@@ -29,6 +30,9 @@ public class World {
 
     @NotNull
     String seed;
+
+    @Transient
+    private List<Article> articles;
 
     public World() {
     }
@@ -85,5 +89,13 @@ public class World {
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
+    }
+
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
     }
 }
