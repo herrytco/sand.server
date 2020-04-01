@@ -172,6 +172,37 @@ public class DiceHandler extends ListenerAdapter {
         sendMessage(event, message);
     }
 
+    private void xRolls(MessageReceivedEvent event, int x, String name) {
+        removeMessage(event);
+
+        StringBuilder sb = new StringBuilder();
+
+            sb.append(String.format("%s rolls %d dice:\n", name, x));
+
+        for (int i = 0; i < x; i++) {
+            sb.append(getSingleRoll(event, i + 1, name));
+            if (i < x - 1)
+                sb.append("\n");
+        }
+
+        String message = sb.toString();
+        sendMessage(event, message);
+    }
+
+    private String singleXRolls(MessageReceivedEvent event, String name, int nr) { //in your area
+        StringBuilder messageBuilder = new StringBuilder();
+
+        messageBuilder.append(String.format("%s's rolls:\n", name));//header
+
+        for (int i = 0; i < nr; i++) {
+            messageBuilder.append(getSingleRoll(event, i + 1, name));
+            messageBuilder.append("\n");
+        }
+
+        String message = messageBuilder.toString();
+        return message;
+    }
+
     private String singleTRolls(MessageReceivedEvent event, String name, int nr) { //in your area
         StringBuilder messageBuilder = new StringBuilder();
 
@@ -600,6 +631,38 @@ public class DiceHandler extends ListenerAdapter {
                         return true;
                     }
 
+
+                case "!prollx":
+                    if (command.length >= 2) {
+                        try {
+
+                            StringBuilder messageBuilder = new StringBuilder();
+
+                            messageBuilder.append(String.format("Everybody in the party\uD83C\uDF89 rolls %d dice\n", Integer.parseInt(command[1])));
+
+                            if (parties.get(event.getMember()) != null) { //Check if member is party leader
+
+                                Party party = parties.get(event.getMember());
+                                for (Member member : party.members) {
+                                    messageBuilder.append(singleXRolls(event, member.getEffectiveName(), Integer.parseInt(command[1])));
+                                }
+                                sendMessage(event, messageBuilder.toString());
+                                removeMessage(event);
+                                return  true;
+                            } else {
+                                sendMessage(event, "Maybe try organizing a !party first.");
+                                return  true;
+                            }
+                        }
+                        catch (NumberFormatException e) {
+                            sendMessage(event, String.format("Please give me a detailed description on how i'm able to roll %s dice", command[1]));
+                            return  true;
+                        }
+                    }
+                    else {
+                        sendMessage(event, "I think you forgot to tell me something.");
+                        return  true;
+                    }
 
 
                 case "!rollx":
