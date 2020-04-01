@@ -12,4 +12,10 @@ public interface WorldRepository extends JpaRepository<World, Integer> {
 
     @Transactional
     void deleteAllByName(String name);
+
+    @Transactional
+    void deleteAllBySeed(String seed);
+
+    @Transactional
+    void deleteBySeed(String seed);
 }

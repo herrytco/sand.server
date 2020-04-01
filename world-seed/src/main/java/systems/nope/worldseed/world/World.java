@@ -1,5 +1,6 @@
 package systems.nope.worldseed.world;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import systems.nope.worldseed.category.Category;
 import systems.nope.worldseed.person.Person;
 
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class World {
     @Id
     @GeneratedValue
@@ -19,12 +21,10 @@ public class World {
 
     private String description;
 
-    @OneToMany
-    @JoinColumn(name = "world")
+    @OneToMany(mappedBy = "world")
     private List<Person> persons;
 
-    @OneToMany
-    @JoinColumn(name = "world")
+    @OneToMany(mappedBy = "world", fetch = FetchType.EAGER)
     private List<Category> categories;
 
     @NotNull

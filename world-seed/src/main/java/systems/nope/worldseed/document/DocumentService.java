@@ -1,0 +1,24 @@
+package systems.nope.worldseed.document;
+
+import org.springframework.stereotype.Service;
+import systems.nope.worldseed.world.World;
+
+@Service
+public class DocumentService {
+    private final DocumentRepository documentRepository;
+
+    public DocumentService(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
+
+    public Document add(World world, String richtext) {
+        return add(world, richtext, 1);
+    }
+
+    public Document add(World world, String richtext, int version) {
+        Document document = new Document(richtext, world, version);
+        documentRepository.save(document);
+
+        return document;
+    }
+}
