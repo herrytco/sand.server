@@ -31,8 +31,9 @@ public class World {
     @NotNull
     String seed;
 
-    @Transient
-    private List<Article> articles;
+    @OneToMany
+    @JoinColumn(name = "world")
+    List<Article> articles;
 
     public World() {
     }

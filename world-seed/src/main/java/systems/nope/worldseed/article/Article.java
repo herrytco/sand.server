@@ -19,6 +19,7 @@ public class Article {
 
     @ManyToOne
     @JoinColumn(name = "world")
+    @JsonIgnore
     private World world;
 
     @ManyToOne
@@ -26,7 +27,12 @@ public class Article {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "document")
+    @JoinColumns(
+            {
+                    @JoinColumn(name = "document"),
+                    @JoinColumn(name = "version")
+            }
+    )
     private Document document;
 
     @NotBlank

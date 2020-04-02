@@ -17,9 +17,9 @@ public class Skill {
     @NotBlank
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "document")
-    private Document document;
+//    @OneToOne
+//    @JoinColumn(name = "document")
+//    private Document document;
 
     @ManyToOne
     @JoinColumn(name = "world")
@@ -28,7 +28,7 @@ public class Skill {
 
     public Skill(String name, Document document, World world) {
         this.name = name;
-        this.document = document;
+//        this.document = document;
         this.world = world;
     }
 
@@ -51,13 +51,13 @@ public class Skill {
         this.name = name;
     }
 
-    public Document getDocument() {
-        return document;
-    }
-
-    public void setDocument(Document document) {
-        this.document = document;
-    }
+//    public Document getDocument() {
+//        return document;
+//    }
+//
+//    public void setDocument(Document document) {
+//        this.document = document;
+//    }
 
     public World getWorld() {
         return world;
