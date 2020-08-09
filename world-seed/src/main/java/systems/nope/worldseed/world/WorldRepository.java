@@ -14,8 +14,5 @@ public interface WorldRepository extends JpaRepository<World, Integer> {
     void deleteAllByName(String name);
 
     @Transactional
-    void deleteAllBySeed(String seed);
-
-    @Transactional
     void deleteBySeed(String seed);
 }
