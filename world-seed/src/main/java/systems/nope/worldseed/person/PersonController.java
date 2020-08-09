@@ -9,6 +9,7 @@ import systems.nope.worldseed.world.WorldService;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/persons")
@@ -20,6 +21,17 @@ public class PersonController {
     public PersonController(PersonService personService, WorldService worldService) {
         this.personService = personService;
         this.worldService = worldService;
+    }
+
+    @GetMapping("/api/{apiKey}")
+    public ResponseEntity<?> getByApiKey(
+            @PathVariable String apiKey
+    ) {
+        Optional<Person> person = personService.getPersonRepository().findByApiKey(apiKey);
+
+        return person
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping("/world/{worldId}")

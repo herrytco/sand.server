@@ -8,6 +8,7 @@ import systems.nope.worldseed.user.User;
 import systems.nope.worldseed.user.WorldOwnership;
 import systems.nope.worldseed.world.requests.NewWorldRequest;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @RestController
@@ -24,7 +25,7 @@ public class WorldController {
     public ResponseEntity<?> bySeed(
             @PathVariable String seed
     ) {
-        Optional<World> seededWorld = worldService.getWorldRepository().findBySeed(seed);
+        Optional<World> seededWorld = worldService.findBySeed(seed);
 
         if (seededWorld.isPresent())
             return ResponseEntity.ok(seededWorld);
@@ -33,15 +34,16 @@ public class WorldController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<?> bySeed(
+    public ResponseEntity<?> byId(
             @PathVariable int id
     ) {
-        Optional<World> seededWorld = worldService.getWorldRepository().findById(id);
+        try {
+            World seededWorld = worldService.get(id);
 
-        if (seededWorld.isPresent())
             return ResponseEntity.ok(seededWorld);
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with seed '%d' not found.", id));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with id '%d' not found.", id));
+        }
     }
 
     @PostMapping

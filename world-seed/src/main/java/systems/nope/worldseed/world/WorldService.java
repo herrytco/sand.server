@@ -1,6 +1,8 @@
 package systems.nope.worldseed.world;
 
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.article.Article;
+import systems.nope.worldseed.article.ArticleService;
 import systems.nope.worldseed.category.CategoryService;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
@@ -8,7 +10,9 @@ import systems.nope.worldseed.role.RoleType;
 import systems.nope.worldseed.user.User;
 import systems.nope.worldseed.user.WorldOwnership;
 
+import javax.swing.text.html.Option;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,16 +22,18 @@ public class WorldService {
     private final RoleService roleService;
     private final UserWorldRoleRepository userWorldRoleRepository;
     private final CategoryService categoryService;
+    private final ArticleService articleService;
 
     public WorldRepository getWorldRepository() {
         return worldRepository;
     }
 
-    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService) {
+    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService, ArticleService articleService) {
         this.worldRepository = worldRepository;
         this.roleService = roleService;
         this.userWorldRoleRepository = userWorldRoleRepository;
         this.categoryService = categoryService;
+        this.articleService = articleService;
     }
 
     private String findSeed() {
@@ -89,6 +95,26 @@ public class WorldService {
                 worldNew,
                 owner
         );
+    }
+
+    public Optional<World> findBySeed(String seed) {
+        Optional<World> world = worldRepository.findBySeed(seed);
+
+        if (world.isPresent()) {
+            World result = world.get();
+            result.setArticles(articleService.getArticleRepository().findAllByWorld(result));
+            return Optional.of(result);
+        }
+
+        return Optional.empty();
+    }
+
+    public World get(int id) {
+        World world = worldRepository.getOne(id);
+
+        world.setArticles(articleService.getArticleRepository().findAllByWorld(world));
+
+        return world;
     }
 
     public WorldOwnership add(User creator, String name, String description) {

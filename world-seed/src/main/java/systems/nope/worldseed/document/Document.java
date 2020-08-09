@@ -7,20 +7,45 @@ import systems.nope.worldseed.world.World;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "document")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Document {
-    @Id
-    @GeneratedValue
-    private int id;
+
+
+    @Embeddable
+    public static class Pk implements Serializable {
+        int id;
+
+        int version;
+
+        public Pk() {
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getVersion() {
+            return version;
+        }
+
+        public void setVersion(int version) {
+            this.version = version;
+        }
+    }
+
+    @EmbeddedId
+    private Pk id;
 
     @NotBlank
     private String richtext;
-
-    @NotNull
-    Integer version;
 
     @ManyToOne
     @JoinColumn(name = "world")
@@ -30,21 +55,23 @@ public class Document {
     public Document() {
     }
 
-    public Document(String richtext, World world) {
-        this(richtext, world, 1);
+    public Document(String richtext, World world, int id) {
+        this(richtext, world, id, 1);
     }
 
-    public Document(String richtext, World world, int id) {
+    public Document(String richtext, World world, int id, int version) {
         this.richtext = richtext;
         this.world = world;
-        this.version = id;
+        this.id = new Pk();
+        this.id.setId(id);
+        this.id.setVersion(version);
     }
 
-    public int getId() {
+    public Pk getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Pk id) {
         this.id = id;
     }
 
@@ -54,14 +81,6 @@ public class Document {
 
     public void setRichtext(String name) {
         this.richtext = name;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     public World getWorld() {

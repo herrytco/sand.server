@@ -78,6 +78,11 @@ public class UserTest {
     }
 
     @Test
+    public void ensureHerryUserExists() {
+        authenticator.ensureUserExists(UserConstants.herryName, UserConstants.herryName, UserConstants.herryPw);
+    }
+
+    @Test
     public void getToken() throws Exception {
         authenticator.ensureTestuserExists();
         String token = authenticator.authenticateTestUser();

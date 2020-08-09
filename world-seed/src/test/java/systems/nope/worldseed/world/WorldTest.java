@@ -53,6 +53,11 @@ public class WorldTest {
     }
 
     @Test
+    public void ensureWorldExists() {
+        worldinator.ensureWorldExists(WorldConstants.konstoWorldName, WorldConstants.worldDescription, "189324");
+    }
+
+    @Test
     public void seedTest() throws Exception {
         worldRepository.deleteBySeed("111111");
 

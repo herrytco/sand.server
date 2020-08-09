@@ -50,4 +50,7 @@ public class Worldinator {
         return optionalWorld.get();
     }
 
+    public WorldService getWorldService() {
+        return worldService;
+    }
 }

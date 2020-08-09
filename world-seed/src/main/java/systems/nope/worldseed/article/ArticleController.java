@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.article.requests.CreateArticleRequest;
+import systems.nope.worldseed.article.requests.UpdateArticleRequest;
 import systems.nope.worldseed.category.Category;
 import systems.nope.worldseed.category.CategoryRepository;
 import systems.nope.worldseed.world.World;
@@ -23,6 +24,30 @@ public class ArticleController {
         this.worldService = worldService;
         this.articleService = articleService;
         this.categoryRepository = categoryRepository;
+    }
+
+    @PostMapping("/id/{articleId}")
+    public ResponseEntity<?> update(
+            @PathVariable int articleId,
+            @RequestBody UpdateArticleRequest request
+    ) {
+
+        Category category;
+
+        try {
+            category = categoryRepository.getOne(request.getCategoryId());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("Category with ID '%d' not found.", request.getCategoryId()));
+        }
+
+        Article updatedArticle = articleService.update(
+                articleId,
+                category,
+                request.getTitle(),
+                request.getContent()
+        );
+
+        return ResponseEntity.ok(updatedArticle);
     }
 
     @PostMapping("/world/{worldId}")

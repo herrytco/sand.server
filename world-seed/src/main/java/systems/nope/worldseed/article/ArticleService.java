@@ -21,6 +21,25 @@ public class ArticleService {
         return articleRepository;
     }
 
+    public Article update(int id, Category category, String name, String content) {
+        Article targetArticle = articleRepository.getOne(id);
+
+        // update article basedata
+        targetArticle.setTitle(name);
+        targetArticle.setCategory(category);
+
+
+        targetArticle.setDocument(
+                documentService.update(
+                        targetArticle.getDocument(),
+                        content
+                )
+        );
+        articleRepository.save(targetArticle);
+
+        return targetArticle;
+    }
+
     public Article add(World world, Category category, String name, String content) {
         if (articleRepository.findByTitle(name).isPresent())
             throw new IllegalStateException(String.format("Duplicate Article with title %s", name));
