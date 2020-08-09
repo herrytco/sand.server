@@ -664,7 +664,6 @@ public class DiceHandler extends ListenerAdapter {
                         return  true;
                     }
 
-
                 case "!rollx":
                     if (command.length >= 2) {
                         try {
