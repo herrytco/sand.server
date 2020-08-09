@@ -52,6 +52,7 @@ public class Config extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/tokens").permitAll()
                 .antMatchers("/users").permitAll()
+                .antMatchers("/echo").permitAll()
                 .antMatchers("/**").authenticated()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
