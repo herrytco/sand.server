@@ -31,7 +31,6 @@ public class ArticleController {
             @PathVariable int articleId,
             @RequestBody UpdateArticleRequest request
     ) {
-
         Category category;
 
         try {

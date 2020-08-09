@@ -77,7 +77,7 @@ public class UserTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
+//    @Test
     public void ensureHerryUserExists() {
         authenticator.ensureUserExists(UserConstants.herryName, UserConstants.herryName, UserConstants.herryPw);
     }
