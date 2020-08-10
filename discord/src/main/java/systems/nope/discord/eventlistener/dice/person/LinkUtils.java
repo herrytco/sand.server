@@ -12,12 +12,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class LinkUtils {
     private static final Map<Member, Person> playerChars = new HashMap<>();
 
-    public static Person getPersonForMember(Member member) {
-        return playerChars.get(member);
+    public static Optional<Person> getPersonForMember(Member member) {
+        if(playerChars.containsKey(member))
+            return Optional.of(playerChars.get(member));
+
+        return Optional.empty();
     }
 
     public static boolean isMemberLinked(Member member) {

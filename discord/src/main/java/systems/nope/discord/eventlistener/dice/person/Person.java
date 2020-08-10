@@ -26,4 +26,8 @@ public class Person {
             stats.add(Stat.fromMap(stat));
         }
     }
+
+    public List<Stat> getStats() {
+        return stats;
+    }
 }

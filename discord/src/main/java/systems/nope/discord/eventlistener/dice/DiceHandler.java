@@ -8,6 +8,7 @@ import systems.nope.discord.eventlistener.dice.event.*;
 import systems.nope.discord.eventlistener.dice.party.event.CreatePartyEvent;
 import systems.nope.discord.eventlistener.dice.party.event.PartyRollEvent;
 import systems.nope.discord.eventlistener.dice.party.event.PartyRollXEvent;
+import systems.nope.discord.eventlistener.dice.person.event.AttributeRoleEvent;
 import systems.nope.discord.eventlistener.dice.person.event.CheckLinkEvent;
 import systems.nope.discord.eventlistener.dice.person.event.LinkEvent;
 import systems.nope.discord.eventlistener.dice.person.event.UnlinkEvent;
@@ -106,6 +107,12 @@ public class DiceHandler extends ListenerAdapter {
             DiceEvent de = null;
 
             switch (command[0]) {
+                case "!rolla":
+                    if(command.length == 2) {
+                        de = new AttributeRoleEvent(event, command[1]);
+                    }
+                    break;
+
                 case "!prollx":
                     if (command.length == 2) {
                         //parse the number
@@ -248,7 +255,6 @@ public class DiceHandler extends ListenerAdapter {
         message = message.replaceAll("\\s+", " ");
 
         if (!handleSingleCommands(event, message) && !handleMultiCommands(event, message.split(" "))) {
-
         }
     }
 }

@@ -1,5 +1,5 @@
 package systems.nope.discord;
 
 public final class DiscordConstants {
-    static final String token = "NjQ3NTMwMjUwNDMwOTcxOTA2.XdhBig.35JNypCab8OOVr2Mtzqu-KAH8AE";
+    static final String token = "as if i would tell you such secrets";
 }
