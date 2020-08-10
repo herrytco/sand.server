@@ -1,6 +1,5 @@
 package systems.nope.worldseed.person;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +71,7 @@ public class PersonTest {
         createPerson(testWorld, token, PersonConstants.personName);
     }
 
-//    @Test
+    @Test
     public void createCustomPerson() throws Exception {
         Optional<World> testWorld = worldinator.getWorldService().getWorldRepository().findByName(WorldConstants.konstoWorldName);
         Optional<String> token = authenticator.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
@@ -80,7 +79,7 @@ public class PersonTest {
         if(!testWorld.isPresent() || !token.isPresent())
             throw new Exception("Failed");
 
-        createPerson(testWorld.get(), token.get(), "Yuki Li");
+        createPerson(testWorld.get(), token.get(), "Pit");
     }
 
     @Test

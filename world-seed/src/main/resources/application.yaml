@@ -3,7 +3,6 @@ jwt:
 file:
   upload-dir: "data"
 server:
-#  port: 8086
   port: 8085
 spring:
   servlet:
@@ -13,7 +12,6 @@ spring:
       max-file-size: 1024MB
       max-request-size: 1048MB
   datasource:
-#    url: "jdbc:mysql://test.nope-api.systems:3306/world_seed_live?useSSL=false&amp;allowPublicKeyRetrieval=true"
     url: "jdbc:mysql://test2.nope-api.systems:3306/world_seed?useSSL=false&amp;allowPublicKeyRetrieval=true"
     username: "sand"
     password: "llH5CqypeHfILgJjUmCS#"

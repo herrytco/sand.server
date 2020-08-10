@@ -3,6 +3,7 @@ package systems.nope.discord.eventlistener.dice.person.event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.eventlistener.dice.DiceResult;
 import systems.nope.discord.eventlistener.dice.DiceUtils;
+import systems.nope.discord.eventlistener.dice.ServerConstants;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
 import systems.nope.discord.eventlistener.dice.person.LinkUtils;
 import systems.nope.discord.eventlistener.dice.person.Person;
@@ -45,9 +46,11 @@ public class AttributeRoleEvent extends DiceEvent {
                 getAuthorName(), person.getName(), statToRollOn.getNameShort(), statToRollOn.getName())
                 + DiceUtils.getCalculation(diceResult) + "\n"
                 + String.format(
-                "%s%d + %d = %d",
+                "%s%d + %s%d = %d",
                 DiceUtils.getEmojiForResult(getAuthor(), diceResult.getResult()),
-                diceResult.getEffectiveResult(), statToRollOn.getValue(),
+                diceResult.getEffectiveResult(),
+                ServerConstants.emoteAttributeIcon,
+                statToRollOn.getValue(),
                 diceResult.getEffectiveResult() + statToRollOn.getValue()
         );
     }

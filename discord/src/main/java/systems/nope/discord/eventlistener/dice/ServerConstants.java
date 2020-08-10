@@ -5,6 +5,7 @@ public final class ServerConstants {
     public static final String emoteD20Result20 = "<:nat20:433634880656506890>";
     public static final String emoteD20Result2To19 = "<:d20unsure:433634881063616512>";
     public static final String emoteRainbowDice = "<:d20rng:433634881118142465>";
+    public static final String emoteAttributeIcon = "<:narrator_attribute:742380896786579466>";
 
     public static final String regularRoll = "%s rolled a %s";
     public static final String kthRoll = "%s's %s dice: %s";
@@ -12,7 +13,7 @@ public final class ServerConstants {
     public static final String singleResult = "%s(d%d): %d";
     public static final String calculation = "%s(d%d): %d %s %d = %d";
 
-    public static final String help = "!roll ... rolls once\n!proll ... rolls once for each !party member\n!uavg ... prints your average (which is hopefully good)\n!rollx [x] ... rolls [x] dice\n!rollt [target0] [x0] [target1] [x1] etc ... rolls [x] dice for each [target]\n!umod [x] ... sets the modifier for a user to [x] which gets added/subtracted to each roll\n!udice [x] ... continues to roll with an [x]-sided dice\n!rollc [x] ... rolls [x] dice and sums the result\n!uavgreset ... resets your average\n!savg ... prints the average of the whole server\n!savgreset ... prints the average of the whole server\n!party ... adds all non-bot members of your current voice channel to your party\n!help ... prints the help, but I guess you knew that already";
+    public static final String help = "!roll ... rolls once\n!proll ... rolls once for each !party member\n!uavg ... prints your average (which is hopefully good)\n!rollx [x] ... rolls [x] dice\n!rollx [x] [min||max] ... rolls [x] dice and chooses the best/worst\n!rollt [target0] [x0] [target1] [x1] etc ... rolls [x] dice against each [target]\n!rollo [target0] [x0] [target1] [x1] etc ... rolls [x] dice for each [target]\n!umod [x] ... sets the modifier for a user to [x] which gets added/subtracted to each roll\n!udice [x] ... continues to roll with an [x]-sided dice\n!rollc [x] ... rolls [x] dice and sums the result\n!uavgreset ... resets your average\n!savg ... prints the average of the whole server\n!savgreset ... prints the average of the whole server\n!party ... adds all non-bot members of your current voice channel to your party\n!help ... prints the help, but I guess you knew that already\n\n!link [api-Key] ... links the discord account to your character\n!rolla [ATTRIBUTE] ... rolls once for the selected attribute";
 
     public static final String urlBackend = "https://test2.nope-api.systems/world-seed";
     public static final String narratorUsername = "narrator@nope-api.systems";
