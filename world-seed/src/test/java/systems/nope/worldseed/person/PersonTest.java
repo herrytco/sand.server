@@ -71,7 +71,7 @@ public class PersonTest {
         createPerson(testWorld, token, PersonConstants.personName);
     }
 
-    @Test
+//    @Test
     public void createCustomPerson() throws Exception {
         Optional<World> testWorld = worldinator.getWorldService().getWorldRepository().findByName(WorldConstants.konstoWorldName);
         Optional<String> token = authenticator.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
