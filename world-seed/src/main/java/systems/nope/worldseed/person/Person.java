@@ -32,7 +32,8 @@ public class Person {
     )
     private List<StatSheet> statSheets;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany
+    @JoinColumn(name = "person_id")
     private List<StatValueInstance> statValues;
 
     public Person(World world, String name, String apiKey) {

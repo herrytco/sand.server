@@ -18,7 +18,7 @@ public class StatSheet {
     private String name;
 
     @OneToMany
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "stat_sheet_id")
     private List<StatValue> statValues;
 
     @ManyToOne

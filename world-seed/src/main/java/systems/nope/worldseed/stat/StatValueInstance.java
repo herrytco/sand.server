@@ -1,5 +1,6 @@
 package systems.nope.worldseed.stat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ public class StatValueInstance {
 
     @ManyToOne
     @JoinColumn(name = "world")
+    @JsonIgnore
     private World world;
 
     @ManyToOne
