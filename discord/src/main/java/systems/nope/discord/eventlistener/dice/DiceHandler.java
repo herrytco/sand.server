@@ -5,13 +5,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import systems.nope.discord.eventlistener.dice.event.*;
-import systems.nope.discord.eventlistener.dice.party.Party;
-import systems.nope.discord.eventlistener.dice.party.PartyUtil;
 import systems.nope.discord.eventlistener.dice.party.event.*;
 import systems.nope.discord.eventlistener.dice.person.event.*;
 
 import javax.annotation.Nonnull;
-import javax.swing.text.html.Option;
 import java.util.*;
 
 public class DiceHandler extends ListenerAdapter {
@@ -49,9 +46,13 @@ public class DiceHandler extends ListenerAdapter {
      * @return whether the event was handled or not
      */
     private boolean handleSingleCommands(@Nonnull MessageReceivedEvent event, String command) {
-        DiceEvent de = null;
+        DiceEvent de;
 
         switch (command) {
+            case "!link":
+                de = new RelinkEvent(event);
+                break;
+
             case "!roll":
                 de = new RollEvent(event);
                 break;

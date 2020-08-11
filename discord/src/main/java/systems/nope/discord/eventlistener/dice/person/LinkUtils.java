@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import okhttp3.Request;
 import okhttp3.Response;
 import systems.nope.discord.eventlistener.dice.BackendUtil;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 import systems.nope.discord.eventlistener.dice.ServerConstants;
+import systems.nope.discord.eventlistener.dice.file.LinkFileManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,17 +19,17 @@ import java.util.Optional;
 
 public class LinkUtils {
     private static final Map<Member, Person> playerChars = new HashMap<>();
-    private static final Map<Member, String> nicknameStash = new HashMap<>();
+    private static final LinkFileManager fileManager = new LinkFileManager();
 
     public static Optional<Person> getPersonForMember(Member member) {
-        if(playerChars.containsKey(member))
+        if (playerChars.containsKey(member))
             return Optional.of(playerChars.get(member));
 
         return Optional.empty();
     }
 
-    public static boolean isMemberLinked(Member member) {
-        return playerChars.containsKey(member);
+    public static void storeLink(Member member, String apiKey) throws IOException {
+        fileManager.putKeyValuePair(member.getId(), apiKey, "links.json");
     }
 
     public static boolean unlinkMember(Member member) {
@@ -40,25 +41,34 @@ public class LinkUtils {
         return false;
     }
 
-    public static void revertPersonNicknamingFromMember(Member member) {
-        if(nicknameStash.containsKey(member)) {
+    public static void renameMemberToPerson(Member member, Person person) throws IOException {
+        try {
+            member.modifyNickname(person.getName()).queue();
+
+            fileManager.putKeyValuePair(member.getId(), DiscordUtil.getMemberName(member), "names.json");
+
+        } catch (HierarchyException e) {
+            System.out.println(String.format("Cannot rename %s due to hierarchy issues.", member.getEffectiveName()));
+        }
+    }
+
+    public static void revertPersonNicknamingFromMember(Member member) throws IOException {
+        String storedName = (String) fileManager.deleteKey(member.getId(), "names.json");
+
+        if (storedName != null) {
             try {
-                String name = nicknameStash.remove(member);
-                member.modifyNickname(name).queue();
+                member.modifyNickname(storedName).queue();
             } catch (HierarchyException e) {
                 System.out.println(String.format("Cannot rename %s due to hierarchy issues.\nMessage: %s", member.getEffectiveName(), e.getMessage()));
             }
         }
     }
 
-    public static void renameMemberToPreson(Member member, Person person) {
-        try {
-            nicknameStash.put(member, member.getNickname());
-            member.modifyNickname(person.getName()).queue();
 
-        } catch (HierarchyException e) {
-            System.out.println(String.format("Cannot rename %s due to hierarchy issues.", member.getEffectiveName()));
-        }
+    public static Person relinkPerson(Member member) throws IOException {
+        String key = (String) fileManager.getValue(member.getId(), "links.json");
+
+        return linkMemberToPersonIdentifiedByApiKey(member, key);
     }
 
     public static Person linkMemberToPersonIdentifiedByApiKey(Member member, String apiKey) throws IOException {
@@ -82,7 +92,9 @@ public class LinkUtils {
 
                 if (linkedPerson.getName() != null) {
                     playerChars.put(member, linkedPerson);
-                    renameMemberToPreson(member, linkedPerson);
+
+                    renameMemberToPerson(member, linkedPerson);
+                    storeLink(member, apiKey);
 
                     return linkedPerson;
                 }
