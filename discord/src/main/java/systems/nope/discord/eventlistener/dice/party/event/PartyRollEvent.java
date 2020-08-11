@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.eventlistener.dice.DiceResult;
 import systems.nope.discord.eventlistener.dice.DiceUtils;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
 import systems.nope.discord.eventlistener.dice.party.Party;
 import systems.nope.discord.eventlistener.dice.party.PartyUtil;
@@ -62,7 +63,7 @@ public class PartyRollEvent extends DiceEvent {
         messageBuilder.append("Rolling once for each party member:\n");
 
         for (Member member : party.getMembers()) {
-            messageBuilder.append(DiceUtils.diceResultToString(member.getEffectiveName(), results.get(member)));
+            messageBuilder.append(DiceUtils.diceResultToString(DiscordUtil.getMemberName(member), results.get(member)));
             messageBuilder.append('\n');
         }
 

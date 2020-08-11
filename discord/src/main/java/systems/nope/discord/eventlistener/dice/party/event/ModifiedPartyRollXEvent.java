@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.eventlistener.dice.DiceResult;
 import systems.nope.discord.eventlistener.dice.DiceUtils;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 
 public class ModifiedPartyRollXEvent extends PartyRollXEvent {
     private final int modifier;
@@ -30,7 +31,7 @@ public class ModifiedPartyRollXEvent extends PartyRollXEvent {
 
         for (Member member : getParty().getMembers())
             for (DiceResult result : getResults().get(member))
-                messageBuilder.append(DiceUtils.diceResultToString(member.getEffectiveName(), result))
+                messageBuilder.append(DiceUtils.diceResultToString(DiscordUtil.getMemberName(member), result))
                         .append(DiceUtils.getDiceModificationString(result, modifier))
                         .append("\n");
 

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.eventlistener.dice.DiceResult;
 import systems.nope.discord.eventlistener.dice.DiceUtils;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
 import systems.nope.discord.eventlistener.dice.party.Party;
 import systems.nope.discord.eventlistener.dice.party.PartyUtil;
@@ -61,7 +62,7 @@ public class PartyRollXEvent extends DiceEvent {
 
         for (Member member : party.getMembers())
             for (DiceResult result : results.get(member))
-                messageBuilder.append(DiceUtils.diceResultToString(member.getEffectiveName(), result))
+                messageBuilder.append(DiceUtils.diceResultToString(DiscordUtil.getMemberName(member), result))
                         .append("\n");
 
         return messageBuilder.toString();

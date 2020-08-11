@@ -124,7 +124,7 @@ public class DiceUtils {
     public static String rollOnceString(Member member) {
         DiceResult result = rollOnce(member);
 
-        return diceResultToString(member.getEffectiveName(), result);
+        return diceResultToString(DiscordUtil.getMemberName(member), result);
     }
 
     public static String diceResultToString(String memberName, DiceResult result) {
