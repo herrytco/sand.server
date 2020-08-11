@@ -21,6 +21,10 @@ public class LinkUtils {
     private static final Map<Member, Person> playerChars = new HashMap<>();
     private static final LinkFileManager fileManager = new LinkFileManager();
 
+    /**
+     * @param member - discord user
+     * @return the stored person for a member
+     */
     public static Optional<Person> getPersonForMember(Member member) {
         if (playerChars.containsKey(member))
             return Optional.of(playerChars.get(member));
@@ -28,10 +32,22 @@ public class LinkUtils {
         return Optional.empty();
     }
 
+    /**
+     * persists the link to the Person in the filesystem
+     *
+     * @param member - discord user
+     * @param apiKey - 256 character ID of a World.Seed character
+     */
     public static void storeLink(Member member, String apiKey) throws IOException {
         fileManager.putKeyValuePair(member.getId(), apiKey, "links.json");
     }
 
+    /**
+     * deletes the link to a Person
+     *
+     * @param member - discord user
+     * @return if a link existed
+     */
     public static boolean unlinkMember(Member member) {
         if (playerChars.containsKey(member)) {
             playerChars.remove(member);
@@ -41,6 +57,13 @@ public class LinkUtils {
         return false;
     }
 
+    /**
+     * renames the discord user to the name of the character and persists the original name in the filesystem
+     *
+     * @param member - discord user
+     * @param person - World.Seed character
+     * @throws IOException - problem in the filesystem
+     */
     public static void renameMemberToPerson(Member member, Person person) throws IOException {
         try {
             member.modifyNickname(person.getName()).queue();
@@ -52,6 +75,12 @@ public class LinkUtils {
         }
     }
 
+    /**
+     * restores the original nickname of the member from the filesystem (if one was persisted)
+     *
+     * @param member - discord user
+     * @throws IOException - problem in the filesystem
+     */
     public static void revertPersonNicknamingFromMember(Member member) throws IOException {
         String storedName = (String) fileManager.deleteKey(member.getId(), "names.json");
 
@@ -64,13 +93,24 @@ public class LinkUtils {
         }
     }
 
-
+    /**
+     * Tries to reestablish the link with the persisted apiKey.
+     *
+     * @param member - discord user
+     * @return retrieved World.Seed character from the backend
+     * @throws IOException - problem in the filesystem
+     */
     public static Person relinkPerson(Member member) throws IOException {
         String key = (String) fileManager.getValue(member.getId(), "links.json");
 
         return linkMemberToPersonIdentifiedByApiKey(member, key);
     }
 
+    /**
+     * @param member - discord user
+     * @param apiKey - 256 character ID of a World.Seed character
+     * @return the retrieved person for a member
+     */
     public static Person linkMemberToPersonIdentifiedByApiKey(Member member, String apiKey) throws IOException {
         String token = BackendUtil.getToken();
 
