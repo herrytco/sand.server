@@ -28,6 +28,14 @@ public class RollXExtremumEvent extends RollXEvent {
         }
     }
 
+    public boolean isMaximum() {
+        return isMaximum;
+    }
+
+    public DiceResult getResult() {
+        return result;
+    }
+
     @Override
     public String toString() {
         StringBuilder all = new StringBuilder("(");

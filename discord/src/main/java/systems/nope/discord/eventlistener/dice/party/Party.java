@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Party {
-    private List<Member> members = new ArrayList<Member>();
-    private Member leader;
+    private final List<Member> members;
+    private final Member leader;
 
     public Party(List<Member> members, Member leader) {
         this.members = new LinkedList<>();

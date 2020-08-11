@@ -14,7 +14,8 @@ import java.util.Optional;
 public class AttributeRoleEvent extends DiceEvent {
 
     private Stat statToRollOn;
-    private final String message;
+    private String message;
+    private DiceResult result;
 
     public AttributeRoleEvent(MessageReceivedEvent event, String attribute) {
         super(event);
@@ -40,19 +41,35 @@ public class AttributeRoleEvent extends DiceEvent {
             return;
         }
 
-        DiceResult diceResult = DiceUtils.rollOnce(getAuthor());
+        result = DiceUtils.rollOnce(getAuthor());
 
         message = String.format("%s rolled with %s on %s(%s)\n",
                 getAuthorName(), person.getName(), statToRollOn.getNameShort(), statToRollOn.getName())
-                + DiceUtils.getCalculation(diceResult) + "\n"
+                + DiceUtils.getCalculation(result) + "\n"
                 + String.format(
                 "%s%d + %s%d = %d",
-                DiceUtils.getEmojiForResult(getAuthor(), diceResult.getResult()),
-                diceResult.getEffectiveResult(),
+                DiceUtils.getEmojiForResult(getAuthor(), result.getResult()),
+                result.getEffectiveResult(),
                 ServerConstants.emoteAttributeIcon,
                 statToRollOn.getValue(),
-                diceResult.getEffectiveResult() + statToRollOn.getValue()
+                result.getEffectiveResult() + statToRollOn.getValue()
         );
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Stat getStatToRollOn() {
+        return statToRollOn;
+    }
+
+    public DiceResult getResult() {
+        return result;
     }
 
     @Override

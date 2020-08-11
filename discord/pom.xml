@@ -27,10 +27,12 @@
 	</repositories>
 
 	<dependencies>
+
+		<!-- Discord API -->
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>4.0.0_39</version>
+			<version>4.2.0_168</version>
 		</dependency>
 
 		<dependency>
