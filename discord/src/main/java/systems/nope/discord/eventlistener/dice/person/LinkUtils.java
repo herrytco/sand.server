@@ -3,6 +3,7 @@ package systems.nope.discord.eventlistener.dice.person;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import okhttp3.Request;
 import okhttp3.Response;
 import systems.nope.discord.eventlistener.dice.BackendUtil;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 public class LinkUtils {
     private static final Map<Member, Person> playerChars = new HashMap<>();
+    private static final Map<Member, String> nicknameStash = new HashMap<>();
 
     public static Optional<Person> getPersonForMember(Member member) {
         if(playerChars.containsKey(member))
@@ -35,6 +37,26 @@ public class LinkUtils {
         }
 
         return false;
+    }
+
+    public static void revertPersonNicknamingFromMember(Member member) {
+        if(nicknameStash.containsKey(member)) {
+            try {
+                String name = nicknameStash.remove(member);
+                member.modifyNickname(name);
+            } catch (HierarchyException e) {
+                System.out.println(String.format("Cannot rename %s due to hierarchy issues.", member.getEffectiveName()));
+            }
+        }
+    }
+
+    public static void renameMemberToPreson(Member member, Person person) {
+        try {
+            nicknameStash.put(member, member.getNickname());
+            member.modifyNickname(person.getName());
+        } catch (HierarchyException e) {
+            System.out.println(String.format("Cannot rename %s due to hierarchy issues.", member.getEffectiveName()));
+        }
     }
 
     public static Person linkMemberToPersonIdentifiedByApiKey(Member member, String apiKey) throws IOException {
@@ -58,6 +80,8 @@ public class LinkUtils {
 
                 if (linkedPerson.getName() != null) {
                     playerChars.put(member, linkedPerson);
+                    renameMemberToPreson(member, linkedPerson);
+
                     return linkedPerson;
                 }
             } catch (MismatchedInputException e) {

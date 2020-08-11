@@ -14,8 +14,10 @@ public class UnlinkEvent extends DiceEvent {
 
     @Override
     public void handle() {
-        if(LinkUtils.unlinkMember(getAuthor()))
+        if(LinkUtils.unlinkMember(getAuthor())) {
             message = "Link removed. You can now link to a new character sir.";
+            LinkUtils.revertPersonNicknamingFromMember(getAuthor());
+        }
         else
             message = "You are not linked to a character. Are you REALLY sure you linked before?";
 
