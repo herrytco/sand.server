@@ -1,12 +1,14 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.stat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import systems.nope.worldseed.person.Person;
 import systems.nope.worldseed.world.World;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "stat_value_instance")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class StatValueInstance {
 
     @Id
@@ -22,7 +24,10 @@ public class StatValueInstance {
     @JoinColumn(name = "stat_value_id")
     private StatValue statValue;
 
-    private Integer value;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     public int getId() {
         return id;
@@ -48,11 +53,11 @@ public class StatValueInstance {
         this.statValue = statValue;
     }
 
-    public Integer getValue() {
-        return value;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 }
