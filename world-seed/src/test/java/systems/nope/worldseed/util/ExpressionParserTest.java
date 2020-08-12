@@ -45,7 +45,7 @@ public class ExpressionParserTest {
     public void testComplexExpression1() {
         double result = ExpressionUtil.parseExpression("( ( 1 + sqrt ( 5.0 ) ) / 2.0 )");
 
-        assertEquals(1.61803, result);
+        assertEquals("1.61803", String.valueOf(result).substring(0,7));
     }
 
 }
