@@ -1,10 +1,10 @@
 package systems.nope.worldseed.person;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.stat.model.StatSheet;
-import systems.nope.worldseed.stat.model.StatValueInstance;
-import systems.nope.worldseed.stat.model.StatValueInstanceSynthesized;
-import systems.nope.worldseed.stat.model.StatValueSynthesized;
+import systems.nope.worldseed.stat.model.*;
+import systems.nope.worldseed.util.ExpressionUtil;
 import systems.nope.worldseed.world.World;
 
 import java.util.Optional;
@@ -14,6 +14,8 @@ import java.util.Random;
 public class PersonService {
 
     private final PersonRepository personRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
 
     public PersonService(PersonRepository personRepository) {
         this.personRepository = personRepository;
@@ -60,9 +62,27 @@ public class PersonService {
 
     private void enrichPersonStats(Person person) {
         for (StatValueInstance stat : person.getStatValues()) {
-            if(stat instanceof StatValueInstanceSynthesized) {
+            if (stat instanceof StatValueInstanceSynthesized) {
                 StatValueInstanceSynthesized synthesized = (StatValueInstanceSynthesized) stat;
-                synthesized.setValue(42);
+
+                String formula = ((StatValueSynthesized) synthesized.getStatValue()).getFormula();
+
+                // substitute variables in formual with Persons stats
+                for (StatValueInstance stati : person.getStatValues()) {
+                    if (stati instanceof StatValueInstanceConstant)
+                        formula = formula.replaceAll(stati.getStatValue().getNameShort(), ((StatValueInstanceConstant) stati).getValue().toString());
+                }
+
+                try {
+                    double result = ExpressionUtil.parseExpression(formula);
+                    synthesized.setValue((int) result);
+                } catch (IllegalArgumentException e) {
+                    synthesized.setValue(-1);
+                    logger.error(e.getMessage());
+                } catch (IllegalStateException e) {
+                    synthesized.setValue(-1);
+                    logger.error(String.format("Internal Error while parsing formula: '%s'", formula));
+                }
             }
         }
     }
