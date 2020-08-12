@@ -25,6 +25,8 @@ public class ExpressionParser {
                 case "*":
                 case "/":
                 case "sqrt":
+                case "ceil":
+                case "floor":
                     operators.add(token);
                     break;
 
@@ -49,6 +51,12 @@ public class ExpressionParser {
                         case "sqrt":
                             result = Math.sqrt(v1);
                             break;
+                        case "ceil":
+                            result = Math.ceil(v1);
+                            break;
+                        case "floor":
+                            result = Math.floor(v1);
+                            break;
 
                         default:
                             throw new IllegalArgumentException(String.format("'%s' is no valid operation!", op));
@@ -58,8 +66,13 @@ public class ExpressionParser {
                     break;
 
                 default:
-                    Double operand = Double.parseDouble(token);
-                    values.push(operand);
+                    try {
+                        Double operand = Double.parseDouble(token);
+                        values.push(operand);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException(String.format("Could not parse '%s' to a Double.", token));
+                    }
+
                     break;
             }
         }
