@@ -3,6 +3,7 @@ package systems.nope.worldseed.stat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import systems.nope.worldseed.stat.model.StatSheet;
 
 import java.util.List;
 

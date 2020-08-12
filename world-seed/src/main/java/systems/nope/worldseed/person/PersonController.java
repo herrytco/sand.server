@@ -27,7 +27,7 @@ public class PersonController {
     public ResponseEntity<?> getByApiKey(
             @PathVariable String apiKey
     ) {
-        Optional<Person> person = personService.getPersonRepository().findByApiKey(apiKey);
+        Optional<Person> person = personService.findByApiKey(apiKey);
 
         return person
                 .map(ResponseEntity::ok)

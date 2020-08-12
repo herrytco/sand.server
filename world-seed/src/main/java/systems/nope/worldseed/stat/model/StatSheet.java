@@ -1,4 +1,4 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.stat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
@@ -50,19 +50,19 @@ public class StatSheet {
         this.name = name;
     }
 
-    public List<StatValue> getStatValues() {
-        return statValues;
-    }
-
-    public void setStatValues(List<StatValue> statValues) {
-        this.statValues = statValues;
-    }
-
     public World getWorld() {
         return world;
     }
 
     public void setWorld(World world) {
         this.world = world;
+    }
+
+    public List<StatValue> getStatValues() {
+        return statValues;
+    }
+
+    public void setStatValues(List<StatValue> statValues) {
+        this.statValues = statValues;
     }
 }

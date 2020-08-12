@@ -1,6 +1,10 @@
 package systems.nope.worldseed.person;
 
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.stat.model.StatSheet;
+import systems.nope.worldseed.stat.model.StatValueInstance;
+import systems.nope.worldseed.stat.model.StatValueInstanceSynthesized;
+import systems.nope.worldseed.stat.model.StatValueSynthesized;
 import systems.nope.worldseed.world.World;
 
 import java.util.Optional;
@@ -33,12 +37,34 @@ public class PersonService {
 
         Optional<Person> optionalPerson = personRepository.findByApiKey(key);
 
-        while(optionalPerson.isPresent()) {
+        while (optionalPerson.isPresent()) {
             key = createRandomString(256);
             optionalPerson = personRepository.findByApiKey(key);
         }
 
         return key;
+    }
+
+    public Optional<Person> findByApiKey(String apiKey) {
+        Optional<Person> optionalPerson = personRepository.findByApiKey(apiKey);
+
+        if (optionalPerson.isEmpty())
+            return optionalPerson;
+
+        Person person = optionalPerson.get();
+
+        enrichPersonStats(person);
+
+        return Optional.of(person);
+    }
+
+    private void enrichPersonStats(Person person) {
+        for (StatValueInstance stat : person.getStatValues()) {
+            if(stat instanceof StatValueInstanceSynthesized) {
+                StatValueInstanceSynthesized synthesized = (StatValueInstanceSynthesized) stat;
+                synthesized.setValue(42);
+            }
+        }
     }
 
     public Person add(World world, String name) {

@@ -1,8 +1,8 @@
 package systems.nope.worldseed.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import systems.nope.worldseed.stat.StatSheet;
-import systems.nope.worldseed.stat.StatValueInstance;
+import systems.nope.worldseed.stat.model.StatSheet;
+import systems.nope.worldseed.stat.model.StatValueInstance;
 import systems.nope.worldseed.world.World;
 
 import javax.persistence.*;
@@ -32,8 +32,7 @@ public class Person {
     )
     private List<StatSheet> statSheets;
 
-    @OneToMany
-    @JoinColumn(name = "person_id")
+    @OneToMany(mappedBy = "person")
     private List<StatValueInstance> statValues;
 
     public Person(World world, String name, String apiKey) {

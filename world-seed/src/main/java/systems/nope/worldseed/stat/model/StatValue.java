@@ -1,4 +1,4 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.stat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "stat_value")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class StatValue {
     @Id
     @GeneratedValue
