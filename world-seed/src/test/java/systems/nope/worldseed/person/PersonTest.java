@@ -79,7 +79,7 @@ public class PersonTest {
         if(!testWorld.isPresent() || !token.isPresent())
             throw new Exception("Failed");
 
-        createPerson(testWorld.get(), token.get(), "Pit");
+        createPerson(testWorld.get(), token.get(), "Yuki Li ");
     }
 
     @Test

@@ -29,6 +29,15 @@ public class StatValueInstance {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    public StatValueInstance() {
+    }
+
+    public StatValueInstance(World world, StatValue statValue, Person person) {
+        this.world = world;
+        this.statValue = statValue;
+        this.person = person;
+    }
+
     public int getId() {
         return id;
     }

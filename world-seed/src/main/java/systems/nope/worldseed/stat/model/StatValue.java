@@ -32,12 +32,12 @@ public class StatValue {
     public StatValue() {
     }
 
-    public StatValue(int id, StatSheet sheet, String name, String nameShort, String unit) {
-        this.id = id;
+    public StatValue(StatSheet sheet, String name, String nameShort, String unit, World world) {
         this.sheet = sheet;
         this.name = name;
         this.nameShort = nameShort;
         this.unit = unit;
+        this.world = world;
     }
 
     public int getId() {

@@ -29,9 +29,9 @@ public class StatSheet {
     public StatSheet() {
     }
 
-    public StatSheet(int id, String name) {
-        this.id = id;
+    public StatSheet(String name, World world) {
         this.name = name;
+        this.world = world;
     }
 
     public int getId() {
