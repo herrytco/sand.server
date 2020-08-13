@@ -58,7 +58,7 @@ public class WorldTest {
     }
 
     @Test
-    public void seedTest() throws Exception {
+    public void deleteAndAddSeedTest() throws Exception {
         worldRepository.deleteBySeed("111111");
 
         World worldTest = worldinator.ensureWorldExists("Testworld", "World used in JUnit Tests", "111111");
@@ -72,6 +72,19 @@ public class WorldTest {
                 .andExpect(status().isOk());
 
         worldRepository.delete(worldTest);
+    }
+
+    @Test
+    public void customSeedTest() throws Exception {
+        String seed = "111111";
+
+        mockMvc.perform(
+                get(String.format("%s/seed/%s", WorldConstants.endpoint, seed))
+                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
