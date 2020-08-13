@@ -97,6 +97,10 @@ public class WorldService {
         );
     }
 
+    public WorldOwnership add(User creator, String name, String description) {
+        return add(creator, name, description, findSeed());
+    }
+
     public Optional<World> findBySeed(String seed) {
         Optional<World> world = worldRepository.findBySeed(seed);
 
@@ -115,9 +119,5 @@ public class WorldService {
         world.setArticles(articleService.getArticleRepository().findAllByWorld(world));
 
         return world;
-    }
-
-    public WorldOwnership add(User creator, String name, String description) {
-        return add(creator, name, description, findSeed());
     }
 }
