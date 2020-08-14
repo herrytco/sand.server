@@ -1,7 +1,6 @@
 package systems.nope.worldseed.stat;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,7 +50,7 @@ public class StatTestCustom {
         world = worldinator.ensureWorldExists("Riverlands RPG", "Lorem Ipsum Si Dolor Amet", seed);
     }
 
-    @Test
+//    @Test
     public void addStatSheet() throws Exception {
         mockMvc.perform(
                 post(String.format("/stat-sheets/worlds/%d", world.getId()))
@@ -62,7 +61,7 @@ public class StatTestCustom {
         ).andDo(print());
     }
 
-    @Test
+//    @Test
     public void addConstantStat() throws Exception {
         String statNameShort = "WLL";
         String statName = "Will";
@@ -86,7 +85,7 @@ public class StatTestCustom {
         ).andDo(print());
     }
 
-    @Test
+//    @Test
     public void addSynthesizedStat() throws Exception {
         String statNameShort = "MM";
         String statName = "Magic Modifier (10% INT)";
@@ -110,7 +109,7 @@ public class StatTestCustom {
         ).andDo(print());
     }
 
-    @Test
+//    @Test
     public void addSheetToPerson() throws Exception {
         mockMvc.perform(
                 post("/stat-sheet-mapping")
@@ -128,7 +127,7 @@ public class StatTestCustom {
         ).andDo(print());
     }
 
-    @Test
+//    @Test
     public void updatePersonConstantValue() throws Exception {
         mockMvc.perform(
                 put(String.format("/stat-sheet-mapping/id/%d/constant-stat", 117))
