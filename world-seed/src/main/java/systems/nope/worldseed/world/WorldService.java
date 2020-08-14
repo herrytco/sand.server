@@ -1,18 +1,17 @@
 package systems.nope.worldseed.world;
 
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.article.Article;
 import systems.nope.worldseed.article.ArticleService;
 import systems.nope.worldseed.category.CategoryService;
+import systems.nope.worldseed.person.Person;
+import systems.nope.worldseed.person.PersonService;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
 import systems.nope.worldseed.role.RoleType;
 import systems.nope.worldseed.user.User;
 import systems.nope.worldseed.user.WorldOwnership;
 
-import javax.swing.text.html.Option;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,17 +22,19 @@ public class WorldService {
     private final UserWorldRoleRepository userWorldRoleRepository;
     private final CategoryService categoryService;
     private final ArticleService articleService;
+    private final PersonService personService;
 
     public WorldRepository getWorldRepository() {
         return worldRepository;
     }
 
-    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService, ArticleService articleService) {
+    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService, ArticleService articleService, PersonService personService) {
         this.worldRepository = worldRepository;
         this.roleService = roleService;
         this.userWorldRoleRepository = userWorldRoleRepository;
         this.categoryService = categoryService;
         this.articleService = articleService;
+        this.personService = personService;
     }
 
     private String findSeed() {
@@ -107,6 +108,26 @@ public class WorldService {
         if (world.isPresent()) {
             World result = world.get();
             result.setArticles(articleService.getArticleRepository().findAllByWorld(result));
+
+            for (Person p : result.getPersons())
+                personService.enrichPersonStats(p);
+
+            return Optional.of(result);
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<World> find(int id) {
+        Optional<World> world = worldRepository.findById(id);
+
+        if (world.isPresent()) {
+            World result = world.get();
+            result.setArticles(articleService.getArticleRepository().findAllByWorld(result));
+
+            for (Person p : result.getPersons())
+                personService.enrichPersonStats(p);
+
             return Optional.of(result);
         }
 
@@ -117,6 +138,9 @@ public class WorldService {
         World world = worldRepository.getOne(id);
 
         world.setArticles(articleService.getArticleRepository().findAllByWorld(world));
+
+        for (Person p : world.getPersons())
+            personService.enrichPersonStats(p);
 
         return world;
     }

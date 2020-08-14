@@ -2,8 +2,8 @@ package systems.nope.worldseed.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.person.PersonService;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
 import systems.nope.worldseed.role.RoleType;
@@ -14,6 +14,7 @@ import systems.nope.worldseed.world.World;
 import systems.nope.worldseed.world.WorldService;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -41,6 +42,7 @@ public class UserController {
     public ResponseEntity<?> worlds(@PathVariable int id) {
         try {
             User requester = userService.getUserRepository().getOne(id);
+
             return ResponseEntity.ok(WorldOwnership.fromUser(requester));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("User ID '%d' not found.", id));
@@ -60,13 +62,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("User ID '%d' not found.", id));
         }
 
-        World worldToJoin;
+        Optional<World> optionalWorld = worldService.find(worldId);
 
-        try {
-            worldToJoin = worldService.getWorldRepository().getOne(worldId);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("User ID '%d' not found.", worldId));
-        }
+        if (optionalWorld.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
+
+        World worldToJoin = optionalWorld.get();
 
         Role visitor = roleService.getRoleForType(RoleType.Visitor);
 

@@ -60,7 +60,7 @@ public class PersonService {
         return Optional.of(person);
     }
 
-    private void enrichPersonStats(Person person) {
+    public void enrichPersonStats(Person person) {
         for (StatValueInstance stat : person.getStatValues()) {
             if (stat instanceof StatValueInstanceSynthesized) {
                 StatValueInstanceSynthesized synthesized = (StatValueInstanceSynthesized) stat;
