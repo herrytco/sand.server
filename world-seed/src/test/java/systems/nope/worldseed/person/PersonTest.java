@@ -82,9 +82,9 @@ public class PersonTest {
         createPerson(testWorld.get(), token.get(), "Yuki Li ");
     }
 
-    @Test
+//    @Test
     public void getCustomPerson() throws Exception {
-        String apiKey = "ywnnoaruoccxrkjegbetdwlwhrvamgfcvzbgijotuiygfighuckecuckbenvggcgfbmouygbumhletznypscdrywvfaphzatgihctxrwnfzufxicialbsyiaihqjaztfsrhjwfplbjtcnpscjofozdyjhmedgfofnoggtlhrxclylwlylyznfzzkheyaulsoogfshgjizdbuzwzfspqjmgodyfpslmqtnlljgpvlovixccqibolldqslqybrgvmx";
+        String apiKey = "ozedawpqwxcksniuhlswtbfruonxfofexxnwbqlfjoihdwptutrorwlmunbrsibxvxfjdenkormbydautimannwinvoekfghpygohmpvmhwbkrujjvjwgoqmdqgndwoxhroydtpclreexzlcfvsbcnjgboddoolhjrcuilruwrcxsplkuzlbpfcrahfefjhfckdleytofqkfgfxwmiquycmrncubztxyzdvxbyrahqoffhigiuilrqwgpbidzwln";
         Optional<String> token = authenticator.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
 
         if(!token.isPresent())
