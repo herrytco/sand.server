@@ -11,6 +11,7 @@ import systems.nope.worldseed.world.World;
 import systems.nope.worldseed.world.WorldService;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/articles")
@@ -54,24 +55,22 @@ public class ArticleController {
             @PathVariable int worldId,
             @RequestBody CreateArticleRequest request
     ) {
-
         System.out.println(request);
 
-        World world;
+        Optional<World> optionalWorld = worldService.find(worldId);
 
-        try {
-            world = worldService.getWorldRepository().getOne(worldId);
-        } catch (EntityNotFoundException e) {
+        if (optionalWorld.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
-        }
 
-        Category category;
+        World world = optionalWorld.get();
 
-        try {
-            category = categoryRepository.getOne(request.getCategoryId());
-        } catch (EntityNotFoundException e) {
+
+        Optional<Category> optionalCategory = categoryRepository.findById(request.getCategoryId());
+
+        if (optionalCategory.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("Category with ID '%d' not found.", request.getCategoryId()));
-        }
+
+        Category category = optionalCategory.get();
 
         Article articleNew = articleService.add(world, category, request.getName(), request.getContent());
 

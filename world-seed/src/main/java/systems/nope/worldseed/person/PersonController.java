@@ -7,15 +7,12 @@ import systems.nope.worldseed.person.requests.CreatePersonRequest;
 import systems.nope.worldseed.world.World;
 import systems.nope.worldseed.world.WorldService;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/persons")
 public class PersonController {
     private final PersonService personService;
-
     private final WorldService worldService;
 
     public PersonController(PersonService personService, WorldService worldService) {
@@ -39,13 +36,12 @@ public class PersonController {
             @PathVariable int worldId,
             @RequestBody CreatePersonRequest createPersonRequest
     ) {
-        World world;
+        Optional<World> optionalWorld = worldService.find(worldId);
 
-        try {
-            world = worldService.getWorldRepository().getOne(worldId);
-        } catch (EntityNotFoundException e) {
+        if (optionalWorld.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
-        }
+
+        World world = optionalWorld.get();
 
         try {
             Person person = personService.add(world, createPersonRequest.getName());

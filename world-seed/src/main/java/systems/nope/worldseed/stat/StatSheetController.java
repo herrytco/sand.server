@@ -37,7 +37,7 @@ public class StatSheetController {
             @PathVariable int worldId,
             @RequestParam String name
     ) {
-        Optional<World> optionalWorld = worldService.getWorldRepository().findById(worldId);
+        Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
@@ -58,7 +58,7 @@ public class StatSheetController {
             @PathVariable int sheetId,
             @RequestBody AddSynthesizedStatRequest request
     ) {
-        Optional<World> optionalWorld = worldService.getWorldRepository().findById(worldId);
+        Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
@@ -86,7 +86,7 @@ public class StatSheetController {
             @PathVariable int sheetId,
             @RequestBody AddConstantStatRequest request
     ) {
-        Optional<World> optionalWorld = worldService.getWorldRepository().findById(worldId);
+        Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
@@ -114,7 +114,7 @@ public class StatSheetController {
             @RequestBody AddNamedResourceRequest request
     ) {
 
-        Optional<World> optionalWorld = worldService.getWorldRepository().findById(worldId);
+        Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
