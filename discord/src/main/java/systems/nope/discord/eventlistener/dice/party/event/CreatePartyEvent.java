@@ -1,6 +1,7 @@
 package systems.nope.discord.eventlistener.dice.party.event;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
 import systems.nope.discord.eventlistener.dice.party.Party;
 import systems.nope.discord.eventlistener.dice.party.PartyUtil;
@@ -23,7 +24,7 @@ public class CreatePartyEvent extends DiceEvent {
                 "%s %s now partying with %s as the host! \uD83C\uDF89",
                 party.getMemberString(),
                 party.getMembers().size() == 1 ? "is" : "are",
-                party.getLeader().getEffectiveName());
+                DiscordUtil.getMemberName(party.getLeader()));
     }
 
     @Override

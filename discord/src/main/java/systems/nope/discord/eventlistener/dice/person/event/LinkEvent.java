@@ -6,6 +6,7 @@ import systems.nope.discord.eventlistener.dice.person.LinkUtils;
 import systems.nope.discord.eventlistener.dice.person.Person;
 
 import java.io.IOException;
+
 public class LinkEvent extends DiceEvent {
 
     private Person linkedPerson;
@@ -22,10 +23,11 @@ public class LinkEvent extends DiceEvent {
             e.printStackTrace();
         }
 
-        if(linkedPerson == null)
+        if (linkedPerson == null)
             this.message = "No playerdata could be found for this API Key!";
-        else
+        else {
             this.message = String.format("Linked '%s' to Character '%s'.", getAuthorName(), linkedPerson.getName());
+        }
     }
 
     public Person getLinkedPerson() {

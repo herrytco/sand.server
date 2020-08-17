@@ -1,4 +1,4 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.stat.sheet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
@@ -7,13 +7,14 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "stat_value")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class StatValue {
     @Id
     @GeneratedValue
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "stat_sheet_id", insertable = false, updatable = false)
+    @JoinColumn(name = "stat_sheet_id")
     @JsonIgnore
     private StatSheet sheet;
 
@@ -31,12 +32,12 @@ public class StatValue {
     public StatValue() {
     }
 
-    public StatValue(int id, StatSheet sheet, String name, String nameShort, String unit) {
-        this.id = id;
+    public StatValue(StatSheet sheet, String name, String nameShort, String unit, World world) {
         this.sheet = sheet;
         this.name = name;
         this.nameShort = nameShort;
         this.unit = unit;
+        this.world = world;
     }
 
     public int getId() {

@@ -2,6 +2,7 @@ package systems.nope.discord.eventlistener.dice.party;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Party {
-    private List<Member> members = new ArrayList<Member>();
-    private Member leader;
+    private final List<Member> members;
+    private final Member leader;
 
     public Party(List<Member> members, Member leader) {
         this.members = new LinkedList<>();
@@ -33,7 +34,7 @@ public class Party {
         for (int i = 0, membersSize = members.size(); i < membersSize; i++) {
             Member member = members.get(i);
 
-            sb.append(member.getEffectiveName());
+            sb.append(DiscordUtil.getMemberName(member));
 
             if (i < members.size() - 1)
                 sb.append(", ");

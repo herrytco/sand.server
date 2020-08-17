@@ -1,30 +1,22 @@
-package systems.nope.worldseed;
+package systems.nope.worldseed.world;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.test.web.servlet.MockMvc;
+import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.user.User;
-import systems.nope.worldseed.world.World;
-import systems.nope.worldseed.world.WorldConstants;
-import systems.nope.worldseed.world.WorldService;
 
 import java.util.Optional;
 
 @Service
-public class Worldinator {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+public class WorldTestUtil {
 
     @Autowired
     private WorldService worldService;
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
+
+    private World ensuredInstance;
 
     public World ensureTestWorldExists() {
         return ensureWorldExists(WorldConstants.nonExistingWorldName, WorldConstants.worldDescription, WorldConstants.nonExistingWorldSeed);
@@ -33,7 +25,7 @@ public class Worldinator {
     public World ensureWorldExists(String name, String description, String seed) {
         Optional<World> optionalWorld = worldService.getWorldRepository().findByName(name);
 
-        User testUser = authenticator.ensureTestuserExists();
+        User testUser = userTestUtil.ensureTestuserExists();
 
         if (optionalWorld.isEmpty()) {
             World world = new World(
@@ -44,13 +36,19 @@ public class Worldinator {
 
             worldService.add(testUser, world.getName(), world.getDescription(), world.getSeed());
 
+            ensuredInstance = world;
             return world;
         }
 
+        ensuredInstance = optionalWorld.get();
         return optionalWorld.get();
     }
 
     public WorldService getWorldService() {
         return worldService;
+    }
+
+    public World getEnsuredInstance() {
+        return ensuredInstance;
     }
 }

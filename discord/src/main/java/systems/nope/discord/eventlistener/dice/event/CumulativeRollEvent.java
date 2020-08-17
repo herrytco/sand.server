@@ -36,4 +36,6 @@ public class CumulativeRollEvent extends RollXEvent {
 
         return sb.toString();
     }
+
+
 }

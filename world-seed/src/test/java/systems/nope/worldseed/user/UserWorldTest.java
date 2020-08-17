@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import systems.nope.worldseed.Authenticator;
 import systems.nope.worldseed.world.*;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserWorldTest {
@@ -26,7 +24,7 @@ public class UserWorldTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
     @Autowired
     private WorldService worldService;
     @Autowired
@@ -37,7 +35,7 @@ public class UserWorldTest {
 
     @BeforeEach
     public void ensureUserExists() {
-        authenticator.ensureTestuserExists();
+        userTestUtil.ensureTestuserExists();
     }
 
     @BeforeEach
@@ -45,7 +43,7 @@ public class UserWorldTest {
         Optional<World> worldPrime = worldService.getWorldRepository().findBySeed(WorldConstants.nonExistingWorldSeed);
 
         if (worldPrime.isEmpty()) {
-            User testUser = authenticator.ensureTestuserExists();
+            User testUser = userTestUtil.ensureTestuserExists();
 
             worldService.add(testUser, WorldConstants.nonExistingWorldName,
                     WorldConstants.worldDescription,
@@ -66,7 +64,7 @@ public class UserWorldTest {
 
         User testUser = optionalUser.get();
 
-        String token = authenticator.authenticateTestUser();
+        String token = userTestUtil.authenticateTestUser();
 
         mockMvc.perform(
                 get(String.format("%s/id/%d", WorldConstants.endpoint, testWorld.getId()))
@@ -96,7 +94,7 @@ public class UserWorldTest {
 
         User testUser = optionalUser.get();
 
-        String token = authenticator.authenticateTestUser();
+        String token = userTestUtil.authenticateTestUser();
 
         mockMvc.perform(
                 post(String.format("%s/id/%d/worlds/%d", UserConstants.endpoint, testUser.getId(), testWorld.getId()))

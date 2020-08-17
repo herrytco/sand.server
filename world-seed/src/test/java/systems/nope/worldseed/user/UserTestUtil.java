@@ -1,4 +1,4 @@
-package systems.nope.worldseed;
+package systems.nope.worldseed.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Service
-public class Authenticator {
+public class UserTestUtil {
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,6 +35,8 @@ public class Authenticator {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private User ensuredUser;
 
     public User ensureTestuserExists() {
         return ensureUserExists(UserConstants.name, UserConstants.nonExistingEmail, passwordEncoder.encode(UserConstants.password));
@@ -51,9 +53,11 @@ public class Authenticator {
             );
             userRepository.save(userNew);
 
-            return userNew;
+            ensuredUser = userNew;
         } else
-            return user.get();
+            ensuredUser = user.get();
+
+        return ensuredUser;
     }
 
     public Optional<String> authenticateUser(String email, String password) throws Exception {
@@ -105,5 +109,9 @@ public class Authenticator {
                 UserConstants.nonExistingEmail,
                 UserConstants.password
         );
+    }
+
+    public User getEnsuredUser() {
+        return ensuredUser;
     }
 }

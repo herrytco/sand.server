@@ -10,8 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import systems.nope.worldseed.Authenticator;
-import systems.nope.worldseed.Worldinator;
+import systems.nope.worldseed.user.UserTestUtil;
+import systems.nope.worldseed.world.WorldTestUtil;
 import systems.nope.worldseed.article.requests.CreateArticleRequest;
 import systems.nope.worldseed.article.requests.UpdateArticleRequest;
 import systems.nope.worldseed.category.Category;
@@ -25,10 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class ArticleTest {
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
 
     @Autowired
-    private Worldinator worldinator;
+    private WorldTestUtil worldinator;
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,7 +41,7 @@ public class ArticleTest {
 
     @BeforeEach
     public void ensureData() {
-        authenticator.ensureTestuserExists();
+        userTestUtil.ensureTestuserExists();
         worldinator.ensureTestWorldExists();
         articleService.getArticleRepository().deleteByTitle(ArticleConstants.articleName);
     }
@@ -55,7 +55,7 @@ public class ArticleTest {
     @Test
     public void updateArticleTest() throws Exception {
         World testWorld = worldinator.ensureTestWorldExists();
-        String token = authenticator.authenticateTestUser();
+        String token = userTestUtil.authenticateTestUser();
 
         assert testWorld.getCategories().size() > 0;
 
@@ -101,7 +101,7 @@ public class ArticleTest {
     @Test
     public void addArticleTest() throws Exception {
         World testWorld = worldinator.ensureTestWorldExists();
-        String token = authenticator.authenticateTestUser();
+        String token = userTestUtil.authenticateTestUser();
 
         assert testWorld.getCategories().size() > 0;
 

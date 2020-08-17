@@ -14,6 +14,10 @@ public class RollEvent extends DiceEvent {
         this.result = DiceUtils.rollOnce(event.getMember());
     }
 
+    public DiceResult getResult() {
+        return result;
+    }
+
     @Override
     public String toString() {
         return DiceUtils.diceResultToString(getAuthorName(), result);

@@ -17,6 +17,10 @@ public class DiceUtils {
         diceTypes.put(member, modifier);
     }
 
+    public static int getDiceModifierForMember(Member member) {
+        return difficulties.getOrDefault(member, 0);
+    }
+
     public static void setModifierForMember(Member member, int modifier) {
         difficulties.put(member, modifier);
     }
@@ -72,6 +76,24 @@ public class DiceUtils {
                 getEmojiForResult(member, result));
     }
 
+    public static String getModifiedCalculation(DiceResult result, int modifier) {
+        return getCalculation(result) + getDiceModificationString(result, modifier);
+    }
+
+    public static String getDiceModificationString(DiceResult result, int modifier) {
+        return getDiceModificationString(result, modifier, result.getEffectiveResult() + modifier);
+    }
+
+    public static String getDiceModificationString(DiceResult result, int modifier, int calculationResult) {
+        return String.format(
+                ServerConstants.rollModification,
+                modifier >= 0 ? "+" : "-",
+                Math.abs(modifier),
+                calculationResult
+        );
+    }
+
+
     /**
      * builds the string for a diceroll calculation.
      *
@@ -102,10 +124,14 @@ public class DiceUtils {
     public static String rollOnceString(Member member) {
         DiceResult result = rollOnce(member);
 
-        return diceResultToString(member.getEffectiveName(), result);
+        return diceResultToString(DiscordUtil.getMemberName(member), result);
     }
 
     public static String diceResultToString(String memberName, DiceResult result) {
+        return String.format(ServerConstants.regularRoll, memberName, DiceUtils.getCalculation(result));
+    }
+
+    public static String modifiedDiceResultToString(String memberName, DiceResult result, int modifier) {
         return String.format(ServerConstants.regularRoll, memberName, DiceUtils.getCalculation(result));
     }
 

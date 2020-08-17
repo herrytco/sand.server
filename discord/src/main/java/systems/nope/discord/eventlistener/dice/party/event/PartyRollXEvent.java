@@ -2,17 +2,19 @@ package systems.nope.discord.eventlistener.dice.party.event;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import systems.nope.discord.eventlistener.dice.DiceResult;
 import systems.nope.discord.eventlistener.dice.DiceUtils;
+import systems.nope.discord.eventlistener.dice.DiscordUtil;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
 import systems.nope.discord.eventlistener.dice.party.Party;
 import systems.nope.discord.eventlistener.dice.party.PartyUtil;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PartyRollXEvent extends DiceEvent {
-    final int numberOfRolls;
-    final String message;
+    private final int numberOfRolls;
+    private final Map<Member, List<DiceResult>> results = new HashMap<>();
+    private Party party;
 
     public PartyRollXEvent(MessageReceivedEvent event, int numberOfRolls) {
         super(event);
@@ -21,35 +23,48 @@ public class PartyRollXEvent extends DiceEvent {
         // check if a party with member as the host exists
         Optional<Party> optionalHostedParty = PartyUtil.getHostedPartyOfMember(getAuthor());
 
-        if (optionalHostedParty.isEmpty()) {
-            message = "Maybe organize a !party first.";
+        if (optionalHostedParty.isEmpty())
             return;
+
+        party = optionalHostedParty.get();
+
+        for (Member member : party.getMembers()) {
+            results.put(member, new LinkedList<>());
+
+            for (int i = 0; i < numberOfRolls; i++)
+                results.get(member).add(DiceUtils.rollOnce(member));
         }
+    }
 
-        Party hostedParty = optionalHostedParty.get();
+    public int getNumberOfRolls() {
+        return numberOfRolls;
+    }
 
-        List<Member> partyMembers = hostedParty.getMembers();
+    public Map<Member, List<DiceResult>> getResults() {
+        return results;
+    }
 
-        // check if there is no one in there
-        if (partyMembers.size() == 0) {
-            message = "This party is boring! I won't perform for it.";
-            return;
-        }
+    public Party getParty() {
+        return party;
+    }
+
+    @Override
+    public String toString() {
+        if (party == null)
+            return "Maybe organize a !party first.";
+
+        if (party.getMembers().size() == 0)
+            return "This party is boring! I won't perform for it.";
 
         // do the rolling
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(String.format("Everybody in the party\uD83C\uDF89 rolls %d dice\n", numberOfRolls));
 
-        for (Member member : partyMembers) {
-            for (int i = 0; i < numberOfRolls; i++)
-                messageBuilder.append(DiceUtils.rollOnceString(member)).append("\n");
-        }
+        for (Member member : party.getMembers())
+            for (DiceResult result : results.get(member))
+                messageBuilder.append(DiceUtils.diceResultToString(DiscordUtil.getMemberName(member), result))
+                        .append("\n");
 
-        message = messageBuilder.toString();
-    }
-
-    @Override
-    public String toString() {
-        return message;
+        return messageBuilder.toString();
     }
 }

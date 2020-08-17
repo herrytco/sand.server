@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
 import systems.nope.discord.eventlistener.dice.person.LinkUtils;
 
+import java.io.IOException;
+
 public class UnlinkEvent extends DiceEvent {
 
     private String message;
@@ -14,9 +16,14 @@ public class UnlinkEvent extends DiceEvent {
 
     @Override
     public void handle() {
-        if(LinkUtils.unlinkMember(getAuthor()))
+        if (LinkUtils.unlinkMember(getAuthor())) {
             message = "Link removed. You can now link to a new character sir.";
-        else
+            try {
+                LinkUtils.revertPersonNicknamingFromMember(getAuthor());
+            } catch (IOException e) {
+                System.out.println("Error reading from file. " + e.getMessage());
+            }
+        } else
             message = "You are not linked to a character. Are you REALLY sure you linked before?";
 
         super.handle();

@@ -6,23 +6,23 @@ import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import systems.nope.worldseed.Authenticator;
+import systems.nope.worldseed.user.UserTestUtil;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TokenTest {
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
 
     @BeforeEach
     public void setup() {
-        authenticator.ensureTestuserExists();
+        userTestUtil.ensureTestuserExists();
     }
 
     @Test
     public void validCredentialsTokenTest() throws Exception {
-        String token = authenticator.authenticateTestUser();
+        String token = userTestUtil.authenticateTestUser();
 
         assert StringUtils.isNotBlank(token);
     }
