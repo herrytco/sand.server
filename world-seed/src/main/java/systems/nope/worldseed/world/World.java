@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import systems.nope.worldseed.article.Article;
 import systems.nope.worldseed.category.Category;
 import systems.nope.worldseed.person.Person;
+import systems.nope.worldseed.stat.sheet.StatSheet;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -27,6 +28,9 @@ public class World {
 
     @OneToMany(mappedBy = "world", fetch = FetchType.EAGER)
     private List<Category> categories;
+
+    @OneToMany(mappedBy = "world")
+    private List<StatSheet> sheets;
 
     @NotNull
     String seed;
@@ -98,5 +102,13 @@ public class World {
 
     public void setArticles(List<Article> articles) {
         this.articles = articles;
+    }
+
+    public List<StatSheet> getSheets() {
+        return sheets;
+    }
+
+    public void setSheets(List<StatSheet> sheets) {
+        this.sheets = sheets;
     }
 }

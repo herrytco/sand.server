@@ -1,9 +1,12 @@
 package systems.nope.worldseed.stat;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.person.Person;
+import systems.nope.worldseed.person.PersonRepository;
 import systems.nope.worldseed.person.PersonService;
 import systems.nope.worldseed.person.requests.AddPersonStatsheetRequest;
 import systems.nope.worldseed.stat.sheet.StatSheet;
@@ -20,6 +23,8 @@ public class PersonStatsheetController {
     private final PersonService personService;
     private final StatSheetService statSheetService;
 
+    private final Logger logger = LoggerFactory.getLogger(PersonStatsheetController.class);
+
     public PersonStatsheetController(PersonService personService, StatSheetService statSheetService) {
         this.personService = personService;
         this.statSheetService = statSheetService;
@@ -30,6 +35,8 @@ public class PersonStatsheetController {
             @PathVariable int instanceId,
             @RequestBody UpdateConstantStatValueIntanceRequest request
     ) {
+        logger.info(request.toString());
+
         Optional<StatValueInstanceConstant> instance = statSheetService.getStatValueInstanceConstantRepository().findById(instanceId);
 
         if (instance.isEmpty())
@@ -44,6 +51,7 @@ public class PersonStatsheetController {
     public ResponseEntity<?> addStatsheetMapping(
             @RequestBody AddPersonStatsheetRequest request
     ) {
+        logger.info(request.toString());
         Optional<Person> optionalPerson = personService.getPersonRepository().findById(request.getPersonId());
 
         if (optionalPerson.isEmpty())

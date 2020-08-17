@@ -13,10 +13,11 @@ public class StatValueInstanceSynthesized extends StatValueInstance {
     private Integer value;
 
     public StatValueInstanceSynthesized() {
+        setType("synthesized");
     }
 
     public StatValueInstanceSynthesized(World world, StatValue statValue, Person person) {
-        super(world, statValue, person);
+        super(world, statValue, person, "synthesized");
     }
 
     public Integer getValue() {

@@ -13,10 +13,11 @@ public class StatValueInstanceConstant extends StatValueInstance {
     private Integer value;
 
     public StatValueInstanceConstant() {
+        setType("constant");
     }
 
     public StatValueInstanceConstant(World world, StatValue statValue, Person person, @NotNull Integer value) {
-        super(world, statValue, person);
+        super(world, statValue, person, "constant");
         this.value = value;
     }
 
