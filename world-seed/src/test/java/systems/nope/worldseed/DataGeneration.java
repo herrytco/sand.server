@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
 import systems.nope.worldseed.role.RoleType;
+import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.user.User;
 import systems.nope.worldseed.user.UserService;
 import systems.nope.worldseed.world.UserWorldRole;
@@ -32,15 +33,15 @@ public class DataGeneration {
 
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
 
     /**
      * used to initialize debug-data on the server
      */
     @Test
     public void insertData() throws Exception {
-        authenticator.ensureUserExists(DebugConstants.debugName, DebugConstants.debugUsername, DebugConstants.debugPassword);
-        Optional<String> tokenDebug = authenticator.authenticateUser(DebugConstants.debugUsername, DebugConstants.debugPassword);
+        userTestUtil.ensureUserExists(DebugConstants.debugName, DebugConstants.debugUsername, DebugConstants.debugPassword);
+        Optional<String> tokenDebug = userTestUtil.authenticateUser(DebugConstants.debugUsername, DebugConstants.debugPassword);
 
         assert tokenDebug.isPresent();
         String token = tokenDebug.get();

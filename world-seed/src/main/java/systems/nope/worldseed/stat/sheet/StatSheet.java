@@ -1,4 +1,4 @@
-package systems.nope.worldseed.stat.model;
+package systems.nope.worldseed.stat.sheet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
@@ -25,6 +25,10 @@ public class StatSheet {
     @JoinColumn(name = "world")
     @JsonIgnore
     private World world;
+
+    @OneToOne
+    @JoinColumn(name = "parent", referencedColumnName = "id")
+    private StatSheet parent;
 
     public StatSheet() {
     }
@@ -64,5 +68,13 @@ public class StatSheet {
 
     public void setStatValues(List<StatValue> statValues) {
         this.statValues = statValues;
+    }
+
+    public StatSheet getParent() {
+        return parent;
+    }
+
+    public void setParent(StatSheet parent) {
+        this.parent = parent;
     }
 }

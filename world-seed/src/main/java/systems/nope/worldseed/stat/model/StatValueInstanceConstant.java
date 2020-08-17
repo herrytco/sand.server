@@ -1,6 +1,7 @@
 package systems.nope.worldseed.stat.model;
 
 import systems.nope.worldseed.person.Person;
+import systems.nope.worldseed.stat.sheet.StatValue;
 import systems.nope.worldseed.world.World;
 
 import javax.persistence.Entity;

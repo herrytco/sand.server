@@ -1,10 +1,8 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.stat.sheet;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.stat.model.StatSheet;
-import systems.nope.worldseed.stat.model.StatValue;
 import systems.nope.worldseed.stat.requests.AddConstantStatRequest;
 import systems.nope.worldseed.stat.requests.AddSynthesizedStatRequest;
 import systems.nope.worldseed.stat.responses.AddStatResponse;

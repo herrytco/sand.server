@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
-import systems.nope.worldseed.Authenticator;
-import systems.nope.worldseed.Worldinator;
+import systems.nope.worldseed.user.UserTestUtil;
+import systems.nope.worldseed.world.WorldTestUtil;
 import systems.nope.worldseed.person.requests.CreatePersonRequest;
 import systems.nope.worldseed.user.UserConstants;
 import systems.nope.worldseed.world.World;
@@ -27,10 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PersonTest {
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
 
     @Autowired
-    private Worldinator worldinator;
+    private WorldTestUtil worldTestUtil;
 
     @Autowired
     private PersonRepository personRepository;
@@ -43,10 +43,11 @@ public class PersonTest {
 
     @BeforeEach
     public void ensureData() {
-        authenticator.ensureTestuserExists();
-        worldinator.ensureTestWorldExists();
+        userTestUtil.ensureTestuserExists();
+        worldTestUtil.ensureTestWorldExists();
 
-        Optional<Person> testPerson = personRepository.findByName(PersonConstants.personName);
+        // delete test character (if existing)
+        Optional<Person> testPerson = personRepository.findByWorldAndName(worldTestUtil.getEnsuredInstance(), PersonConstants.personName);
         testPerson.ifPresent(person -> personRepository.delete(person));
     }
 
@@ -65,29 +66,49 @@ public class PersonTest {
 
     @Test
     public void createPersonTest() throws Exception {
-        World testWorld = worldinator.ensureTestWorldExists();
-        String token = authenticator.authenticateTestUser();
+        World testWorld = worldTestUtil.ensureTestWorldExists();
+        String token = userTestUtil.authenticateTestUser();
 
         createPerson(testWorld, token, PersonConstants.personName);
     }
 
-//    @Test
-    public void createCustomPerson() throws Exception {
-        Optional<World> testWorld = worldinator.getWorldService().getWorldRepository().findByName(WorldConstants.konstoWorldName);
-        Optional<String> token = authenticator.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
+    @Test
+    public void getByApiTest() throws Exception {
+        World testWorld = worldTestUtil.ensureTestWorldExists();
+        String token = userTestUtil.authenticateTestUser();
 
-        if(!testWorld.isPresent() || !token.isPresent())
+        createPerson(testWorld, token, PersonConstants.personName);
+
+        Optional<Person> personOptional = personRepository.findByWorldAndName(testWorld, PersonConstants.personName);
+
+        assert personOptional.isPresent();
+
+        Person person = personOptional.get();
+
+        mockMvc.perform(
+                get(String.format("%s/api/%s", PersonConstants.endpoint, person.getApiKey()))
+                        .header("Authorization", String.format("Bearer %s", token))
+        ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    //    @Test
+    public void createCustomPerson() throws Exception {
+        Optional<World> testWorld = worldTestUtil.getWorldService().getWorldRepository().findByName(WorldConstants.konstoWorldName);
+        Optional<String> token = userTestUtil.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
+
+        if (!testWorld.isPresent() || !token.isPresent())
             throw new Exception("Failed");
 
         createPerson(testWorld.get(), token.get(), "Yuki Li ");
     }
 
-//    @Test
+    //    @Test
     public void getCustomPerson() throws Exception {
         String apiKey = "ozedawpqwxcksniuhlswtbfruonxfofexxnwbqlfjoihdwptutrorwlmunbrsibxvxfjdenkormbydautimannwinvoekfghpygohmpvmhwbkrujjvjwgoqmdqgndwoxhroydtpclreexzlcfvsbcnjgboddoolhjrcuilruwrcxsplkuzlbpfcrahfefjhfckdleytofqkfgfxwmiquycmrncubztxyzdvxbyrahqoffhigiuilrqwgpbidzwln";
-        Optional<String> token = authenticator.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
+        Optional<String> token = userTestUtil.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
 
-        if(!token.isPresent())
+        if (!token.isPresent())
             throw new Exception("Failed");
 
         mockMvc.perform(
