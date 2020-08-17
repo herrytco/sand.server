@@ -3,22 +3,31 @@ package systems.nope.worldseed.person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.stat.model.*;
-import systems.nope.worldseed.util.ExpressionUtil;
+import systems.nope.worldseed.stat.StatValueInstanceConstantRepository;
+import systems.nope.worldseed.stat.StatValueInstanceSynthesizedRepository;
+import systems.nope.worldseed.stat.model.StatValueInstance;
+import systems.nope.worldseed.stat.model.StatValueInstanceConstant;
+import systems.nope.worldseed.stat.model.StatValueInstanceSynthesized;
+import systems.nope.worldseed.stat.sheet.*;
 import systems.nope.worldseed.world.World;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final StatSheetService statSheetService;
+    private final StatValueInstanceConstantRepository statValueInstanceConstantRepository;
+    private final StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository;
 
     private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
 
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, StatSheetService statSheetService, StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository) {
         this.personRepository = personRepository;
+        this.statSheetService = statSheetService;
+        this.statValueInstanceConstantRepository = statValueInstanceConstantRepository;
+        this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
     }
 
     public String createRandomString(int length) {
@@ -47,6 +56,45 @@ public class PersonService {
         return key;
     }
 
+    public void addStatSheetToPerson(Person person, StatSheet sheet) {
+        if (sheet.getParent() != null)
+            addStatSheetToPerson(person, sheet.getParent());
+
+        if (person.getStatSheets().contains(sheet)) {
+            person.getStatSheets().remove(sheet);
+            personRepository.save(person);
+        }
+
+        for (StatValue value : sheet.getStatValues()) {
+            StatValueInstance instance = null;
+
+            boolean duplicate = false;
+
+            for (StatValueInstance i : person.getStatValues())
+                if (i.getStatValue().getId() == value.getId()) {
+                    duplicate = true;
+                    break;
+                }
+
+            if (duplicate)
+                continue;
+
+            if (value instanceof StatValueConstant) {
+                instance = new StatValueInstanceConstant(person.getWorld(), value, person, ((StatValueConstant) value).getInitalValue());
+                statValueInstanceConstantRepository.save((StatValueInstanceConstant) instance);
+            } else if (value instanceof StatValueSynthesized) {
+                instance = new StatValueInstanceSynthesized(person.getWorld(), value, person);
+                statValueInstanceSynthesizedRepository.save((StatValueInstanceSynthesized) instance);
+            }
+
+            if (instance != null)
+                person.getStatValues().add(instance);
+        }
+
+        person.getStatSheets().add(sheet);
+        personRepository.save(person);
+    }
+
     public Optional<Person> findByApiKey(String apiKey) {
         Optional<Person> optionalPerson = personRepository.findByApiKey(apiKey);
 
@@ -61,30 +109,7 @@ public class PersonService {
     }
 
     public void enrichPersonStats(Person person) {
-        for (StatValueInstance stat : person.getStatValues()) {
-            if (stat instanceof StatValueInstanceSynthesized) {
-                StatValueInstanceSynthesized synthesized = (StatValueInstanceSynthesized) stat;
-
-                String formula = ((StatValueSynthesized) synthesized.getStatValue()).getFormula();
-
-                // substitute variables in formual with Persons stats
-                for (StatValueInstance stati : person.getStatValues()) {
-                    if (stati instanceof StatValueInstanceConstant)
-                        formula = formula.replaceAll(stati.getStatValue().getNameShort(), ((StatValueInstanceConstant) stati).getValue().toString());
-                }
-
-                try {
-                    double result = ExpressionUtil.parseExpression(formula);
-                    synthesized.setValue((int) result);
-                } catch (IllegalArgumentException e) {
-                    synthesized.setValue(-1);
-                    logger.error(e.getMessage());
-                } catch (IllegalStateException e) {
-                    synthesized.setValue(-1);
-                    logger.error(String.format("Internal Error while parsing formula: '%s'", formula));
-                }
-            }
-        }
+        statSheetService.enrichPersonStats(person);
     }
 
     public Person add(World world, String name) {

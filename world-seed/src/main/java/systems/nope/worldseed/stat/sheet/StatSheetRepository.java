@@ -1,7 +1,7 @@
-package systems.nope.worldseed.stat;
+package systems.nope.worldseed.stat.sheet;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import systems.nope.worldseed.stat.model.StatSheet;
+import systems.nope.worldseed.stat.sheet.StatSheet;
 import systems.nope.worldseed.world.World;
 
 import java.util.Optional;

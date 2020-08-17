@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.person.Person;
 import systems.nope.worldseed.person.PersonService;
 import systems.nope.worldseed.person.requests.AddPersonStatsheetRequest;
-import systems.nope.worldseed.stat.model.StatSheet;
+import systems.nope.worldseed.stat.sheet.StatSheet;
 import systems.nope.worldseed.stat.model.StatValueInstanceConstant;
 import systems.nope.worldseed.stat.requests.UpdateConstantStatValueIntanceRequest;
+import systems.nope.worldseed.stat.sheet.StatSheetService;
 
 import java.util.Optional;
 
@@ -53,7 +54,7 @@ public class PersonStatsheetController {
         if (optionalStatSheet.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("Character with ID '%d' not found.", request.getStatsheetId()));
 
-        statSheetService.addStatSheetToPerson(optionalPerson.get(), optionalStatSheet.get());
+        personService.addStatSheetToPerson(optionalPerson.get(), optionalStatSheet.get());
         return ResponseEntity.ok().build();
     }
 

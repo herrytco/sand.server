@@ -1,6 +1,6 @@
 package systems.nope.worldseed.stat.responses;
 
-import systems.nope.worldseed.stat.model.StatValue;
+import systems.nope.worldseed.stat.sheet.StatValue;
 
 public class AddStatResponse {
     private StatValue stat;
