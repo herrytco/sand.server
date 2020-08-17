@@ -154,7 +154,7 @@ public class StatSheetService {
     }
 
     public StatValue addConstantStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, Integer initialValue) {
-        Optional<StatValueConstant> referenceValue = statValueConstantRepository.findByWorldAndName(world, name);
+        Optional<StatValueConstant> referenceValue = statValueConstantRepository.findByWorldAndNameAndSheet(world, name, sheet);
 
         if (referenceValue.isPresent())
             throw new IllegalStateException(String.format("Duplicate Stat with name %s", name));

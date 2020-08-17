@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
-import systems.nope.worldseed.Authenticator;
 
 import java.util.Optional;
 
@@ -37,10 +36,10 @@ public class UserTest {
     private UserRepository userRepository;
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
 
     private String getNewUserDetails() throws JsonProcessingException {
-        return builder.build().writeValueAsString(Authenticator.getTestuserRegistrationRequest());
+        return builder.build().writeValueAsString(UserTestUtil.getTestuserRegistrationRequest());
     }
 
     @BeforeEach
@@ -61,12 +60,12 @@ public class UserTest {
      */
     @Test
     public void myWorldTest() throws Exception {
-        authenticator.ensureTestuserExists();
+        userTestUtil.ensureTestuserExists();
 
         Optional<User> testUser = userRepository.findByEmail(UserConstants.nonExistingEmail);
         assert testUser.isPresent();
 
-        String token = authenticator.authenticateTestUser();
+        String token = userTestUtil.authenticateTestUser();
 
         mockMvc.perform(
                 get(String.format("%s/id/%d/worlds", UserConstants.endpoint, testUser.get().getId()))
@@ -79,20 +78,20 @@ public class UserTest {
 
 //    @Test
     public void ensureHerryUserExists() {
-        authenticator.ensureUserExists(UserConstants.herryName, UserConstants.herryName, UserConstants.herryPw);
+        userTestUtil.ensureUserExists(UserConstants.herryName, UserConstants.herryName, UserConstants.herryPw);
     }
 
     @Test
     public void getToken() throws Exception {
-        authenticator.ensureTestuserExists();
-        String token = authenticator.authenticateTestUser();
+        userTestUtil.ensureTestuserExists();
+        String token = userTestUtil.authenticateTestUser();
         System.out.println("TOKEN: " + token);
     }
 
     @Test
     public void getUser() throws Exception {
-        authenticator.ensureTestuserExists();
-        String token = authenticator.authenticateTestUser();
+        userTestUtil.ensureTestuserExists();
+        String token = userTestUtil.authenticateTestUser();
 
         Optional<User> testUser = userRepository.findByEmail(UserConstants.nonExistingEmail);
         assert testUser.isPresent();

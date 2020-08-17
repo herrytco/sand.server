@@ -1,4 +1,4 @@
-package systems.nope.worldseed.stat.model;
+package systems.nope.worldseed.stat.sheet;
 
 import systems.nope.worldseed.world.World;
 

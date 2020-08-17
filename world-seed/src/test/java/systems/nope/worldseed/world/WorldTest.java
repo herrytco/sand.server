@@ -9,8 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
-import systems.nope.worldseed.Authenticator;
-import systems.nope.worldseed.Worldinator;
+import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.requests.NewWorldRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,10 +31,10 @@ public class WorldTest {
     private WorldRepository worldRepository;
 
     @Autowired
-    private Worldinator worldinator;
+    private WorldTestUtil worldTestUtil;
 
     @Autowired
-    private Authenticator authenticator;
+    private UserTestUtil userTestUtil;
 
     private String newWorldContent() throws JsonProcessingException {
         NewWorldRequest request = new NewWorldRequest(
@@ -48,24 +47,24 @@ public class WorldTest {
 
     @BeforeEach
     public void createTestUser() {
-        authenticator.ensureTestuserExists();
+        userTestUtil.ensureTestuserExists();
         worldRepository.deleteAllByName(WorldConstants.nonExistingWorldName);
     }
 
     @Test
     public void ensureWorldExists() {
-        worldinator.ensureWorldExists(WorldConstants.konstoWorldName, WorldConstants.worldDescription, "189324");
+        worldTestUtil.ensureWorldExists(WorldConstants.konstoWorldName, WorldConstants.worldDescription, "189324");
     }
 
     @Test
     public void deleteAndAddSeedTest() throws Exception {
         worldRepository.deleteBySeed("111111");
 
-        World worldTest = worldinator.ensureWorldExists("Testworld", "World used in JUnit Tests", "111111");
+        World worldTest = worldTestUtil.ensureWorldExists("Testworld", "World used in JUnit Tests", "111111");
 
         mockMvc.perform(
                 get(String.format("%s/seed/%s", WorldConstants.endpoint, "111111"))
-                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
@@ -80,7 +79,7 @@ public class WorldTest {
 
         mockMvc.perform(
                 get(String.format("%s/seed/%s", WorldConstants.endpoint, seed))
-                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
@@ -103,7 +102,7 @@ public class WorldTest {
         mockMvc.perform(
                 post(WorldConstants.endpoint)
                         .content(newWorldContent())
-                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
@@ -115,7 +114,7 @@ public class WorldTest {
         mockMvc.perform(
                 post(WorldConstants.endpoint)
                         .content(newWorldContent())
-                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
@@ -124,7 +123,7 @@ public class WorldTest {
         mockMvc.perform(
                 post(WorldConstants.endpoint)
                         .content(newWorldContent())
-                        .header("Authorization", String.format("Bearer %s", authenticator.authenticateTestUser()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())

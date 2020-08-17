@@ -11,9 +11,11 @@ import systems.nope.worldseed.stat.model.StatValueInstanceSynthesized;
 import systems.nope.worldseed.stat.sheet.*;
 import systems.nope.worldseed.world.World;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
+@Transactional
 public class PersonService {
 
     private final PersonRepository personRepository;
@@ -95,6 +97,19 @@ public class PersonService {
         personRepository.save(person);
     }
 
+    public Optional<Person> findByWorldAndName(World world, String name) {
+        Optional<Person> optionalPerson = personRepository.findByWorldAndName(world, name);
+
+        if (optionalPerson.isEmpty())
+            return optionalPerson;
+
+        Person person = optionalPerson.get();
+
+        enrichPersonStats(person);
+
+        return Optional.of(person);
+    }
+
     public Optional<Person> findByApiKey(String apiKey) {
         Optional<Person> optionalPerson = personRepository.findByApiKey(apiKey);
 
@@ -113,7 +128,7 @@ public class PersonService {
     }
 
     public Person add(World world, String name) {
-        Optional<Person> referencePerson = personRepository.findByName(name);
+        Optional<Person> referencePerson = personRepository.findByWorldAndName(world, name);
 
         if (referencePerson.isPresent())
             throw new IllegalStateException(String.format("Duplicate Person with name %s", name));

@@ -1,4 +1,4 @@
-package systems.nope.worldseed.stat.model;
+package systems.nope.worldseed.stat.sheet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.world.World;
@@ -14,7 +14,7 @@ public class StatValue {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "stat_sheet_id", insertable = false, updatable = false)
+    @JoinColumn(name = "stat_sheet_id")
     @JsonIgnore
     private StatSheet sheet;
 
