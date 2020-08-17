@@ -29,15 +29,19 @@ public class StatValue {
     @JsonIgnore
     private World world;
 
+    @Transient
+    private String type;
+
     public StatValue() {
     }
 
-    public StatValue(StatSheet sheet, String name, String nameShort, String unit, World world) {
+    public StatValue(StatSheet sheet, String name, String nameShort, String unit, World world, String type) {
         this.sheet = sheet;
         this.name = name;
         this.nameShort = nameShort;
         this.unit = unit;
         this.world = world;
+        this.type = type;
     }
 
     public int getId() {
@@ -86,5 +90,13 @@ public class StatValue {
 
     public void setWorld(World world) {
         this.world = world;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

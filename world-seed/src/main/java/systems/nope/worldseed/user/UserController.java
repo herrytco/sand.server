@@ -3,6 +3,7 @@ package systems.nope.worldseed.user;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.person.Person;
 import systems.nope.worldseed.person.PersonService;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
@@ -14,6 +15,7 @@ import systems.nope.worldseed.world.World;
 import systems.nope.worldseed.world.WorldService;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,12 +25,14 @@ public class UserController {
     private final WorldService worldService;
     private final RoleService roleService;
     private final UserWorldRoleRepository userWorldRoleRepository;
+    private final PersonService personService;
 
-    public UserController(UserService userService, WorldService worldService, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository) {
+    public UserController(UserService userService, WorldService worldService, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, PersonService personService) {
         this.userService = userService;
         this.worldService = worldService;
         this.roleService = roleService;
         this.userWorldRoleRepository = userWorldRoleRepository;
+        this.personService = personService;
     }
 
     @RequestMapping("/id/{id}")
@@ -43,7 +47,13 @@ public class UserController {
         try {
             User requester = userService.getUserRepository().getOne(id);
 
-            return ResponseEntity.ok(WorldOwnership.fromUser(requester));
+            List<WorldOwnership> worldOwnership = WorldOwnership.fromUser(requester);
+
+            for (WorldOwnership w : worldOwnership)
+                for (Person p : w.getWorld().getPersons())
+                    personService.enrichPersonStats(p);
+
+            return ResponseEntity.ok(worldOwnership);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("User ID '%d' not found.", id));
         }

@@ -17,4 +17,11 @@ public class UpdateConstantStatValueIntanceRequest {
     public void setValueNew(Integer valueNew) {
         this.valueNew = valueNew;
     }
+
+    @Override
+    public String toString() {
+        return "UpdateConstantStatValueIntanceRequest{" +
+                "valueNew=" + valueNew +
+                '}';
+    }
 }

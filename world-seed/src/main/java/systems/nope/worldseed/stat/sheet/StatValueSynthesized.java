@@ -11,10 +11,11 @@ public class StatValueSynthesized extends StatValue{
     private String formula;
 
     public StatValueSynthesized() {
+        setType("synthesized");
     }
 
     public StatValueSynthesized(StatSheet sheet, String name, String nameShort, String unit, World world, @NotBlank String formula) {
-        super(sheet, name, nameShort, unit, world);
+        super(sheet, name, nameShort, unit, world, "synthesized");
         this.formula = formula;
     }
 

@@ -27,4 +27,12 @@ public class AddPersonStatsheetRequest {
     public void setStatsheetId(int statsheetId) {
         this.statsheetId = statsheetId;
     }
+
+    @Override
+    public String toString() {
+        return "AddPersonStatsheetRequest{" +
+                "personId=" + personId +
+                ", statsheetId=" + statsheetId +
+                '}';
+    }
 }

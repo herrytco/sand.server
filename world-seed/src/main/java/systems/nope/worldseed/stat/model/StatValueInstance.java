@@ -30,13 +30,17 @@ public class StatValueInstance {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    @Transient
+    private String type;
+
     public StatValueInstance() {
     }
 
-    public StatValueInstance(World world, StatValue statValue, Person person) {
+    public StatValueInstance(World world, StatValue statValue, Person person, String type) {
         this.world = world;
         this.statValue = statValue;
         this.person = person;
+        this.type = type;
     }
 
     public int getId() {
@@ -69,5 +73,13 @@ public class StatValueInstance {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

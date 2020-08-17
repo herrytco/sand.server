@@ -13,10 +13,11 @@ public class StatValueConstant extends StatValue {
     private Integer initalValue;
 
     public StatValueConstant() {
+        setType("constant");
     }
 
     public StatValueConstant(StatSheet sheet, String name, String nameShort, String unit, World world, Integer initalValue) {
-        super(sheet, name, nameShort, unit, world);
+        super(sheet, name, nameShort, unit, world, "constant");
         this.initalValue = initalValue;
     }
 
