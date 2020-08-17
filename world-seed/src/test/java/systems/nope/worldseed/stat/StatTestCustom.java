@@ -52,7 +52,7 @@ public class StatTestCustom {
         world = worldinator.ensureWorldExists("Riverlands RPG", "Lorem Ipsum Si Dolor Amet", seed);
     }
 
-    @Test
+//    @Test
     public void addStatSheet() throws Exception {
         mockMvc.perform(
                 post(String.format("/stat-sheets/worlds/%d", world.getId()))
@@ -87,10 +87,10 @@ public class StatTestCustom {
         ).andDo(print());
     }
 
-    @Test
+//    @Test
     public void addSynthesizedStat() throws Exception {
         String statNameShort = "MM";
-        String statName = "Magic Modifier (10% INT)";
+        String statName = "Magic Modifier";
         String formula = "( 0.1 * INT )";
 
         mockMvc.perform(
@@ -111,7 +111,7 @@ public class StatTestCustom {
         ).andDo(print());
     }
 
-    @Test
+//    @Test
     public void addSheetToPerson() throws Exception {
         mockMvc.perform(
                 post("/stat-sheet-mapping")
