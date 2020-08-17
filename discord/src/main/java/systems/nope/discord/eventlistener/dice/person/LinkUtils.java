@@ -1,5 +1,6 @@
 package systems.nope.discord.eventlistener.dice.person;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import net.dv8tion.jda.api.entities.Member;
@@ -48,11 +49,13 @@ public class LinkUtils {
      * @param member - discord user
      * @return if a link existed
      */
-    public static boolean unlinkMember(Member member) {
+    public static boolean unlinkMember(Member member) throws IOException {
         if (playerChars.containsKey(member)) {
             playerChars.remove(member);
             return true;
         }
+
+        fileManager.deleteKey(member.getId(), "links.json");
 
         return false;
     }
@@ -138,8 +141,9 @@ public class LinkUtils {
 
                     return linkedPerson;
                 }
-            } catch (MismatchedInputException e) {
-                System.out.println("No data for apiKey: " + apiKey);
+            } catch (MismatchedInputException | JsonParseException e) {
+                System.out.println("No data for apiKey: " + apiKey.substring(0, 20)+"...");
+                unlinkMember(member);
                 return null;
             }
         }
