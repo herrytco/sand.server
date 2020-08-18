@@ -52,33 +52,11 @@ public class WorldTest {
     }
 
     @Test
-    public void ensureWorldExists() {
-        worldTestUtil.ensureWorldExists(WorldConstants.konstoWorldName, WorldConstants.worldDescription, "189324");
-    }
-
-    @Test
     public void deleteAndAddSeedTest() throws Exception {
-        worldRepository.deleteBySeed("111111");
-
-        World worldTest = worldTestUtil.ensureWorldExists("Testworld", "World used in JUnit Tests", "111111");
+        World worldTest = worldTestUtil.ensureTestWorldExists();
 
         mockMvc.perform(
-                get(String.format("%s/seed/%s", WorldConstants.endpoint, "111111"))
-                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        ).andDo(print())
-                .andExpect(status().isOk());
-
-        worldRepository.delete(worldTest);
-    }
-
-    @Test
-    public void customSeedTest() throws Exception {
-        String seed = "111111";
-
-        mockMvc.perform(
-                get(String.format("%s/seed/%s", WorldConstants.endpoint, seed))
+                get(String.format("%s/seed/%s", WorldConstants.endpoint, worldTest.getSeed()))
                         .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

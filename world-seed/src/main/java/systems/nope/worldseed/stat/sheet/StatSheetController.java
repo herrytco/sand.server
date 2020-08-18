@@ -7,12 +7,14 @@ import systems.nope.worldseed.stat.requests.AddConstantStatRequest;
 import systems.nope.worldseed.stat.requests.AddSynthesizedStatRequest;
 import systems.nope.worldseed.stat.responses.AddStatResponse;
 import systems.nope.worldseed.stat.responses.StatSheetResponse;
+import systems.nope.worldseed.util.exceptions.NotFoundException;
 import systems.nope.worldseed.util.requests.AddNamedResourceRequest;
 import systems.nope.worldseed.world.World;
 import systems.nope.worldseed.world.WorldService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/stat-sheets")
@@ -26,9 +28,22 @@ public class StatSheetController {
     }
 
     @GetMapping
-    public List<StatSheet> all() {
-        return statSheetService.getStatSheetRepository().findAll();
+    public List<OutStatSheet> all() {
+        return statSheetService.getStatSheetRepository().findAll().stream().map(OutStatSheet::fromStatSheet).collect(Collectors.toList());
     }
+
+    @GetMapping("/id/{id}")
+    public OutStatSheet one(
+            @PathVariable int id
+    ) {
+        Optional<StatSheet> optionalStatSheet = statSheetService.findById(id);
+
+        if (optionalStatSheet.isEmpty())
+            throw new NotFoundException(id);
+
+        return OutStatSheet.fromStatSheet(optionalStatSheet.get());
+    }
+
 
     @GetMapping("/worlds/{worldId}")
     public ResponseEntity<?> findByName(

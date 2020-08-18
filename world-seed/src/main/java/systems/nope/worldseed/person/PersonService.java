@@ -123,6 +123,20 @@ public class PersonService {
         return Optional.of(person);
     }
 
+
+    public Optional<Person> findById(Integer id) {
+        Optional<Person> optionalPerson = personRepository.findById(id);
+
+        if (optionalPerson.isEmpty())
+            return optionalPerson;
+
+        Person person = optionalPerson.get();
+
+        enrichPersonStats(person);
+
+        return Optional.of(person);
+    }
+
     public void enrichPersonStats(Person person) {
         statSheetService.enrichPersonStats(person);
     }

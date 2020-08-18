@@ -20,6 +20,7 @@ public class StatValueInstanceSynthesized extends StatValueInstance {
         super(world, statValue, person, "synthesized");
     }
 
+    @Override
     public Integer getValue() {
         return value;
     }

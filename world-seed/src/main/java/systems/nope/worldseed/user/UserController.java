@@ -1,20 +1,15 @@
 package systems.nope.worldseed.user;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.person.Person;
-import systems.nope.worldseed.person.PersonService;
 import systems.nope.worldseed.role.Role;
 import systems.nope.worldseed.role.RoleService;
 import systems.nope.worldseed.role.RoleType;
 import systems.nope.worldseed.user.requests.RegistrationRequest;
-import systems.nope.worldseed.world.UserWorldRole;
-import systems.nope.worldseed.world.UserWorldRoleRepository;
-import systems.nope.worldseed.world.World;
-import systems.nope.worldseed.world.WorldService;
+import systems.nope.worldseed.util.exceptions.NotFoundException;
+import systems.nope.worldseed.world.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,57 +20,58 @@ public class UserController {
     private final WorldService worldService;
     private final RoleService roleService;
     private final UserWorldRoleRepository userWorldRoleRepository;
-    private final PersonService personService;
 
-    public UserController(UserService userService, WorldService worldService, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, PersonService personService) {
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    public UserController(UserService userService, WorldService worldService, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository) {
         this.userService = userService;
         this.worldService = worldService;
         this.roleService = roleService;
         this.userWorldRoleRepository = userWorldRoleRepository;
-        this.personService = personService;
     }
 
     @RequestMapping("/id/{id}")
     public User one(
             @PathVariable int id
     ) {
+        logger.info(String.format("UserController.one(id:%d)", id));
+
         return userService.getUserRepository().getOne(id);
     }
 
     @GetMapping("/id/{id}/worlds")
-    public ResponseEntity<?> worlds(@PathVariable int id) {
-        try {
-            User requester = userService.getUserRepository().getOne(id);
+    public List<WorldOwnership> worlds(@PathVariable int id) {
+        logger.info(String.format("UserController.worlds(id:%d)", id));
 
-            List<WorldOwnership> worldOwnership = WorldOwnership.fromUser(requester);
+        Optional<User> optionalRequester = userService.findById(id);
 
-            for (WorldOwnership w : worldOwnership)
-                for (Person p : w.getWorld().getPersons())
-                    personService.enrichPersonStats(p);
+        if (optionalRequester.isEmpty())
+            throw new NotFoundException(id);
 
-            return ResponseEntity.ok(worldOwnership);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("User ID '%d' not found.", id));
-        }
+        User requester = optionalRequester.get();
+
+        return WorldOwnership.fromUser(requester);
     }
 
     @PostMapping("/id/{id}/worlds/{worldId}")
-    public ResponseEntity<?> joinWorld(
+    public void joinWorld(
             @PathVariable int id,
             @PathVariable int worldId
     ) {
-        User requester;
+        logger.info(String.format("UserController.joinWorld(userId:%d, worldId:%d)", id, worldId));
 
-        try {
-            requester = userService.getUserRepository().getOne(id);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("User ID '%d' not found.", id));
-        }
+        Optional<User> optionalRequester = userService.findById(id);
+
+        if (optionalRequester.isEmpty())
+            throw new NotFoundException(id);
+
+        User requester = optionalRequester.get();
+
 
         Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
+            throw new NotFoundException(worldId);
 
         World worldToJoin = optionalWorld.get();
 
@@ -83,19 +79,14 @@ public class UserController {
 
         UserWorldRole userWorldRole = new UserWorldRole(requester, worldToJoin, visitor);
         userWorldRoleRepository.save(userWorldRole);
-
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping
-    public ResponseEntity<?> add(
+    public void add(
             @RequestBody RegistrationRequest request
     ) {
+        logger.info(String.format("UserAddRequest %s", request));
 
-        System.out.println(String.format("UserAddRequest %s", request));
-        if (userService.addUser(request.name, request.email, request.password)) {
-            return ResponseEntity.ok().build();
-        } else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        userService.addUser(request.name, request.email, request.password);
     }
 }

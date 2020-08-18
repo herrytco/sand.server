@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.util.exceptions.AlreadyExistingException;
 
 import java.util.Optional;
 
@@ -22,22 +23,20 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean addUser(String name, String email, String password) {
+    public Optional<User> findById(int id) {
+        return userRepository.findById(id);
+    }
+
+    public void addUser(String name, String email, String password) throws AlreadyExistingException {
 
         // if a user with this email already exists, return false (as email should be unique)
         Optional<User> reference = userRepository.findByEmail(email);
         if (reference.isPresent())
-            return false;
+            throw new AlreadyExistingException();
 
         User userNew = new User(name, email, passwordEncoder.encode(password));
 
-        try {
-            userRepository.save(userNew);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        userRepository.save(userNew);
     }
 
     @Override

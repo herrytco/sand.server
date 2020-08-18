@@ -36,6 +36,26 @@ public class StatSheetService {
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
     }
 
+    public Optional<StatSheet> findById(int id) {
+        return statSheetRepository.findById(id);
+    }
+
+    Optional<StatValueConstant> findStatValueConstantById(int id) {
+        return statValueConstantRepository.findById(id);
+    }
+
+    Optional<StatValueSynthesized> findStatValueSynthesizedById(int id) {
+        return statValueSynthesizedRepository.findById(id);
+    }
+
+    public Optional<StatValueInstanceConstant> findStatValueInstanceConstantById(int id) {
+        return statValueInstanceConstantRepository.findById(id);
+    }
+
+    public Optional<StatValueInstanceSynthesized> findStatValueInstanceSynthesizedById(int id) {
+        return statValueInstanceSynthesizedRepository.findById(id);
+    }
+
     public StatSheetRepository getStatSheetRepository() {
         return statSheetRepository;
     }
@@ -45,6 +65,54 @@ public class StatSheetService {
         statValueInstanceConstantRepository.save(instance);
     }
 
+    public void enrichStatInstance(StatValueInstanceSynthesized instanceSynthesized) {
+        Person person = instanceSynthesized.getPerson();
+        List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
+
+        String formula = ((StatValueSynthesized) instanceSynthesized.getStatValue()).getFormula();
+
+        // substitute variables in order of sheet inheritance
+        for (SheetNode tree : sheetForest) {
+            Optional<Stack<SheetNode>> optionalScopeStack = tree.findStackForStatValueInstance(instanceSynthesized);
+
+            if (optionalScopeStack.isPresent()) {
+                Stack<SheetNode> scopeStack = optionalScopeStack.get();
+
+                for (SheetNode scope : scopeStack) {
+                    StatSheet sheet = scope.getSheet();
+
+                    // substitute variables in formula with Persons stats
+                    for (StatValueInstance stati : person.getStatValues()) {
+                        if (stati.getStatValue().getSheet() == sheet) {
+                            if (stati instanceof StatValueInstanceConstant)
+                                formula = formula.replaceAll(stati.getStatValue().getNameShort(),
+                                        ((StatValueInstanceConstant) stati).getValue().toString());
+                            else if (stati instanceof StatValueInstanceSynthesized) {
+                                StatValueInstanceSynthesized s = ((StatValueInstanceSynthesized) stati);
+
+                                if (s.getValue() != null)
+                                    formula = formula.replaceAll(stati.getStatValue().getNameShort(),
+                                            s.getValue().toString());
+                            }
+
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
+        try {
+            double result = ExpressionUtil.parseExpression(formula);
+            instanceSynthesized.setValue((int) result);
+        } catch (IllegalArgumentException e) {
+            instanceSynthesized.setValue(-1);
+            logger.error(e.getMessage());
+        } catch (IllegalStateException e) {
+            instanceSynthesized.setValue(-1);
+            logger.error(String.format("Internal Error while parsing formula: '%s'", formula));
+        }
+    }
 
     public void enrichPersonStats(Person person) {
         List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());

@@ -21,6 +21,7 @@ public class StatValueInstanceConstant extends StatValueInstance {
         this.value = value;
     }
 
+    @Override
     public Integer getValue() {
         return value;
     }

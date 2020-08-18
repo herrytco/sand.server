@@ -82,4 +82,8 @@ public class StatValueInstance {
     public void setType(String type) {
         this.type = type;
     }
+
+    public Integer getValue() {
+        return 0;
+    }
 }

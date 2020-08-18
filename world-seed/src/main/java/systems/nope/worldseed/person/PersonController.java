@@ -1,9 +1,8 @@
 package systems.nope.worldseed.person;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.person.requests.CreatePersonRequest;
+import systems.nope.worldseed.util.exceptions.NotFoundException;
 import systems.nope.worldseed.world.World;
 import systems.nope.worldseed.world.WorldService;
 
@@ -21,33 +20,44 @@ public class PersonController {
     }
 
     @GetMapping("/api/{apiKey}")
-    public ResponseEntity<?> getByApiKey(
+    public OutPerson getByApiKey(
             @PathVariable String apiKey
     ) {
         Optional<Person> person = personService.findByApiKey(apiKey);
 
-        return person
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        if (person.isEmpty())
+            throw new NotFoundException(apiKey);
+
+        return OutPerson.fromPerson(person.get());
     }
 
+    @GetMapping("/id/{id}")
+    public OutPerson getById(
+            @PathVariable Integer id
+    ) {
+        Optional<Person> person = personService.findById(id);
+
+        if (person.isEmpty())
+            throw new NotFoundException(id);
+
+        return OutPerson.fromPerson(person.get());
+    }
+
+
     @PostMapping("/world/{worldId}")
-    public ResponseEntity<?> create(
+    public OutPerson create(
             @PathVariable int worldId,
             @RequestBody CreatePersonRequest createPersonRequest
     ) {
         Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
+            throw new NotFoundException(worldId);
 
         World world = optionalWorld.get();
 
-        try {
-            Person person = personService.add(world, createPersonRequest.getName());
-            return ResponseEntity.ok(person);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Character with name '%s' already exists.", createPersonRequest.getName()));
-        }
+        Person person = personService.add(world, createPersonRequest.getName());
+
+        return OutPerson.fromPerson(person);
     }
 }
