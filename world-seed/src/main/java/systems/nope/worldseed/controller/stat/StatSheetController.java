@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatSheetDto;
 import systems.nope.worldseed.dto.request.AddConstantStatRequest;
 import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
+import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.dto.response.AddStatResponse;
 import systems.nope.worldseed.dto.response.StatSheetResponse;
 import systems.nope.worldseed.model.stat.StatSheet;
@@ -32,8 +33,10 @@ public class StatSheetController {
     }
 
     @GetMapping
-    public List<StatSheetDto> all() {
-        return statSheetService.getStatSheetRepository().findAll().stream().map(StatSheetDto::fromStatSheet).collect(Collectors.toList());
+    public List<StatSheetDto> all(
+            @RequestBody MultiIdRequest request
+    ) {
+        return request.getIds().stream().map(this::one).collect(Collectors.toList());
     }
 
     @GetMapping("/id/{id}")

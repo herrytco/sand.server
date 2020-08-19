@@ -1,5 +1,7 @@
 package systems.nope.worldseed.person;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,15 +10,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.repository.PersonRepository;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 import systems.nope.worldseed.model.World;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,6 +49,9 @@ public class PersonTest {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     public void ensureData() {
         userTestUtil.ensureTestuserExists();
@@ -51,25 +62,69 @@ public class PersonTest {
         testPerson.ifPresent(person -> personRepository.delete(person));
     }
 
-    private void createPerson() throws Exception {
-        World testWorld = worldTestUtil.ensureTestWorldExists();
+    @AfterEach
+    public void cleanup() {
+        personRepository.deleteAllByName(PersonConstants.personName);
+        personRepository.deleteAllByName(PersonConstants.personName2);
+        personRepository.deleteAllByName(PersonConstants.personName3);
+    }
+
+    private PersonDto createPerson(String name) throws Exception {
+        World testWorld = worldTestUtil.getEnsuredInstance();
         String token = userTestUtil.authenticateTestUser();
 
-        AddNamedResourceRequest createPersonRequest = new AddNamedResourceRequest(PersonConstants.personName);
+        AddNamedResourceRequest createPersonRequest = new AddNamedResourceRequest(name);
 
-        mockMvc.perform(
+        MvcResult result = mockMvc.perform(
                 post(String.format("%s/world/%d", PersonConstants.endpoint, testWorld.getId()))
                         .header("Authorization", String.format("Bearer %s", token))
                         .content(builder.build().writeValueAsString(createPersonRequest))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+
+        PersonDto addedPerson = objectMapper.readValue(result.getResponse().getContentAsString(), PersonDto.class);
+
+        assertEquals(name, addedPerson.getName());
+
+        return addedPerson;
     }
 
     @Test
     public void createPersonTest() throws Exception {
-        createPerson();
+        PersonDto p = createPerson(PersonConstants.personName);
+    }
+
+    @Test
+    public void createMultiplePersonTest() throws Exception {
+        String token = userTestUtil.authenticateTestUser();
+
+        PersonDto p = createPerson(PersonConstants.personName);
+        PersonDto p2 = createPerson(PersonConstants.personName2);
+        PersonDto p3 = createPerson(PersonConstants.personName3);
+
+        List<Integer> ids = new LinkedList<Integer>();
+        ids.add(p.getId());
+        ids.add(p2.getId());
+        ids.add(p3.getId());
+
+        MultiIdRequest request = new MultiIdRequest(ids);
+
+        MvcResult result = mockMvc.perform(
+                get(PersonConstants.endpoint)
+                        .header("Authorization", String.format("Bearer %s", token))
+                        .content(builder.build().writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        PersonDto[] ps = objectMapper.readValue(result.getResponse().getContentAsString(), PersonDto[].class);
+
+        assertEquals(3, ps.length);
     }
 
     @Test
@@ -77,7 +132,7 @@ public class PersonTest {
         World testWorld = worldTestUtil.ensureTestWorldExists();
         String token = userTestUtil.authenticateTestUser();
 
-        createPerson();
+        createPerson(PersonConstants.personName);
 
         Optional<Person> personOptional = personRepository.findByWorldAndName(testWorld, PersonConstants.personName);
         assert personOptional.isPresent();

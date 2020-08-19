@@ -3,13 +3,16 @@ package systems.nope.worldseed.controller.person;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.WorldService;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/persons")
@@ -46,6 +49,12 @@ public class PersonController {
         return PersonDto.fromPerson(person.get());
     }
 
+    @GetMapping
+    List<PersonDto> getMultiple(
+            @RequestBody MultiIdRequest request
+    ) {
+        return request.getIds().stream().map(this::getById).collect(Collectors.toList());
+    }
 
     @PostMapping("/world/{worldId}")
     public PersonDto create(
