@@ -51,6 +51,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- swagger documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.2.32</version>
+        </dependency>
+
         <!-- Use MySQL Connector-J -->
         <dependency>
             <groupId>mysql</groupId>
