@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
-import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
@@ -14,6 +13,7 @@ import systems.nope.worldseed.service.WorldService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/persons")
@@ -24,6 +24,24 @@ public class PersonController {
     public PersonController(PersonService personService, WorldService worldService) {
         this.personService = personService;
         this.worldService = worldService;
+    }
+
+    @Operation(summary = "Get a set of Characters which belong to the given world.")
+    @GetMapping("/world/id/{worldId}")
+    List<PersonDto> getByWorld(
+            @PathVariable int worldId
+    ) {
+        return personService.findByWorld(worldService.get(worldId))
+                .stream().map(PersonDto::fromPerson)
+                .collect(Collectors.toList());
+    }
+
+    @Operation(summary = "Get a set of Characters identified by their ids.")
+    @GetMapping
+    List<PersonDto> getMultiple(
+            @RequestParam(name = "id") Integer[] ids
+    ) {
+        return Stream.of(ids).map(this::getById).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get a single Character by its id.")
@@ -37,14 +55,6 @@ public class PersonController {
             throw new NotFoundException(id);
 
         return PersonDto.fromPerson(person.get());
-    }
-
-    @Operation(summary = "Get a set of Characters identified by their ids.")
-    @GetMapping
-    List<PersonDto> getMultiple(
-            @RequestBody MultiIdRequest request
-    ) {
-        return request.getIds().stream().map(this::getById).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get a single Character by its unique API key.")

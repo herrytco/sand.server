@@ -1,22 +1,16 @@
 package systems.nope.worldseed.controller.stat;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatSheetDto;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
 import systems.nope.worldseed.dto.request.AddConstantStatRequest;
 import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
-import systems.nope.worldseed.dto.request.MultiIdRequest;
-import systems.nope.worldseed.dto.response.AddStatResponse;
-import systems.nope.worldseed.dto.response.StatSheetResponse;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.service.StatSheetService;
-import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.World;
@@ -25,6 +19,7 @@ import systems.nope.worldseed.service.WorldService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/stat-sheets")
@@ -40,9 +35,9 @@ public class StatSheetController {
     @Operation(summary = "Get a set of StatSheets identified by their ids.")
     @GetMapping
     public List<StatSheetDto> multiple(
-            @RequestBody MultiIdRequest request
+            @RequestParam(name = "id") Integer[] ids
     ) {
-        return request.getIds().stream().map(this::one).collect(Collectors.toList());
+        return Stream.of(ids).map(this::one).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get single StatSheet identified by its id.")

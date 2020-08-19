@@ -3,6 +3,7 @@ package systems.nope.worldseed.service;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.dto.UserWorldRoleDto;
 import systems.nope.worldseed.exception.AlreadyExistingException;
+import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.repository.UserWorldRoleRepository;
 import systems.nope.worldseed.repository.WorldRepository;
@@ -38,7 +39,7 @@ public class WorldService {
         return add(creator, name, description, findSeed());
     }
 
-    public UserWorldRoleDto add(User creator, String name, String description, String seed)  {
+    public UserWorldRoleDto add(User creator, String name, String description, String seed) {
         Optional<World> reference = worldRepository.findByName(name);
 
         if (reference.isPresent())
@@ -96,15 +97,23 @@ public class WorldService {
         return Optional.empty();
     }
 
-    public World get(int id) {
-        World world = worldRepository.getOne(id);
+    public World get(int id, boolean enrich) {
+        Optional<World> optionalWorld = find(id);
 
-        world.setArticles(articleService.getArticleRepository().findAllByWorld(world));
+        if (optionalWorld.isEmpty())
+            throw new NotFoundException(id);
 
-        for (Person p : world.getPersons())
-            personService.enrichPersonStats(p);
+        World world = optionalWorld.get();
+
+        if (enrich)
+            for (Person p : world.getPersons())
+                personService.enrichPersonStats(p);
 
         return world;
+    }
+
+    public World get(int id) {
+        return get(id, true);
     }
 
     /**

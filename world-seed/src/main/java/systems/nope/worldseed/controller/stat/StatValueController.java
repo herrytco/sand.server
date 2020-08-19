@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
-import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
@@ -13,6 +12,7 @@ import systems.nope.worldseed.exception.NotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/stat-values")
@@ -27,9 +27,9 @@ public class StatValueController {
     @Operation(summary = "Get a set of StatValues identified by their ids.")
     @GetMapping
     public List<StatValueDto> multiple(
-            @RequestBody MultiIdRequest request
+            @RequestParam(name = "id") Integer[] ids
     ) {
-        return request.getIds().stream().map(this::one).collect(Collectors.toList());
+        return Stream.of(ids).map(this::one).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get one StatValue identified by its id.")
