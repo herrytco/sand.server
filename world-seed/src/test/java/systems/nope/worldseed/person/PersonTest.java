@@ -8,12 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.repository.PersonRepository;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
-import systems.nope.worldseed.person.requests.CreatePersonRequest;
-import systems.nope.worldseed.user.UserConstants;
-import systems.nope.worldseed.world.World;
-import systems.nope.worldseed.world.WorldConstants;
+import systems.nope.worldseed.model.World;
 
 import java.util.Optional;
 
@@ -51,11 +51,14 @@ public class PersonTest {
         testPerson.ifPresent(person -> personRepository.delete(person));
     }
 
-    private void createPerson(World world, String token, String name) throws Exception {
-        CreatePersonRequest createPersonRequest = new CreatePersonRequest(name);
+    private void createPerson() throws Exception {
+        World testWorld = worldTestUtil.ensureTestWorldExists();
+        String token = userTestUtil.authenticateTestUser();
+
+        AddNamedResourceRequest createPersonRequest = new AddNamedResourceRequest(PersonConstants.personName);
 
         mockMvc.perform(
-                post(String.format("%s/world/%d", PersonConstants.endpoint, world.getId()))
+                post(String.format("%s/world/%d", PersonConstants.endpoint, testWorld.getId()))
                         .header("Authorization", String.format("Bearer %s", token))
                         .content(builder.build().writeValueAsString(createPersonRequest))
                         .accept(MediaType.APPLICATION_JSON)
@@ -66,10 +69,7 @@ public class PersonTest {
 
     @Test
     public void createPersonTest() throws Exception {
-        World testWorld = worldTestUtil.ensureTestWorldExists();
-        String token = userTestUtil.authenticateTestUser();
-
-        createPerson(testWorld, token, PersonConstants.personName);
+        createPerson();
     }
 
     @Test
@@ -77,10 +77,9 @@ public class PersonTest {
         World testWorld = worldTestUtil.ensureTestWorldExists();
         String token = userTestUtil.authenticateTestUser();
 
-        createPerson(testWorld, token, PersonConstants.personName);
+        createPerson();
 
         Optional<Person> personOptional = personRepository.findByWorldAndName(testWorld, PersonConstants.personName);
-
         assert personOptional.isPresent();
 
         Person person = personOptional.get();
@@ -88,32 +87,6 @@ public class PersonTest {
         mockMvc.perform(
                 get(String.format("%s/api/%s", PersonConstants.endpoint, person.getApiKey()))
                         .header("Authorization", String.format("Bearer %s", token))
-        ).andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    //    @Test
-    public void createCustomPerson() throws Exception {
-        Optional<World> testWorld = worldTestUtil.getWorldService().getWorldRepository().findByName(WorldConstants.konstoWorldName);
-        Optional<String> token = userTestUtil.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
-
-        if (!testWorld.isPresent() || !token.isPresent())
-            throw new Exception("Failed");
-
-        createPerson(testWorld.get(), token.get(), "Yuki Li ");
-    }
-
-//        @Test
-    public void getCustomPerson() throws Exception {
-        String apiKey = "ozedawpqwxcksniuhlswtbfruonxfofexxnwbqlfjoihdwptutrorwlmunbrsibxvxfjdenkormbydautimannwinvoekfghpygohmpvmhwbkrujjvjwgoqmdqgndwoxhroydtpclreexzlcfvsbcnjgboddoolhjrcuilruwrcxsplkuzlbpfcrahfefjhfckdleytofqkfgfxwmiquycmrncubztxyzdvxbyrahqoffhigiuilrqwgpbidzwln";
-        Optional<String> token = userTestUtil.authenticateUser(UserConstants.herryName, UserConstants.herryPw);
-
-        if (!token.isPresent())
-            throw new Exception("Failed");
-
-        mockMvc.perform(
-                get(String.format("%s/api/%s", PersonConstants.endpoint, apiKey))
-                        .header("Authorization", String.format("Bearer %s", token.get()))
         ).andDo(print())
                 .andExpect(status().isOk());
     }

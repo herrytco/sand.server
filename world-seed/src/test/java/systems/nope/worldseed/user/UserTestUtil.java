@@ -7,13 +7,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import systems.nope.worldseed.repository.UserRepository;
 import systems.nope.worldseed.token.TokenConstants;
-import systems.nope.worldseed.user.User;
-import systems.nope.worldseed.user.UserConstants;
-import systems.nope.worldseed.user.UserRepository;
-import systems.nope.worldseed.user.requests.RegistrationRequest;
-import systems.nope.worldseed.user.requests.TokenRequest;
-import systems.nope.worldseed.user.responses.TokenResponse;
+import systems.nope.worldseed.model.User;
+import systems.nope.worldseed.dto.request.RegistrationRequest;
+import systems.nope.worldseed.dto.request.TokenRequest;
+import systems.nope.worldseed.dto.response.TokenResponse;
 
 import java.util.Optional;
 

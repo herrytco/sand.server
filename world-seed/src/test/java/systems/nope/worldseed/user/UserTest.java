@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import systems.nope.worldseed.model.User;
+import systems.nope.worldseed.repository.UserRepository;
 
 import java.util.Optional;
 

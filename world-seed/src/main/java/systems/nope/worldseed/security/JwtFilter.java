@@ -3,7 +3,7 @@ package systems.nope.worldseed.security;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import systems.nope.worldseed.user.TokenService;
+import systems.nope.worldseed.service.TokenService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

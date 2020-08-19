@@ -5,15 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import systems.nope.worldseed.role.Role;
-import systems.nope.worldseed.role.RoleService;
-import systems.nope.worldseed.role.RoleType;
+import systems.nope.worldseed.model.Role;
+import systems.nope.worldseed.service.RoleService;
+import systems.nope.worldseed.model.RoleType;
 import systems.nope.worldseed.user.UserTestUtil;
-import systems.nope.worldseed.user.User;
-import systems.nope.worldseed.user.UserService;
-import systems.nope.worldseed.world.UserWorldRole;
-import systems.nope.worldseed.world.World;
-import systems.nope.worldseed.world.WorldService;
+import systems.nope.worldseed.model.User;
+import systems.nope.worldseed.service.UserService;
+import systems.nope.worldseed.model.UserWorldRole;
+import systems.nope.worldseed.model.World;
+import systems.nope.worldseed.service.WorldService;
 
 import java.util.Optional;
 

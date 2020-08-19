@@ -2,9 +2,9 @@ package systems.nope.worldseed.stat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.stat.sheet.StatSheet;
-import systems.nope.worldseed.stat.sheet.StatSheetService;
-import systems.nope.worldseed.world.World;
+import systems.nope.worldseed.model.stat.StatSheet;
+import systems.nope.worldseed.service.StatSheetService;
+import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.world.WorldTestUtil;
 
 import java.util.Optional;

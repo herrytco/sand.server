@@ -2,8 +2,13 @@ package systems.nope.worldseed.stat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.stat.sheet.*;
-import systems.nope.worldseed.world.World;
+import systems.nope.worldseed.model.stat.StatSheet;
+import systems.nope.worldseed.model.stat.value.StatValueConstant;
+import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
+import systems.nope.worldseed.repository.stat.StatValueConstantRepository;
+import systems.nope.worldseed.repository.stat.StatValueSynthesizedRepository;
+import systems.nope.worldseed.service.StatSheetService;
+import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.world.WorldTestUtil;
 
 import java.util.Optional;

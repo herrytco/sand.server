@@ -10,10 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.TestConstants;
-import systems.nope.worldseed.stat.requests.AddConstantStatRequest;
-import systems.nope.worldseed.stat.requests.AddSynthesizedStatRequest;
-import systems.nope.worldseed.stat.sheet.StatValueConstantRepository;
-import systems.nope.worldseed.stat.sheet.StatValueSynthesizedRepository;
+import systems.nope.worldseed.dto.request.AddConstantStatRequest;
+import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
+import systems.nope.worldseed.repository.stat.StatValueConstantRepository;
+import systems.nope.worldseed.repository.stat.StatValueSynthesizedRepository;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 

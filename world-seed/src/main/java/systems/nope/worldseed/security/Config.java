@@ -11,12 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import systems.nope.worldseed.user.TokenService;
+import systems.nope.worldseed.service.TokenService;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 @Component
 @EnableWebSecurity
