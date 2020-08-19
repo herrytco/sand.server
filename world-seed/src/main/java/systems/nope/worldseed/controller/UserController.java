@@ -1,19 +1,22 @@
 package systems.nope.worldseed.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.dto.UserDto;
+import systems.nope.worldseed.dto.UserWorldRoleDto;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.repository.UserWorldRoleRepository;
 import systems.nope.worldseed.service.RoleService;
 import systems.nope.worldseed.service.UserService;
-import systems.nope.worldseed.dto.WorldOwnershipDto;
 import systems.nope.worldseed.dto.request.RegistrationRequest;
 import systems.nope.worldseed.service.WorldService;
 import systems.nope.worldseed.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -32,17 +35,29 @@ public class UserController {
         this.userWorldRoleRepository = userWorldRoleRepository;
     }
 
-    @RequestMapping("/id/{id}")
-    public User one(
+    @Operation(summary = "Add a new User to the system.")
+    @PostMapping
+    public void add(
+            @RequestBody RegistrationRequest request
+    ) {
+        logger.info(String.format("UserAddRequest %s", request));
+
+        userService.addUser(request.getName(), request.getEmail(), request.getPassword());
+    }
+
+    @Operation(summary = "Get a single User by its ID.")
+    @GetMapping("/id/{id}")
+    public UserDto one(
             @PathVariable int id
     ) {
         logger.info(String.format("UserController.one(id:%d)", id));
 
-        return userService.getUserRepository().getOne(id);
+        return UserDto.fromUser(userService.getUserRepository().getOne(id));
     }
 
+    @Operation(summary = "Get all Users for a World.")
     @GetMapping("/id/{id}/worlds")
-    public List<WorldOwnershipDto> worlds(@PathVariable int id) {
+    public List<UserWorldRoleDto> worlds(@PathVariable int id) {
         logger.info(String.format("UserController.worlds(id:%d)", id));
 
         Optional<User> optionalRequester = userService.findById(id);
@@ -52,9 +67,10 @@ public class UserController {
 
         User requester = optionalRequester.get();
 
-        return WorldOwnershipDto.fromUser(requester);
+        return requester.getWorldRoles().stream().map(UserWorldRoleDto::fromUserWorldRole).collect(Collectors.toList());
     }
 
+    @Operation(summary = "Add a User to a World with the Role 'Visitor'.")
     @PostMapping("/id/{id}/worlds/{worldId}")
     public void joinWorld(
             @PathVariable int id,
@@ -81,14 +97,5 @@ public class UserController {
 
         UserWorldRole userWorldRole = new UserWorldRole(requester, worldToJoin, visitor);
         userWorldRoleRepository.save(userWorldRole);
-    }
-
-    @PostMapping
-    public void add(
-            @RequestBody RegistrationRequest request
-    ) {
-        logger.info(String.format("UserAddRequest %s", request));
-
-        userService.addUser(request.getName(), request.getEmail(), request.getPassword());
     }
 }

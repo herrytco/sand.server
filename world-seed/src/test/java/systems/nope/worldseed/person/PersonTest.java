@@ -13,15 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
-import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.repository.PersonRepository;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 import systems.nope.worldseed.model.World;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -105,19 +102,9 @@ public class PersonTest {
         PersonDto p2 = createPerson(PersonConstants.personName2);
         PersonDto p3 = createPerson(PersonConstants.personName3);
 
-        List<Integer> ids = new LinkedList<Integer>();
-        ids.add(p.getId());
-        ids.add(p2.getId());
-        ids.add(p3.getId());
-
-        MultiIdRequest request = new MultiIdRequest(ids);
-
         MvcResult result = mockMvc.perform(
-                get(PersonConstants.endpoint)
+                get(String.format("%s?id=%d&id=%d&id=%d", PersonConstants.endpoint, p.getId(), p2.getId(), p3.getId()))
                         .header("Authorization", String.format("Bearer %s", token))
-                        .content(builder.build().writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();

@@ -36,32 +36,6 @@ public class PersonService {
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
     }
 
-    public String createRandomString(int length) {
-        final int leftLimit = 97; // letter 'a'
-        final int rightLimit = 122; // letter 'z'
-        Random random = new Random();
-        StringBuilder buffer = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            int randomLimitedInt = leftLimit + (int)
-                    (random.nextFloat() * (rightLimit - leftLimit + 1));
-            buffer.append((char) randomLimitedInt);
-        }
-        return buffer.toString();
-    }
-
-    private String findApiKey() {
-        String key = createRandomString(256);
-
-        Optional<Person> optionalPerson = personRepository.findByApiKey(key);
-
-        while (optionalPerson.isPresent()) {
-            key = createRandomString(256);
-            optionalPerson = personRepository.findByApiKey(key);
-        }
-
-        return key;
-    }
-
     public void addStatSheetToPerson(Person person, StatSheet sheet) {
         if (sheet.getParent() != null)
             addStatSheetToPerson(person, sheet.getParent());
@@ -101,6 +75,10 @@ public class PersonService {
         personRepository.save(person);
     }
 
+    public List<Person> findByWorld(World world) {
+        return personRepository.findByWorld(world);
+    }
+
     public Optional<Person> findByWorldAndName(World world, String name) {
         Optional<Person> optionalPerson = personRepository.findByWorldAndName(world, name);
 
@@ -126,7 +104,6 @@ public class PersonService {
 
         return Optional.of(person);
     }
-
 
     public Optional<Person> findById(Integer id) {
         Optional<Person> optionalPerson = personRepository.findById(id);
@@ -155,6 +132,32 @@ public class PersonService {
         personRepository.save(person);
 
         return person;
+    }
+
+    private String findApiKey() {
+        String key = createRandomString(256);
+
+        Optional<Person> optionalPerson = personRepository.findByApiKey(key);
+
+        while (optionalPerson.isPresent()) {
+            key = createRandomString(256);
+            optionalPerson = personRepository.findByApiKey(key);
+        }
+
+        return key;
+    }
+
+    public String createRandomString(int length) {
+        final int leftLimit = 97; // letter 'a'
+        final int rightLimit = 122; // letter 'z'
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
     }
 
     public PersonRepository getPersonRepository() {

@@ -1,17 +1,16 @@
 package systems.nope.worldseed.controller.stat;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatSheetDto;
+import systems.nope.worldseed.dto.StatValueDto;
+import systems.nope.worldseed.dto.StatValueSynthesizedDto;
 import systems.nope.worldseed.dto.request.AddConstantStatRequest;
 import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
-import systems.nope.worldseed.dto.request.MultiIdRequest;
-import systems.nope.worldseed.dto.response.AddStatResponse;
-import systems.nope.worldseed.dto.response.StatSheetResponse;
 import systems.nope.worldseed.model.stat.StatSheet;
+import systems.nope.worldseed.model.stat.value.StatValueConstant;
+import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.service.StatSheetService;
-import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.World;
@@ -20,6 +19,7 @@ import systems.nope.worldseed.service.WorldService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/stat-sheets")
@@ -32,13 +32,15 @@ public class StatSheetController {
         this.worldService = worldService;
     }
 
+    @Operation(summary = "Get a set of StatSheets identified by their ids.")
     @GetMapping
-    public List<StatSheetDto> all(
-            @RequestBody MultiIdRequest request
+    public List<StatSheetDto> multiple(
+            @RequestParam(name = "id") Integer[] ids
     ) {
-        return request.getIds().stream().map(this::one).collect(Collectors.toList());
+        return Stream.of(ids).map(this::one).collect(Collectors.toList());
     }
 
+    @Operation(summary = "Get single StatSheet identified by its id.")
     @GetMapping("/id/{id}")
     public StatSheetDto one(
             @PathVariable int id
@@ -51,102 +53,82 @@ public class StatSheetController {
         return StatSheetDto.fromStatSheet(optionalStatSheet.get());
     }
 
-
+    @Operation(summary = "Get single StatSheet identified by its name.")
     @GetMapping("/worlds/{worldId}")
-    public ResponseEntity<?> findByName(
+    public StatSheetDto findByName(
             @PathVariable int worldId,
             @RequestParam String name
     ) {
         Optional<World> optionalWorld = worldService.find(worldId);
 
         if (optionalWorld.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
+            throw new NotFoundException(worldId);
 
         World world = optionalWorld.get();
 
-        Optional<StatSheet> referenceSheet = statSheetService.getStatSheetRepository().findByWorldAndName(world, name);
+        Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findByWorldAndName(world, name);
 
-        if (referenceSheet.isPresent())
-            return ResponseEntity.ok(new StatSheetResponse(referenceSheet.get()));
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("Stat Sheet '%s' does not exist.", name));
+        if (optionalStatSheet.isEmpty())
+            throw new NotFoundException(name);
+
+        return StatSheetDto.fromStatSheet(optionalStatSheet.get());
     }
 
+    @Operation(summary = "Create a new synthesized StatValue for the StatSheet.")
     @PostMapping("/worlds/{worldId}/sheet/{sheetId}/synthesized-stat")
-    public ResponseEntity<?> addSynthesizedStatToSheet(
+    public StatValueSynthesizedDto addSynthesizedStatToSheet(
             @PathVariable int worldId,
             @PathVariable int sheetId,
             @RequestBody AddSynthesizedStatRequest request
     ) {
         Optional<World> optionalWorld = worldService.find(worldId);
-
         if (optionalWorld.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
-
+            throw new NotFoundException(worldId);
         World world = optionalWorld.get();
 
         Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findById(sheetId);
-
         if (optionalStatSheet.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("StatSheet with name '%s' already exists.", request.getName()));
-
+            throw new NotFoundException(sheetId);
         StatSheet sheet = optionalStatSheet.get();
 
-        try {
-            StatValue value = statSheetService.addSynthesizedStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getFormula());
-            return ResponseEntity.ok(new AddStatResponse(value));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Stat with name '%s' already exists.", request.getName()));
-        }
+        StatValueSynthesized value = statSheetService.addSynthesizedStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getFormula());
+        return StatValueSynthesizedDto.fromStatValueSynthesized(value);
     }
 
+    @Operation(summary = "Create a new constant StatValue for the StatSheet.")
     @PostMapping("/worlds/{worldId}/sheet/{sheetId}/constant-stat")
-    public ResponseEntity<?> addConstantStatToSheet(
+    public StatValueDto addConstantStatToSheet(
             @PathVariable int worldId,
             @PathVariable int sheetId,
             @RequestBody AddConstantStatRequest request
     ) {
         Optional<World> optionalWorld = worldService.find(worldId);
-
         if (optionalWorld.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
-
+            throw new NotFoundException(worldId);
         World world = optionalWorld.get();
 
         Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findById(sheetId);
-
         if (optionalStatSheet.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("StatSheet with name '%s' already exists.", request.getName()));
-
+            throw new NotFoundException(sheetId);
         StatSheet sheet = optionalStatSheet.get();
 
-        try {
-            StatValue value = statSheetService.addConstantStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getInitialValue());
-            return ResponseEntity.ok(new AddStatResponse(value));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("Stat with name '%s' already exists.", request.getName()));
-        }
+        StatValueConstant value = statSheetService.addConstantStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getInitialValue());
+        return StatValueDto.fromStatValueConstant(value);
     }
 
+    @Operation(summary = "Create a new Statsheet to the system.")
     @PostMapping("/worlds/{worldId}")
-    public ResponseEntity<?> add(
+    public StatSheetDto add(
             @PathVariable int worldId,
             @RequestBody AddNamedResourceRequest request
     ) {
-
         Optional<World> optionalWorld = worldService.find(worldId);
-
         if (optionalWorld.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("World with ID '%d' not found.", worldId));
-
+            throw new NotFoundException(worldId);
         World world = optionalWorld.get();
 
-        try {
-            StatSheet sheetNew = statSheetService.add(world, request.getName());
-            return ResponseEntity.ok(new StatSheetResponse((sheetNew)));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("StatSheet with name '%s' already exists.", request.getName()));
-        }
+        StatSheet sheetNew = statSheetService.add(world, request.getName());
+        return StatSheetDto.fromStatSheet(sheetNew);
     }
 }
 
