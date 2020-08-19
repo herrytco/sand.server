@@ -3,6 +3,7 @@ package systems.nope.worldseed.dto;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.value.StatValue;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,13 +29,15 @@ public class StatSheetDto {
     public static StatSheetDto fromStatSheet(StatSheet sheet) {
 
         Integer statSheetId = null;
-        if(sheet.getParent() != null)
+        if (sheet.getParent() != null)
             statSheetId = sheet.getParent().getId();
 
         return new StatSheetDto(
                 sheet.getId(),
                 sheet.getName(),
-                sheet.getStatValues().stream().map(StatValue::getId).collect(Collectors.toList()),
+                sheet.getStatValues() != null
+                        ? sheet.getStatValues().stream().map(StatValue::getId).collect(Collectors.toList())
+                        : new LinkedList<>(),
                 sheet.getWorld().getId(),
                 statSheetId
         );
