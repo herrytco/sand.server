@@ -2,8 +2,10 @@ package systems.nope.worldseed.world;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.model.World;
+import systems.nope.worldseed.service.WorldService;
 import systems.nope.worldseed.user.UserTestUtil;
-import systems.nope.worldseed.user.User;
+import systems.nope.worldseed.model.User;
 
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ public class WorldTestUtil {
     private World ensuredInstance;
 
     public World ensureTestWorldExists() {
-        return ensureWorldExists(WorldConstants.nonExistingWorldName, WorldConstants.worldDescription, WorldConstants.nonExistingWorldSeed);
+        return ensureWorldExists(WorldConstants.existingWorldName, WorldConstants.worldDescription, WorldConstants.existingWorldSeed);
     }
 
     public World ensureWorldExists(String name, String description, String seed) {

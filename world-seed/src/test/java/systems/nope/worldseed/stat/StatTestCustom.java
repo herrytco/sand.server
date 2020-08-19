@@ -1,7 +1,6 @@
 package systems.nope.worldseed.stat;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,13 +9,13 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
-import systems.nope.worldseed.person.requests.AddPersonStatsheetRequest;
-import systems.nope.worldseed.stat.requests.AddConstantStatRequest;
-import systems.nope.worldseed.stat.requests.AddSynthesizedStatRequest;
-import systems.nope.worldseed.stat.requests.UpdateConstantStatValueIntanceRequest;
-import systems.nope.worldseed.stat.sheet.StatSheetRepository;
-import systems.nope.worldseed.util.requests.AddNamedResourceRequest;
-import systems.nope.worldseed.world.World;
+import systems.nope.worldseed.dto.request.AddPersonStatsheetRequest;
+import systems.nope.worldseed.dto.request.AddConstantStatRequest;
+import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
+import systems.nope.worldseed.dto.request.UpdateConstantStatValueIntanceRequest;
+import systems.nope.worldseed.repository.stat.StatSheetRepository;
+import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.model.World;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;

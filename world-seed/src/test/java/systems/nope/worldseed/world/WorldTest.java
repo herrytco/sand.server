@@ -9,8 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import systems.nope.worldseed.model.World;
+import systems.nope.worldseed.repository.WorldRepository;
 import systems.nope.worldseed.user.UserTestUtil;
-import systems.nope.worldseed.world.requests.NewWorldRequest;
+import systems.nope.worldseed.dto.request.NewWorldRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

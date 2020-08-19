@@ -8,10 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.repository.PersonRepository;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
-import systems.nope.worldseed.person.requests.CreatePersonRequest;
-import systems.nope.worldseed.world.World;
+import systems.nope.worldseed.model.World;
 
 import java.util.Optional;
 
@@ -53,7 +55,7 @@ public class PersonTest {
         World testWorld = worldTestUtil.ensureTestWorldExists();
         String token = userTestUtil.authenticateTestUser();
 
-        CreatePersonRequest createPersonRequest = new CreatePersonRequest(PersonConstants.personName);
+        AddNamedResourceRequest createPersonRequest = new AddNamedResourceRequest(PersonConstants.personName);
 
         mockMvc.perform(
                 post(String.format("%s/world/%d", PersonConstants.endpoint, testWorld.getId()))

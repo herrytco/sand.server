@@ -11,6 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.TestConstants;
+import systems.nope.worldseed.dto.WorldDto;
+import systems.nope.worldseed.model.User;
+import systems.nope.worldseed.model.UserWorldRole;
+import systems.nope.worldseed.model.World;
+import systems.nope.worldseed.repository.UserWorldRoleRepository;
+import systems.nope.worldseed.service.WorldService;
 import systems.nope.worldseed.world.*;
 
 import java.util.List;
@@ -72,7 +78,7 @@ public class UserWorldTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        OutWorld worldResponse = objectMapper.readValue(result.getResponse().getContentAsString(), OutWorld.class);
+        WorldDto worldResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorldDto.class);
 
         assert worldResponse.getName().equals(WorldConstants.existingWorldName);
     }

@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import systems.nope.worldseed.util.exceptions.AlreadyExistingException;
-import systems.nope.worldseed.util.exceptions.NotFoundException;
+import systems.nope.worldseed.exception.AlreadyExistingException;
+import systems.nope.worldseed.exception.NotFoundException;
 
 @ControllerAdvice
 public class NotFoundAdvice {
