@@ -1,5 +1,6 @@
 package systems.nope.worldseed.controller.stat;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatValueInstanceDto;
 import systems.nope.worldseed.dto.request.MultiIdRequest;
@@ -22,6 +23,7 @@ public class StatValueInstanceController {
         this.statSheetService = statSheetService;
     }
 
+    @Operation(summary = "Get a set of StatValueInstances identified by their ids.")
     @GetMapping
     public List<StatValueInstanceDto> multiple(
             @RequestBody MultiIdRequest request
@@ -29,6 +31,7 @@ public class StatValueInstanceController {
         return request.getIds().stream().map(this::one).collect(Collectors.toList());
     }
 
+    @Operation(summary = "Get one StatValueInstance identified by its id.")
     @GetMapping("/id/{id}")
     public StatValueInstanceDto one(
             @PathVariable int id

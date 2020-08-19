@@ -3,6 +3,7 @@ package systems.nope.worldseed.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.StatValueInstance;
@@ -209,11 +210,11 @@ public class StatSheetService {
         return forest;
     }
 
-    public StatValue addSynthesizedStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, String formula) {
+    public StatValueSynthesized addSynthesizedStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, String formula) {
         Optional<StatValueSynthesized> referenceValue = statValueSynthesizedRepository.findByWorldAndNameAndSheet(world, name, sheet);
 
         if (referenceValue.isPresent())
-            throw new IllegalStateException(String.format("Duplicate Stat with name %s", name));
+            throw new AlreadyExistingException(name);
 
         StatValueSynthesized valueNew = new StatValueSynthesized(
                 sheet, name, nameShort, unit, world, formula
@@ -224,11 +225,11 @@ public class StatSheetService {
         return valueNew;
     }
 
-    public StatValue addConstantStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, Integer initialValue) {
+    public StatValueConstant addConstantStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, Integer initialValue) {
         Optional<StatValueConstant> referenceValue = statValueConstantRepository.findByWorldAndNameAndSheet(world, name, sheet);
 
         if (referenceValue.isPresent())
-            throw new IllegalStateException(String.format("Duplicate Stat with name %s", name));
+            throw new AlreadyExistingException();
 
         StatValueConstant valueNew = new StatValueConstant(
                 sheet, name, nameShort, unit, world, initialValue
@@ -243,7 +244,7 @@ public class StatSheetService {
         Optional<StatSheet> referenceStatSheet = statSheetRepository.findByWorldAndName(world, name);
 
         if (referenceStatSheet.isPresent())
-            throw new IllegalStateException(String.format("Duplicate Stat Sheet with name %s", name));
+            throw new AlreadyExistingException(name);
 
         StatSheet sheetNew = new StatSheet(name, world);
 

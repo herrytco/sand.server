@@ -1,11 +1,10 @@
 package systems.nope.worldseed.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.dto.UserWorldRoleDto;
 import systems.nope.worldseed.model.User;
-import systems.nope.worldseed.dto.WorldOwnershipDto;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.dto.WorldDto;
 import systems.nope.worldseed.model.World;
@@ -24,6 +23,7 @@ public class WorldController {
         this.worldService = worldService;
     }
 
+    @Operation(summary = "Get a single World by its id.")
     @GetMapping("/id/{id}")
     public WorldDto byId(
             @PathVariable int id
@@ -36,6 +36,7 @@ public class WorldController {
         return WorldDto.fromWorld(optionalWorld.get());
     }
 
+    @Operation(summary = "Get a single World by its unique seed.")
     @GetMapping("/seed/{seed}")
     public WorldDto bySeed(
             @PathVariable String seed
@@ -48,23 +49,14 @@ public class WorldController {
         return WorldDto.fromWorld(seededWorld.get());
     }
 
-
-
-
-
-
+    @Operation(summary = "Add a new world to the system.")
     @PostMapping
-    public ResponseEntity<?> add(
+    public UserWorldRoleDto add(
             @RequestBody NewWorldRequest request,
             Authentication authentication
     ) {
         User requester = (User) authentication.getPrincipal();
 
-        try {
-            WorldOwnershipDto result = worldService.add(requester, request.getName(), request.description);
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        return worldService.add(requester, request.getName(), request.description);
     }
 }

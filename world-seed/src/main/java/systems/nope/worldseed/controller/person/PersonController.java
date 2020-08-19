@@ -1,5 +1,6 @@
 package systems.nope.worldseed.controller.person;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
@@ -25,18 +26,7 @@ public class PersonController {
         this.worldService = worldService;
     }
 
-    @GetMapping("/api/{apiKey}")
-    public PersonDto getByApiKey(
-            @PathVariable String apiKey
-    ) {
-        Optional<Person> person = personService.findByApiKey(apiKey);
-
-        if (person.isEmpty())
-            throw new NotFoundException(apiKey);
-
-        return PersonDto.fromPerson(person.get());
-    }
-
+    @Operation(summary = "Get a single Character by its id.")
     @GetMapping("/id/{id}")
     public PersonDto getById(
             @PathVariable Integer id
@@ -49,6 +39,7 @@ public class PersonController {
         return PersonDto.fromPerson(person.get());
     }
 
+    @Operation(summary = "Get a set of Characters identified by their ids.")
     @GetMapping
     List<PersonDto> getMultiple(
             @RequestBody MultiIdRequest request
@@ -56,6 +47,20 @@ public class PersonController {
         return request.getIds().stream().map(this::getById).collect(Collectors.toList());
     }
 
+    @Operation(summary = "Get a single Character by its unique API key.")
+    @GetMapping("/api/{apiKey}")
+    public PersonDto getByApiKey(
+            @PathVariable String apiKey
+    ) {
+        Optional<Person> person = personService.findByApiKey(apiKey);
+
+        if (person.isEmpty())
+            throw new NotFoundException(apiKey);
+
+        return PersonDto.fromPerson(person.get());
+    }
+
+    @Operation(summary = "Create a new character in a given world.")
     @PostMapping("/world/{worldId}")
     public PersonDto create(
             @PathVariable int worldId,

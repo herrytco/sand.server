@@ -3,7 +3,7 @@ jwt:
 file:
   upload-dir: "data"
 server:
-  port: 8080
+  port: 80
 springdoc:
   api-docs:
     path: "/docs"

@@ -1,10 +1,11 @@
 package systems.nope.worldseed.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.exception.ImpossibleException;
+import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.service.TokenService;
 import systems.nope.worldseed.model.User;
 import systems.nope.worldseed.service.UserService;
@@ -22,8 +23,9 @@ public class TokenController {
     private final TokenService tokenService;
     private final UserService userService;
 
+    @Operation(summary = "Authenticate at the backend to get a JWT token used for authentication at other requests.")
     @PostMapping
-    public ResponseEntity<?> token(
+    public TokenResponse token(
             @RequestBody TokenRequest tokenRequest
     ) {
         try {
@@ -31,19 +33,17 @@ public class TokenController {
 
             if (requestingUser instanceof User) {
                 User user = (User) requestingUser;
-                return ResponseEntity.ok(
-                        new TokenResponse(
-                                user.getId(),
-                                tokenService.generateToken(user),
-                                user.getName(),
-                                user.getEmail()
-                        )
+                return new TokenResponse(
+                        user.getId(),
+                        tokenService.generateToken(user),
+                        user.getName(),
+                        user.getEmail()
                 );
             }
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username not found!");
-        }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new ImpossibleException();
+        } catch (UsernameNotFoundException e) {
+            throw new NotFoundException(tokenRequest.username);
+        }
     }
 }
