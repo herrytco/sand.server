@@ -1,17 +1,17 @@
 package systems.nope.worldseed.controller.stat;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
+import systems.nope.worldseed.dto.request.MultiIdRequest;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.exception.NotFoundException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/stat-values")
@@ -23,8 +23,15 @@ public class StatValueController {
         this.statSheetService = statSheetService;
     }
 
+    @GetMapping
+    public List<StatValueDto> multiple(
+            @RequestBody MultiIdRequest request
+    ) {
+        return request.getIds().stream().map(this::one).collect(Collectors.toList());
+    }
+
     @GetMapping("/id/{id}")
-    StatValueDto one(
+    public StatValueDto one(
             @PathVariable int id
     ) {
         Optional<StatValueConstant> statValueConstantOptional = statSheetService.findStatValueConstantById(id);
