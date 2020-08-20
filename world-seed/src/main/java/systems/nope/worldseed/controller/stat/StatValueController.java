@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
+import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.exception.NotFoundException;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +24,23 @@ public class StatValueController {
 
     public StatValueController(StatSheetService statSheetService) {
         this.statSheetService = statSheetService;
+    }
+
+    @Operation(summary = "Get a set of StatValues all belonging to the same StatSheet.")
+    @GetMapping("/stat-sheet/id/{statSheetId}")
+    public List<StatValueDto> forStatSheet(
+            @PathVariable int statSheetId
+    ) {
+        List<StatValueDto> values = new LinkedList<>();
+
+        for(StatValue value : statSheetService.get(statSheetId).getStatValues()) {
+            if (value instanceof StatValueConstant)
+                values.add(StatValueDto.fromStatValueConstant((StatValueConstant) value));
+            else if (value instanceof StatValueSynthesized)
+                values.add(StatValueSynthesizedDto.fromStatValueSynthesized((StatValueSynthesized) value));
+        }
+
+        return values;
     }
 
     @Operation(summary = "Get a set of StatValues identified by their ids.")

@@ -7,9 +7,11 @@ import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
 import systems.nope.worldseed.dto.request.AddConstantStatRequest;
 import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
+import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
+import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
@@ -25,11 +27,30 @@ import java.util.stream.Stream;
 @RequestMapping("/stat-sheets")
 public class StatSheetController {
     private final StatSheetService statSheetService;
+    private final PersonService personService;
     private final WorldService worldService;
 
-    public StatSheetController(StatSheetService statSheetService, WorldService worldService) {
+    public StatSheetController(StatSheetService statSheetService, PersonService personService, WorldService worldService) {
         this.statSheetService = statSheetService;
+        this.personService = personService;
         this.worldService = worldService;
+    }
+
+    @Operation(summary = "Get a set of StatSheets all belonging to the same person.")
+    @GetMapping("/person/id/{personId}")
+    public List<StatSheetDto> allForPerson(
+            @PathVariable int personId
+    ) {
+        return personService.get(personId).getStatSheets().stream().map(StatSheetDto::fromStatSheet).collect(Collectors.toList());
+    }
+
+    @Operation(summary = "Get a set of StatSheets all belonging to the same world.")
+    @GetMapping("/world/id/{worldId}")
+    public List<StatSheetDto> allForWorld(
+            @PathVariable int worldId
+    ) {
+        return statSheetService.findByWorld(worldService.get(worldId))
+                .stream().map(StatSheetDto::fromStatSheet).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get a set of StatSheets identified by their ids.")

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatValueInstanceDto;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
+import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.exception.NotFoundException;
 
@@ -17,10 +18,20 @@ import java.util.stream.Stream;
 @RequestMapping("/stat-value-instances")
 public class StatValueInstanceController {
 
+    private final PersonService personService;
     private final StatSheetService statSheetService;
 
-    public StatValueInstanceController(StatSheetService statSheetService) {
+    public StatValueInstanceController(PersonService personService, StatSheetService statSheetService) {
+        this.personService = personService;
         this.statSheetService = statSheetService;
+    }
+
+    @Operation(summary = "Get a set of StatValueInstances all belonging to the same person.")
+    @GetMapping("/person/id/{personId}")
+    public List<StatValueInstanceDto> forPerson(
+            @PathVariable int personId
+    ) {
+        return personService.get(personId).getStatValues().stream().map(StatValueInstanceDto::fromInstance).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get a set of StatValueInstances identified by their ids.")

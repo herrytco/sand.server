@@ -3,6 +3,7 @@ package systems.nope.worldseed.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.StatValueInstance;
@@ -34,6 +35,28 @@ public class PersonService {
         this.statSheetService = statSheetService;
         this.statValueInstanceConstantRepository = statValueInstanceConstantRepository;
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
+    }
+
+    public Optional<Person> find(int id) {
+        return personRepository.findById(id);
+    }
+
+    public Person get(int id) {
+        return get(id, true);
+    }
+
+    public Person get(int id, boolean enrich) {
+        Optional<Person> optionalPerson = find(id);
+
+        if (optionalPerson.isEmpty())
+            throw new NotFoundException(id);
+
+        Person person = optionalPerson.get();
+
+        if(enrich)
+            enrichPersonStats(person);
+
+        return person;
     }
 
     public void addStatSheetToPerson(Person person, StatSheet sheet) {
