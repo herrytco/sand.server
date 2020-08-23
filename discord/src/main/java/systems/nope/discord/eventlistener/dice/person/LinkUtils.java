@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import okhttp3.Request;
 import okhttp3.Response;
-import systems.nope.discord.eventlistener.dice.BackendUtil;
+import systems.nope.discord.eventlistener.dice.backend.BackendUtil;
 import systems.nope.discord.eventlistener.dice.DiscordUtil;
 import systems.nope.discord.eventlistener.dice.ServerConstants;
 import systems.nope.discord.eventlistener.dice.file.LinkFileManager;
@@ -109,6 +109,12 @@ public class LinkUtils {
         return linkMemberToPersonIdentifiedByApiKey(member, key);
     }
 
+    private static void enhancePerson(Person person) throws IOException {
+        String sheets = BackendUtil.sendRequest(String.format("%s/stat-sheets/person/id/%d", ServerConstants.urlBackend, person.getId()));
+
+        System.out.println(sheets);
+    }
+
     /**
      * @param member - discord user
      * @param apiKey - 256 character ID of a World.Seed character
@@ -118,31 +124,29 @@ public class LinkUtils {
         String token = BackendUtil.getToken();
 
         if (token != null) {
-            Request request = new Request.Builder()
-                    .url(String.format("%s/persons/api/%s", ServerConstants.urlBackend, apiKey))
-                    .header("Authorization", String.format("Bearer %s", token))
-                    .build();
+            String response = BackendUtil.sendRequest(String.format("%s/persons/api/%s", ServerConstants.urlBackend, apiKey));
 
-            Response response = BackendUtil.httpClient.newCall(request).execute();
-            HashMap<String, Object> data;
+            System.out.println(response);
 
             ObjectMapper mapper = new ObjectMapper();
             try {
-                data = mapper.readValue(response.body().string(), HashMap.class);
+                HashMap<String, Object> data = mapper.readValue(response, HashMap.class);
 
-                Person linkedPerson = new Person((String) data.get("name"));
-                linkedPerson.setStats((List<Map<String, Object>>) data.get("statValues"));
+                Person linkedPerson = Person.fromJson(data);
 
-                if (linkedPerson.getName() != null) {
-                    playerChars.put(member, linkedPerson);
+                playerChars.put(member, linkedPerson);
 
-                    renameMemberToPerson(member, linkedPerson);
-                    storeLink(member, apiKey);
+                enhancePerson(linkedPerson);
 
-                    return linkedPerson;
-                }
+                renameMemberToPerson(member, linkedPerson);
+                storeLink(member, apiKey);
+
+                return linkedPerson;
             } catch (MismatchedInputException | JsonParseException e) {
-                System.out.println("No data for apiKey: " + apiKey.substring(0, 20)+"...");
+                if (apiKey != null)
+                    System.out.println("No data for apiKey: " + apiKey.substring(0, Math.min(apiKey.length(), 20)) + "...");
+                else
+                    System.out.println("No API key stored.");
                 unlinkMember(member);
                 return null;
             }

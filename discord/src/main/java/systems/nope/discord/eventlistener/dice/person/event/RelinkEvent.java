@@ -14,7 +14,7 @@ public class RelinkEvent extends DiceEvent {
         super(event);
 
         try {
-            linkedPerson = LinkUtils.relinkPerson(getAuthor());
+           linkedPerson = LinkUtils.relinkPerson(getAuthor());
         } catch (IOException e) {
             e.printStackTrace();
         }
