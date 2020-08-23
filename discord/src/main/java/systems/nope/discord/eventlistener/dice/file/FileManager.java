@@ -85,7 +85,7 @@ public abstract class FileManager {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(data);
 
-        System.out.println("content: " + json);
+//        System.out.println("content: " + json);
 
         File storage = resolve(storageFileName);
         Files.write(storage.toPath(), json.getBytes());
