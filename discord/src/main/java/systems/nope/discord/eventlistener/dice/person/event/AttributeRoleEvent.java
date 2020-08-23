@@ -5,15 +5,13 @@ import systems.nope.discord.eventlistener.dice.DiceResult;
 import systems.nope.discord.eventlistener.dice.DiceUtils;
 import systems.nope.discord.eventlistener.dice.ServerConstants;
 import systems.nope.discord.eventlistener.dice.event.DiceEvent;
-import systems.nope.discord.eventlistener.dice.person.LinkUtils;
-import systems.nope.discord.eventlistener.dice.person.Person;
-import systems.nope.discord.eventlistener.dice.person.Stat;
+import systems.nope.discord.eventlistener.dice.person.*;
 
 import java.util.Optional;
 
 public class AttributeRoleEvent extends DiceEvent {
 
-    private Stat statToRollOn;
+    private StatValue statToRollOn;
     private String message;
     private DiceResult result;
 
@@ -29,12 +27,19 @@ public class AttributeRoleEvent extends DiceEvent {
 
         Person person = linkedPerson.get();
 
-        for (Stat stat : person.getStats())
-            if (stat.getName().toLowerCase().equals(attribute.toLowerCase())
-                    || stat.getNameShort().toLowerCase().equals(attribute.toLowerCase())) {
-                statToRollOn = stat;
-                break;
+        for(StatSheet sheet : person.getStatSheets()) {
+            for(StatValue value : sheet.getValues()) {
+
+                if(value.getName().toLowerCase().equals(attribute.toLowerCase())
+                || value.getNameShort().toLowerCase().equals(attribute.toLowerCase())) {
+                    statToRollOn = value;
+                    break;
+                }
             }
+
+            if(statToRollOn != null)
+                break;
+        }
 
         if (statToRollOn == null) {
             message = String.format("The stat '%s' does not exist, check your stats again please.", attribute);
@@ -43,8 +48,8 @@ public class AttributeRoleEvent extends DiceEvent {
 
         result = DiceUtils.rollOnce(getAuthor());
 
-        message = String.format("%s rolled with %s on %s(%s)\n",
-                getAuthorName(), person.getName(), statToRollOn.getNameShort(), statToRollOn.getName())
+        message = String.format("%s rolled on %s(%s)\n",
+                person.getName(), statToRollOn.getNameShort(), statToRollOn.getName())
                 + DiceUtils.getCalculation(result) + "\n"
                 + String.format(
                 "%s%d + %s%d = %d",
@@ -64,7 +69,7 @@ public class AttributeRoleEvent extends DiceEvent {
         this.message = message;
     }
 
-    public Stat getStatToRollOn() {
+    public StatValue getStatToRollOn() {
         return statToRollOn;
     }
 

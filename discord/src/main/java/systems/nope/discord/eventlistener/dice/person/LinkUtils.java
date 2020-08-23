@@ -13,10 +13,7 @@ import systems.nope.discord.eventlistener.dice.ServerConstants;
 import systems.nope.discord.eventlistener.dice.file.LinkFileManager;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class LinkUtils {
     private static final Map<Member, Person> playerChars = new HashMap<>();
@@ -109,10 +106,82 @@ public class LinkUtils {
         return linkMemberToPersonIdentifiedByApiKey(member, key);
     }
 
+    /**
+     * query statsheet and -value information from the backend and store it
+     * in the Person given
+     *
+     * @param person - target person
+     * @throws IOException - problem during HTTP communication
+     */
     private static void enhancePerson(Person person) throws IOException {
-        String sheets = BackendUtil.sendRequest(String.format("%s/stat-sheets/person/id/%d", ServerConstants.urlBackend, person.getId()));
 
-        System.out.println(sheets);
+        // fetch stat sheets
+        String sheets = BackendUtil.sendRequest(String.format("%s/stat-sheets/person/id/%d", ServerConstants.urlBackend, person.getId()));
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<StatSheet> sheetList = new LinkedList<>();
+
+        try {
+            List<Map<String, Object>> data = mapper.readValue(sheets, List.class);
+
+            for (Map<String, Object> row : data)
+                sheetList.add(StatSheet.fromJson(row));
+
+            person.setStatSheets(sheetList);
+        } catch (MismatchedInputException | JsonParseException e) {
+            System.out.println("Unable to decode Stat-Sheet response: " + sheets);
+        }
+
+        // fetch stat values for each sheet
+        for (StatSheet sheet : person.getStatSheets()) {
+            List<StatValue> valueList = new LinkedList<>();
+
+            String values = BackendUtil.sendRequest(String.format("%s/stat-values/stat-sheet/id/%d", ServerConstants.urlBackend, sheet.getId()));
+
+            try {
+                List<Map<String, Object>> data = mapper.readValue(values, List.class);
+
+                for (Map<String, Object> row : data)
+                    valueList.add(StatValue.fromJson(row));
+
+                sheet.setValues(valueList);
+            } catch (MismatchedInputException | JsonParseException e) {
+                System.out.println("Unable to decode Stat-Sheet response: " + sheets);
+            }
+        }
+
+        // fetch stat value INSTANCES for each sheet
+        String statValueInstances = BackendUtil.sendRequest(String.format("%s/stat-value-instances/person/id/%d", ServerConstants.urlBackend, person.getId()));
+        try {
+            List<Map<String, Object>> data = mapper.readValue(statValueInstances, List.class);
+
+            for (Map<String, Object> row : data) {
+
+                Integer statValueId = (Integer) row.get("statValue");
+
+                for (StatSheet sheet : person.getStatSheets()) {
+
+                    boolean found = false;
+
+                    for (StatValue value : sheet.getValues()) {
+                        if (value.getId() == statValueId) {
+                            value.setValue((Integer) row.get("value"));
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        break;
+                }
+            }
+        } catch (MismatchedInputException | JsonParseException e) {
+            System.out.println("Unable to decode Stat-Sheet response: " + sheets);
+        }
+
+
+        System.out.println("done");
+
     }
 
     /**
