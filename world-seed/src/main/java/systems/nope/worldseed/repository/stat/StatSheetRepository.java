@@ -6,11 +6,14 @@ import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 public interface StatSheetRepository extends JpaRepository<StatSheet, Integer> {
 
     Optional<StatSheet> findByWorldAndName(World world, String name);
+
+    List<StatSheet> findByWorld(World world);
 
     @Transactional
     @Modifying

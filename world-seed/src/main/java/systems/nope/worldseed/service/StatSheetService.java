@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.AlreadyExistingException;
+import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.StatValueInstance;
@@ -40,8 +41,19 @@ public class StatSheetService {
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
     }
 
+    public List<StatSheet> findByWorld(World world) { return statSheetRepository.findByWorld(world); }
+
     public Optional<StatSheet> findById(int id) {
         return statSheetRepository.findById(id);
+    }
+
+    public StatSheet get(int id) {
+        Optional<StatSheet> optionalStatSheet = findById(id);
+
+        if(optionalStatSheet.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatSheet.get();
     }
 
     public Optional<StatValueConstant> findStatValueConstantById(int id) {

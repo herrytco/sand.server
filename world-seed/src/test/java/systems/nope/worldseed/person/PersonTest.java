@@ -133,4 +133,17 @@ public class PersonTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void getByCustomApiTest() throws Exception {
+        String token = userTestUtil.authenticateTestUser();
+
+        String apiKey = "ozedawpqwxcksniuhlswtbfruonxfofexxnwbqlfjoihdwptutrorwlmunbrsibxvxfjdenkormbydautimannwinvoekfghpygohmpvmhwbkrujjvjwgoqmdqgndwoxhroydtpclreexzlcfvsbcnjgboddoolhjrcuilruwrcxsplkuzlbpfcrahfefjhfckdleytofqkfgfxwmiquycmrncubztxyzdvxbyrahqoffhigiuilrqwgpbidzwln";
+
+        mockMvc.perform(
+                get(String.format("%s/api/%s", PersonConstants.endpoint, apiKey))
+                        .header("Authorization", String.format("Bearer %s", token))
+        ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
 }
