@@ -2,7 +2,13 @@ version: '3'
 services:
   seed:
     build: ./world-seed
+    container_name: seed
     ports:
     - "8085:80"
+    expose:
+    - "80"
   discord:
     build: ./discord
+    container_name: discord
+    volumes:
+    - ~/sand.discord.data:/data
