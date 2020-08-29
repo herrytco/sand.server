@@ -11,6 +11,7 @@ import javax.security.auth.login.LoginException;
 public class DiscordApplication {
 
     public static void main(String[] args) {
+	System.out.println("Starting up the bot my nigga!");
         try {
             JDA jda = new JDABuilder(DiscordConstants.token)
                     .addEventListeners(new DiceHandler())
