@@ -17,6 +17,9 @@ public class BackendUtil {
             = MediaType.parse("application/json; charset=utf-8");
 
     public static String sendRequest(String url) throws IOException {
+
+        System.out.println("Sending request to: "+url);
+
         String token = BackendUtil.getToken();
 
         Request request = new Request.Builder()
