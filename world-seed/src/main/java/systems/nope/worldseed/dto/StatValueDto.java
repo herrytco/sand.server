@@ -1,8 +1,6 @@
 package systems.nope.worldseed.dto;
 
-import systems.nope.worldseed.model.stat.value.StatValueConstant;
-
-public class StatValueDto {
+public abstract class StatValueDto {
     private final int id;
 
     private final String name;
@@ -25,18 +23,6 @@ public class StatValueDto {
         this.unit = unit;
         this.world = world;
         this.type = type;
-    }
-
-    public static StatValueDto fromStatValueConstant(StatValueConstant statValueConstant) {
-        return new StatValueDto(
-                statValueConstant.getId(),
-                statValueConstant.getName(),
-                statValueConstant.getNameShort(),
-                statValueConstant.getSheet().getId(),
-                statValueConstant.getUnit(),
-                statValueConstant.getWorld().getId(),
-                statValueConstant.getType()
-        );
     }
 
     public int getId() {
