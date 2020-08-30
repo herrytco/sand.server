@@ -2,6 +2,7 @@ package systems.nope.worldseed.controller.stat;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.dto.StatValueConstantDto;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
 import systems.nope.worldseed.model.stat.value.StatValue;
@@ -35,7 +36,7 @@ public class StatValueController {
 
         for(StatValue value : statSheetService.get(statSheetId).getStatValues()) {
             if (value instanceof StatValueConstant)
-                values.add(StatValueDto.fromStatValueConstant((StatValueConstant) value));
+                values.add(StatValueConstantDto.fromStatValueConstant((StatValueConstant) value));
             else if (value instanceof StatValueSynthesized)
                 values.add(StatValueSynthesizedDto.fromStatValueSynthesized((StatValueSynthesized) value));
         }
@@ -59,7 +60,7 @@ public class StatValueController {
         Optional<StatValueConstant> statValueConstantOptional = statSheetService.findStatValueConstantById(id);
 
         if (statValueConstantOptional.isPresent())
-            return StatValueDto.fromStatValueConstant(statValueConstantOptional.get());
+            return StatValueConstantDto.fromStatValueConstant(statValueConstantOptional.get());
 
         Optional<StatValueSynthesized> optionalStatValueSynthesized = statSheetService.findStatValueSynthesizedById(id);
 

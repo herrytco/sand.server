@@ -3,6 +3,7 @@ package systems.nope.worldseed.controller.stat;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatSheetDto;
+import systems.nope.worldseed.dto.StatValueConstantDto;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
 import systems.nope.worldseed.dto.request.AddConstantStatRequest;
@@ -133,7 +134,7 @@ public class StatSheetController {
         StatSheet sheet = optionalStatSheet.get();
 
         StatValueConstant value = statSheetService.addConstantStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getInitialValue());
-        return StatValueDto.fromStatValueConstant(value);
+        return StatValueConstantDto.fromStatValueConstant(value);
     }
 
     @Operation(summary = "Create a new Statsheet to the system.")
