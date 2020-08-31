@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.StatValueConstantDto;
 import systems.nope.worldseed.dto.StatValueDto;
 import systems.nope.worldseed.dto.StatValueSynthesizedDto;
+import systems.nope.worldseed.dto.request.UpdateStatFormulaRequest;
+import systems.nope.worldseed.dto.request.UpdateStatInitialValueRequest;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
@@ -34,7 +36,7 @@ public class StatValueController {
     ) {
         List<StatValueDto> values = new LinkedList<>();
 
-        for(StatValue value : statSheetService.get(statSheetId).getStatValues()) {
+        for (StatValue value : statSheetService.get(statSheetId).getStatValues()) {
             if (value instanceof StatValueConstant)
                 values.add(StatValueConstantDto.fromStatValueConstant((StatValueConstant) value));
             else if (value instanceof StatValueSynthesized)
@@ -42,6 +44,22 @@ public class StatValueController {
         }
 
         return values;
+    }
+
+    @PutMapping("/id/{statValueId}/initial-value")
+    public void updateConstantStatValue(
+            @PathVariable int statValueId,
+            @RequestBody UpdateStatInitialValueRequest request
+    ) {
+        statSheetService.updateStatValueContant(statValueId, request.getInitialValue());
+    }
+
+    @PutMapping("/id/{statValueId}/formula")
+    public void updateSynthesizedStatValue(
+            @PathVariable int statValueId,
+            @RequestBody UpdateStatFormulaRequest request
+    ) {
+        statSheetService.updateStatValueSynthesized(statValueId, request.getFormula());
     }
 
     @Operation(summary = "Get a set of StatValues identified by their ids.")

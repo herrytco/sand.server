@@ -10,7 +10,6 @@ import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
-import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.*;
@@ -128,6 +127,44 @@ public class StatSheetService {
             instanceSynthesized.setValue(-1);
             logger.error(String.format("Internal Error while parsing formula: '%s'", formula));
         }
+    }
+
+    public void updateStatValueContant(Integer id, Integer initialValueNew) {
+        StatValueConstant statValueToUpdate = getStatValueConstant(id);
+        statValueToUpdate.setInitalValue(initialValueNew);
+        statValueConstantRepository.save(statValueToUpdate);
+    }
+
+    public StatValueConstant getStatValueConstant(int id) {
+        Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
+
+        if(optionalStatValueConstant.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatValueConstant.get();
+    }
+
+    public Optional<StatValueConstant> findStatValueConstant(int id) {
+        return statValueConstantRepository.findById(id);
+    }
+
+    public void updateStatValueSynthesized(Integer id, String formulaNew) {
+        StatValueSynthesized statValueSynthesized = getStatValueSynthesized(id);
+        statValueSynthesized.setFormula(formulaNew);
+        statValueSynthesizedRepository.save(statValueSynthesized);
+    }
+
+    public StatValueSynthesized getStatValueSynthesized(int id) {
+        Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
+
+        if(optionalStatValueSynthesized.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatValueSynthesized.get();
+    }
+
+    public Optional<StatValueSynthesized> findStatValueSynthesized(int id) {
+        return statValueSynthesizedRepository.findById(id);
     }
 
     public void enrichPersonStats(Person person) {
