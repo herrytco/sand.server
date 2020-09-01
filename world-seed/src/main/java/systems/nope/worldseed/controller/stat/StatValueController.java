@@ -46,6 +46,13 @@ public class StatValueController {
         return values;
     }
 
+    @DeleteMapping("/id/{statValueId}")
+    public void deleteStatValue(
+            @PathVariable int statValueId
+    ) {
+        statSheetService.deleteStatValue(statValueId);
+    }
+
     @PutMapping("/id/{statValueId}/initial-value")
     public void updateConstantStatValue(
             @PathVariable int statValueId,

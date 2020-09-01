@@ -10,6 +10,7 @@ import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
+import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.*;
@@ -127,6 +128,24 @@ public class StatSheetService {
             instanceSynthesized.setValue(-1);
             logger.error(String.format("Internal Error while parsing formula: '%s'", formula));
         }
+    }
+
+    public void deleteStatValue(Integer id) {
+        Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
+
+        if(optionalStatValueConstant.isPresent()) {
+            statValueConstantRepository.delete(optionalStatValueConstant.get());
+            return;
+        }
+
+        Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
+
+        if(optionalStatValueSynthesized.isPresent()) {
+            statValueSynthesizedRepository.delete(optionalStatValueSynthesized.get());
+            return;
+        }
+
+        throw new NotFoundException(id);
     }
 
     public void updateStatValueContant(Integer id, Integer initialValueNew) {
