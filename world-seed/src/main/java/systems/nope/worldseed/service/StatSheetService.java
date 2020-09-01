@@ -10,7 +10,6 @@ import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
-import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.*;
@@ -130,6 +129,44 @@ public class StatSheetService {
         }
     }
 
+    public void updateStatValueContant(Integer id, Integer initialValueNew) {
+        StatValueConstant statValueToUpdate = getStatValueConstant(id);
+        statValueToUpdate.setInitalValue(initialValueNew);
+        statValueConstantRepository.save(statValueToUpdate);
+    }
+
+    public StatValueConstant getStatValueConstant(int id) {
+        Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
+
+        if(optionalStatValueConstant.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatValueConstant.get();
+    }
+
+    public Optional<StatValueConstant> findStatValueConstant(int id) {
+        return statValueConstantRepository.findById(id);
+    }
+
+    public void updateStatValueSynthesized(Integer id, String formulaNew) {
+        StatValueSynthesized statValueSynthesized = getStatValueSynthesized(id);
+        statValueSynthesized.setFormula(formulaNew);
+        statValueSynthesizedRepository.save(statValueSynthesized);
+    }
+
+    public StatValueSynthesized getStatValueSynthesized(int id) {
+        Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
+
+        if(optionalStatValueSynthesized.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatValueSynthesized.get();
+    }
+
+    public Optional<StatValueSynthesized> findStatValueSynthesized(int id) {
+        return statValueSynthesizedRepository.findById(id);
+    }
+
     public void enrichPersonStats(Person person) {
         List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
 
@@ -234,6 +271,11 @@ public class StatSheetService {
 
         statValueSynthesizedRepository.save(valueNew);
 
+        for(Person assignedPerson : sheet.getAssignedPersons()) {
+            StatValueInstanceSynthesized instanceNew = StatValueInstanceSynthesized.fromStatValueAndPerson(valueNew, assignedPerson);
+            statValueInstanceSynthesizedRepository.save(instanceNew);
+        }
+
         return valueNew;
     }
 
@@ -248,6 +290,11 @@ public class StatSheetService {
         );
 
         statValueConstantRepository.save(valueNew);
+
+        for(Person assignedPerson : sheet.getAssignedPersons()) {
+            StatValueInstanceConstant instanceNew = StatValueInstanceConstant.fromStatValueAndPerson(valueNew, assignedPerson);
+            statValueInstanceConstantRepository.save(instanceNew);
+        }
 
         return valueNew;
     }
