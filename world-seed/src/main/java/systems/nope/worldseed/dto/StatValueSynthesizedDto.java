@@ -1,9 +1,11 @@
 package systems.nope.worldseed.dto;
 
+import lombok.Data;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 
+@Data
 public class StatValueSynthesizedDto extends StatValueDto {
-    private final String formula;
+    private String formula;
 
     public StatValueSynthesizedDto(int id, String name, String nameShort, int statSheet, String unit, int world, String type, String formula) {
         super(id, name, nameShort, statSheet, unit, world, type);
@@ -21,9 +23,5 @@ public class StatValueSynthesizedDto extends StatValueDto {
                 statValueSynthesized.getType(),
                 statValueSynthesized.getFormula()
         );
-    }
-
-    public String getFormula() {
-        return formula;
     }
 }

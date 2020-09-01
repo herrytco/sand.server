@@ -19,7 +19,7 @@ public class StatSheet {
     @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "sheet")
     private List<StatValue> statValues;
 
     @ManyToOne

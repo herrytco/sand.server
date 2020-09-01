@@ -1,6 +1,5 @@
 package systems.nope.worldseed.model.stat.value;
 
-import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
 
