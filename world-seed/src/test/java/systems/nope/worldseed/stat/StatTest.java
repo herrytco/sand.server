@@ -1,6 +1,5 @@
 package systems.nope.worldseed.stat;
 
-import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.TestConstants;
 import systems.nope.worldseed.dto.request.*;
 import systems.nope.worldseed.model.Person;
@@ -21,8 +21,8 @@ import systems.nope.worldseed.world.WorldTestUtil;
 
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,6 +104,134 @@ public class StatTest {
         ).andDo(print());
     }
 
+
+    @Test
+    public void addStatToStatSheetAndRetrieveAllStats() throws Exception {
+        statSheetService.getStatSheetRepository().delete(statSheetTestUtil.ensureTestStatSheet());
+        StatSheet testSheet = statSheetTestUtil.ensureTestStatSheet();
+        Person testPerson = personTestUtil.ensureTestPersonExists();
+
+        // assign sheet
+        mockMvc.perform(
+                post("/stat-sheet-mapping")
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddPersonStatsheetRequest(
+                                                testPerson.getId(),
+                                                testSheet.getId()
+                                        )
+                                )
+                        )
+        ).andDo(print());
+
+        // add new constant stat to sheet
+        mockMvc.perform(
+                post(String.format("/stat-sheets/worlds/%d/sheet/%d/constant-stat", worldTestUtil.getEnsuredInstance().getId(), testSheet.getId()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddConstantStatRequest(
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatUnit,
+                                                StatSheetConstants.testConstantStatDefault
+                                        )
+                                )
+                        )
+        ).andDo(print())
+                .andExpect(status().isOk());
+
+        // query the stats of the sheet
+        MvcResult response = mockMvc.perform(
+                get(String.format("/stat-values/stat-sheet/id/%d", testSheet.getId()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddConstantStatRequest(
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatUnit,
+                                                StatSheetConstants.testConstantStatDefault
+                                        )
+                                )
+                        )
+        ).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Object[] result = builder.build().readValue(response.getResponse().getContentAsString(), Object[].class);
+
+        assertEquals(1, result.length);
+    }
+
+    @Test
+    public void addSheetToPersonAndEnsureStatsAreThere() throws Exception {
+        statSheetService.getStatSheetRepository().delete(statSheetTestUtil.ensureTestStatSheet());
+        StatSheet testSheet = statSheetTestUtil.ensureTestStatSheet();
+        Person testPerson = personTestUtil.ensureTestPersonExists();
+
+        // assign sheet
+        mockMvc.perform(
+                post("/stat-sheet-mapping")
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddPersonStatsheetRequest(
+                                                testPerson.getId(),
+                                                testSheet.getId()
+                                        )
+                                )
+                        )
+        ).andDo(print());
+
+        // add new constant stat to sheet
+        mockMvc.perform(
+                post(String.format("/stat-sheets/worlds/%d/sheet/%d/constant-stat", worldTestUtil.getEnsuredInstance().getId(), testSheet.getId()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddConstantStatRequest(
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatUnit,
+                                                StatSheetConstants.testConstantStatDefault
+                                        )
+                                )
+                        )
+        ).andDo(print())
+                .andExpect(status().isOk());
+
+        // query the stats of the Person
+        mockMvc.perform(
+                get(String.format("/stat-value-instances/person/id/%d", testPerson.getId()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddConstantStatRequest(
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatName,
+                                                StatSheetConstants.testConstantStatUnit,
+                                                StatSheetConstants.testConstantStatDefault
+                                        )
+                                )
+                        )
+        ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
     @Test
     public void addSheetToPersonAndAddNewConstantStat() throws Exception {
         StatSheet testSheet = statSheetTestUtil.ensureTestStatSheet();
@@ -183,22 +311,7 @@ public class StatTest {
                                 )
                         )
         ).andDo(print())
-        .andExpect(status().isOk());
-    }
-
-    //    @Test
-    public void updatePersonConstantValue() throws Exception {
-        mockMvc.perform(
-                put(String.format("/stat-sheet-mapping/id/%d/constant-stat", 117))
-                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(
-                                builder.build().writeValueAsString(
-                                        new UpdateConstantStatValueIntanceRequest(100)
-                                )
-                        )
-        ).andDo(print());
+                .andExpect(status().isOk());
     }
 
 

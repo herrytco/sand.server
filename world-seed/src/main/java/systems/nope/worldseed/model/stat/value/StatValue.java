@@ -15,7 +15,7 @@ public class StatValue {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "stat_sheet_id_value")
+    @JoinColumn(name = "stat_sheet_id_value", referencedColumnName = "id")
     @JsonIgnore
     private StatSheet sheet;
 
