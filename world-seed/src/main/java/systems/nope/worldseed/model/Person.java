@@ -27,7 +27,7 @@ public class Person {
     @JoinTable(
             name = "person_stat_sheet",
             joinColumns = @JoinColumn(name = "person_id"),
-            inverseJoinColumns = @JoinColumn(name = "stat_sheet_id")
+            inverseJoinColumns = @JoinColumn(name = "stat_sheet_id_2")
     )
     private List<StatSheet> statSheets;
 

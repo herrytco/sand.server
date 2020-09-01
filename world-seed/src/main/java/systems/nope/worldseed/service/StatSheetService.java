@@ -271,6 +271,11 @@ public class StatSheetService {
 
         statValueSynthesizedRepository.save(valueNew);
 
+        for(Person assignedPerson : sheet.getAssignedPersons()) {
+            StatValueInstanceSynthesized instanceNew = StatValueInstanceSynthesized.fromStatValueAndPerson(valueNew, assignedPerson);
+            statValueInstanceSynthesizedRepository.save(instanceNew);
+        }
+
         return valueNew;
     }
 
@@ -285,6 +290,11 @@ public class StatSheetService {
         );
 
         statValueConstantRepository.save(valueNew);
+
+        for(Person assignedPerson : sheet.getAssignedPersons()) {
+            StatValueInstanceConstant instanceNew = StatValueInstanceConstant.fromStatValueAndPerson(valueNew, assignedPerson);
+            statValueInstanceConstantRepository.save(instanceNew);
+        }
 
         return valueNew;
     }
