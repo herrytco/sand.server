@@ -3,9 +3,11 @@ package systems.nope.worldseed.service;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.NotFoundException;
-import systems.nope.worldseed.model.Tileset;
+import systems.nope.worldseed.model.tile.Tile;
+import systems.nope.worldseed.model.tile.Tileset;
 import systems.nope.worldseed.model.World;
-import systems.nope.worldseed.repository.TilesetRepository;
+import systems.nope.worldseed.repository.tile.TileRepository;
+import systems.nope.worldseed.repository.tile.TilesetRepository;
 import systems.nope.worldseed.util.file.TileFileUtil;
 import systems.nope.worldseed.util.file.TileSetFileUtil;
 
@@ -19,11 +21,14 @@ import java.util.Optional;
 public class TilesetService {
 
     private final TilesetRepository tilesetRepository;
+    private final TileRepository tileRepository;
+
     private final TileFileUtil tileFileUtil;
     private final TileSetFileUtil tileSetFileUtil;
 
-    public TilesetService(TilesetRepository tilesetRepository, TileFileUtil tileFileUtil, TileSetFileUtil tileSetFileUtil) {
+    public TilesetService(TilesetRepository tilesetRepository, TileRepository tileRepository, TileFileUtil tileFileUtil, TileSetFileUtil tileSetFileUtil) {
         this.tilesetRepository = tilesetRepository;
+        this.tileRepository = tileRepository;
         this.tileFileUtil = tileFileUtil;
         this.tileSetFileUtil = tileSetFileUtil;
     }
@@ -33,19 +38,6 @@ public class TilesetService {
         tilesetRepository.delete(get(id));
         tileSetFileUtil.deleteFile(target.getWorld(), target.getFileName());
         tileFileUtil.deleteDirectory(target.getWorld(), String.valueOf(target.getId()));
-    }
-
-    private static boolean isTransparent(BufferedImage image, int x, int y) {
-        int pixel = image.getRGB(x, y);
-        return (pixel >> 24) == 0x00;
-    }
-
-    private static boolean containsContent(BufferedImage image) {
-        for (int i = 0; i < image.getHeight(); i++)
-            for (int j = 0; j < image.getWidth(); j++)
-                if (!isTransparent(image, j, i))
-                    return true;
-        return false;
     }
 
     public Tileset add(World world, String name, Integer tileWidth, Integer tileHeight, byte[] image) throws IOException {
@@ -79,6 +71,10 @@ public class TilesetService {
                     ImageIO.write(
                             tileImage
                             , "png", tileFileUtil.resolve(world, String.format("%d/%d.png", tilesetNew.getId(), i)));
+
+                    Tile tileNew = new Tile(i, tilesetNew);
+                    tileRepository.save(tileNew);
+
                     i++;
                 }
             }
@@ -102,5 +98,19 @@ public class TilesetService {
 
     public TilesetRepository getTilesetRepository() {
         return tilesetRepository;
+    }
+
+
+    private static boolean containsContent(BufferedImage image) {
+        for (int i = 0; i < image.getHeight(); i++)
+            for (int j = 0; j < image.getWidth(); j++)
+                if (!isTransparent(image, j, i))
+                    return true;
+        return false;
+    }
+
+    private static boolean isTransparent(BufferedImage image, int x, int y) {
+        int pixel = image.getRGB(x, y);
+        return (pixel >> 24) == 0x00;
     }
 }

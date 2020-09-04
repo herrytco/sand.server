@@ -1,4 +1,6 @@
-package systems.nope.worldseed.model;
+package systems.nope.worldseed.model.tile;
+
+import systems.nope.worldseed.model.World;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

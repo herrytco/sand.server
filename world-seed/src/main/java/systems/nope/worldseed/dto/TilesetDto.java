@@ -1,7 +1,7 @@
 package systems.nope.worldseed.dto;
 
 import lombok.Data;
-import systems.nope.worldseed.model.Tileset;
+import systems.nope.worldseed.model.tile.Tileset;
 
 @Data
 public class TilesetDto {

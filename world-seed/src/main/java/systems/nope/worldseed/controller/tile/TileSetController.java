@@ -5,11 +5,10 @@ import org.springframework.web.multipart.MultipartFile;
 import systems.nope.worldseed.dto.TilesetDto;
 import systems.nope.worldseed.dto.request.AddTilesetRequest;
 import systems.nope.worldseed.exception.FilesystemException;
-import systems.nope.worldseed.model.Tileset;
+import systems.nope.worldseed.model.tile.Tileset;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.TilesetService;
 import systems.nope.worldseed.service.WorldService;
-import systems.nope.worldseed.util.file.TileSetFileUtil;
 
 import java.io.IOException;
 
@@ -17,12 +16,10 @@ import java.io.IOException;
 @RequestMapping("/tile-sets")
 public class TileSetController {
 
-    private final TileSetFileUtil tileSetFileUtil;
     private final WorldService worldService;
     private final TilesetService tilesetService;
 
-    public TileSetController(TileSetFileUtil tileSetFileUtil, WorldService worldService, TilesetService tilesetService) {
-        this.tileSetFileUtil = tileSetFileUtil;
+    public TileSetController(WorldService worldService, TilesetService tilesetService) {
         this.worldService = worldService;
         this.tilesetService = tilesetService;
     }
