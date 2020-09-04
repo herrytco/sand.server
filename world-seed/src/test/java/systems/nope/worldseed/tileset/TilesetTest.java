@@ -12,7 +12,9 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import systems.nope.worldseed.dto.TilesetDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.dto.request.AddTilesetRequest;
 import systems.nope.worldseed.stat.StatSheetConstants;
@@ -21,8 +23,7 @@ import systems.nope.worldseed.world.WorldTestUtil;
 
 import java.nio.file.Files;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,9 +67,21 @@ public class TilesetTest {
                 Files.readAllBytes(r.getFile().toPath())
         );
 
-        mockMvc.perform(
+        MvcResult result = mockMvc.perform(
                 multipart(String.format("/tile-sets/worlds/%d", worldTestUtil.getEnsuredInstance().getId()))
                         .file(file)
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(builder.build().writeValueAsString(createAddRequest()))
+        ).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        TilesetDto tileset = builder.build().readValue(result.getResponse().getContentAsString(), TilesetDto.class);
+
+        mockMvc.perform(
+                delete(String.format("/tile-sets/id/%d", tileset.getId()))
                         .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

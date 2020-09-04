@@ -7,6 +7,9 @@ import systems.nope.worldseed.model.World;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 public abstract class FileUtil {
     final String root;
@@ -44,13 +47,34 @@ public abstract class FileUtil {
         return target;
     }
 
+    public void deleteDirectory(World world, String path) throws IOException {
+        File directoryToBeDeleted = new File(String.format("%s/%d/%s", root().getAbsolutePath(), world.getId(), path));
+
+        Files.walk(directoryToBeDeleted.toPath())
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
+    }
+
     public File resolve(World world, String path) throws IOException {
         File target = new File(String.format("%s/%s", resolve(world).getAbsolutePath(), path));
+
+        File parent = new File(target.getParent());
+
+        if(parent.mkdirs())
+            logger.info(String.format("Created directory '%s'.", parent.getAbsolutePath()));
 
         if (target.createNewFile())
             logger.info(String.format("Created file '%s'.", target.getAbsolutePath()));
 
         return target;
+    }
+
+    public void deleteFile(World world, String path) throws IOException {
+        File target = resolve(world, path);
+
+        if (target.exists() && target.delete())
+            logger.info(String.format("Deleted file '%s'.", target.getAbsolutePath()));
     }
 
     public void putFile(World world, String path, byte[] content) throws IOException {

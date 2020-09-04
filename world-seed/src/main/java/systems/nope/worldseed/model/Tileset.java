@@ -33,6 +33,10 @@ public class Tileset {
         this.tileHeight = tileHeight;
     }
 
+    public String getFileName() {
+        return String.format("%d.png", this.getId());
+    }
+
     public int getId() {
         return id;
     }
