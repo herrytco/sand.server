@@ -38,15 +38,6 @@ public abstract class FileUtil {
         return subRoot;
     }
 
-    public File resolve(World world) {
-        File target = new File(String.format("%s/%d", root().getAbsolutePath(), world.getId()));
-
-        if (!target.exists() && target.mkdirs())
-            logger.info(String.format("Created directory '%s'", target.getAbsolutePath()));
-
-        return target;
-    }
-
     public void deleteDirectory(World world, String path) throws IOException {
         File directoryToBeDeleted = new File(String.format("%s/%d/%s", root().getAbsolutePath(), world.getId(), path));
 
@@ -57,15 +48,24 @@ public abstract class FileUtil {
     }
 
     public File resolve(World world, String path) throws IOException {
-        File target = new File(String.format("%s/%s", resolve(world).getAbsolutePath(), path));
+        File target = new File(String.format("%s/%s", resolveWorldFolder(world).getAbsolutePath(), path));
 
         File parent = new File(target.getParent());
 
-        if(parent.mkdirs())
+        if (!parent.exists() && parent.mkdirs())
             logger.info(String.format("Created directory '%s'.", parent.getAbsolutePath()));
 
-        if (target.createNewFile())
+        if (!target.exists() && target.createNewFile())
             logger.info(String.format("Created file '%s'.", target.getAbsolutePath()));
+
+        return target;
+    }
+
+    public File resolveWorldFolder(World world) {
+        File target = new File(String.format("%s/%d", root().getAbsolutePath(), world.getId()));
+
+        if (!target.exists() && target.mkdirs())
+            logger.info(String.format("Created directory '%s'", target.getAbsolutePath()));
 
         return target;
     }

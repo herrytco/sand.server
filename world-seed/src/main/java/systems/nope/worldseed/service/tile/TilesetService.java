@@ -1,7 +1,10 @@
-package systems.nope.worldseed.service;
+package systems.nope.worldseed.service.tile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.AlreadyExistingException;
+import systems.nope.worldseed.exception.FilesystemException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.tile.Tile;
 import systems.nope.worldseed.model.tile.Tileset;
@@ -15,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 @Service
@@ -26,11 +30,59 @@ public class TilesetService {
     private final TileFileUtil tileFileUtil;
     private final TileSetFileUtil tileSetFileUtil;
 
+    private final Logger logger = LoggerFactory.getLogger(TilesetService.class);
+
     public TilesetService(TilesetRepository tilesetRepository, TileRepository tileRepository, TileFileUtil tileFileUtil, TileSetFileUtil tileSetFileUtil) {
         this.tilesetRepository = tilesetRepository;
         this.tileRepository = tileRepository;
         this.tileFileUtil = tileFileUtil;
         this.tileSetFileUtil = tileSetFileUtil;
+    }
+
+    public void updateTile(int tileId, String name, String descriptionShort, String descriptionLong, String textColor) {
+        Tile tileToUpdate = getTile(tileId);
+
+        if (name != null)
+            tileToUpdate.setName(name);
+
+        if (descriptionShort != null)
+            tileToUpdate.setDescriptionShort(descriptionShort);
+
+        if (descriptionLong != null)
+            tileToUpdate.setDescriptionLong(descriptionLong);
+
+        if (textColor != null)
+            tileToUpdate.setTextColor(textColor);
+
+        tileRepository.save(tileToUpdate);
+    }
+
+    public Tile getTile(int id) {
+        Optional<Tile> tileOptional = findTile(id);
+
+        if(tileOptional.isEmpty())
+            throw new NotFoundException(id);
+
+        return tileOptional.get();
+    }
+
+    public Optional<Tile> findTile(int id) {
+        return tileRepository.findById(id);
+    }
+
+    public byte[] getTileImage(int tileId) {
+        Optional<Tile> tile = tileRepository.findById(tileId);
+
+        if (tile.isEmpty())
+            throw new NotFoundException(tileId);
+
+        try {
+            byte[] result = Files.readAllBytes(tileFileUtil.getTileFilehandler(tile.get()).toPath());
+            return result;
+        } catch (IOException e) {
+            logger.error("Unable to read tile-file.");
+            throw new FilesystemException();
+        }
     }
 
     public void delete(int id) throws IOException {

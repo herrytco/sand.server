@@ -6,18 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import systems.nope.worldseed.dto.TilesetDto;
-import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.dto.request.AddTilesetRequest;
-import systems.nope.worldseed.stat.StatSheetConstants;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 
@@ -56,8 +51,7 @@ public class TilesetTest {
         worldTestUtil.ensureTestWorldExists();
     }
 
-    @Test
-    public void addStatSheetTest() throws Exception {
+    public TilesetDto add() throws Exception {
         ClassPathResource r = new ClassPathResource("test/grassland_tileset_128.png");
 
         MockMultipartFile file = new MockMultipartFile(
@@ -78,14 +72,27 @@ public class TilesetTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        TilesetDto tileset = builder.build().readValue(result.getResponse().getContentAsString(), TilesetDto.class);
+        return builder.build().readValue(result.getResponse().getContentAsString(), TilesetDto.class);
+    }
+
+//    @Test
+    public void addTileSetTest() throws Exception {
+        TilesetDto dto = add();
 
         mockMvc.perform(
-                delete(String.format("/tile-sets/id/%d", tileset.getId()))
+                get(String.format("/tile-sets/%d/tile/0/tile.png", dto.getId()))
                         .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(builder.build().writeValueAsString(createAddRequest()))
+        ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void addAndDeleteTileSetTest() throws Exception {
+        TilesetDto tilesetDto = add();
+
+        mockMvc.perform(
+                delete(String.format("/tile-sets/id/%d", tilesetDto.getId()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
         ).andDo(print())
                 .andExpect(status().isOk());
     }
