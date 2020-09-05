@@ -31,7 +31,7 @@ public class StatSheetService {
     private final StatValueInstanceConstantRepository statValueInstanceConstantRepository;
     private final StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(StatSheetService.class);
 
     public StatSheetService(StatSheetRepository statSheetRepository, StatValueConstantRepository statValueConstantRepository, StatValueSynthesizedRepository statValueSynthesizedRepository, StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository) {
         this.statSheetRepository = statSheetRepository;

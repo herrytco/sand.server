@@ -1,6 +1,7 @@
 /.idea
 /.idea/**
 
+/_seed-data
 /world-seed/target
 /out
 
@@ -12,3 +13,9 @@ world-seed/jar/
 discord/jar/
 
 data/link/
+
+world-seed/_seed-data/tilesets/448/
+
+world-seed/_seed-data/tiles/448/30/
+
+world-seed/_seed-data/tiles/448/33/

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,11 @@ public class EchoController {
         data.put("port", request.getRemotePort());
 
         return data;
+    }
+
+    @GetMapping("/root")
+    public String root() {
+        return new File(".").getAbsolutePath();
     }
 
     @GetMapping

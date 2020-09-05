@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import systems.nope.worldseed.exception.AlreadyExistingException;
+import systems.nope.worldseed.exception.FilesystemException;
 import systems.nope.worldseed.exception.NotFoundException;
 
 @ControllerAdvice
@@ -24,4 +25,13 @@ public class NotFoundAdvice {
     String alreadyExistsHandler(AlreadyExistingException e) {
         return e.getMessage();
     }
+
+    @ResponseBody
+    @ExceptionHandler(FilesystemException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    String filesystemHandler(FilesystemException e) {
+        return "An error occured in the filesystem.";
+    }
+
+
 }
