@@ -1,5 +1,6 @@
 package systems.nope.worldseed.tileset;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.dto.TilesetDto;
 import systems.nope.worldseed.dto.request.AddTilesetRequest;
+import systems.nope.worldseed.dto.request.UpdateTileRequest;
+import systems.nope.worldseed.model.World;
+import systems.nope.worldseed.model.tile.Tileset;
+import systems.nope.worldseed.repository.tile.TilesetRepository;
+import systems.nope.worldseed.service.tile.TilesetService;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 
+import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,6 +45,12 @@ public class TilesetTest {
     @Autowired
     private Jackson2ObjectMapperBuilder builder;
 
+    @Autowired
+    private TilesetService tilesetService;
+
+    @Autowired
+    private TilesetRepository tilesetRepository;
+
     public AddTilesetRequest createAddRequest() {
         return new AddTilesetRequest(
                 TileTestConstants.tilesetTestName,
@@ -51,7 +65,17 @@ public class TilesetTest {
         worldTestUtil.ensureTestWorldExists();
     }
 
-    public TilesetDto add() throws Exception {
+    @AfterEach
+    public void teardown() throws IOException {
+        World testWorld = worldTestUtil.getEnsuredInstance();
+        Optional<Tileset> tilesetOptional = tilesetRepository.findByWorldAndName(testWorld, TileTestConstants.tilesetTestName);
+
+        if (tilesetOptional.isPresent()) {
+            tilesetService.delete(tilesetOptional.get().getId());
+        }
+    }
+
+    private TilesetDto add() throws Exception {
         ClassPathResource r = new ClassPathResource("test/grassland_tileset_128.png");
 
         MockMultipartFile file = new MockMultipartFile(
@@ -75,7 +99,33 @@ public class TilesetTest {
         return builder.build().readValue(result.getResponse().getContentAsString(), TilesetDto.class);
     }
 
-//    @Test
+    UpdateTileRequest createUpdateTileRequest() {
+        return new UpdateTileRequest(
+                TileTestConstants.tileName,
+                TileTestConstants.tileDescriptionShort,
+                TileTestConstants.tileDescriptionLong,
+                TileTestConstants.tileColor
+        );
+    }
+
+    @Test
+    public void updateFirstTileTest() throws Exception {
+        TilesetDto dto = add();
+
+        // update tile request
+        mockMvc.perform(
+                put(String.format("/tile-sets/%d/tile/0", dto.getId()))
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(builder.build().writeValueAsString(createUpdateTileRequest()))
+        ).andDo(print())
+                .andExpect(status().isOk());
+
+        System.out.println("Done");
+    }
+
+    @Test
     public void addTileSetTest() throws Exception {
         TilesetDto dto = add();
 

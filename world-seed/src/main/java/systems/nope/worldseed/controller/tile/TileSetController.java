@@ -27,12 +27,13 @@ public class TileSetController {
         this.tilesetService = tilesetService;
     }
 
-    @PutMapping("/tile/{tileId}")
+    @PutMapping("/{tilesetId}/tile/{tileId}")
     public void updatetile(
             @PathVariable int tileId,
+            @PathVariable Integer tilesetId,
             @RequestBody UpdateTileRequest request
     ) {
-        tilesetService.updateTile(tileId, request.getName(), request.getDescriptionShort(), request.getDescriptionLong(), request.getTextColor());
+        tilesetService.updateTile(tilesetId, tileId, request.getName(), request.getDescriptionShort(), request.getDescriptionLong(), request.getTextColor());
     }
 
     @GetMapping(

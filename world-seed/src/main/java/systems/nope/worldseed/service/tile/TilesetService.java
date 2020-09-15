@@ -39,8 +39,8 @@ public class TilesetService {
         this.tileSetFileUtil = tileSetFileUtil;
     }
 
-    public void updateTile(int tileId, String name, String descriptionShort, String descriptionLong, String textColor) {
-        Tile tileToUpdate = getTile(tileId);
+    public void updateTile(Integer tilesetId, Integer tileId, String name, String descriptionShort, String descriptionLong, String textColor) {
+        Tile tileToUpdate = getTile(get(tilesetId), tileId);
 
         if (name != null)
             tileToUpdate.setName(name);
@@ -57,17 +57,17 @@ public class TilesetService {
         tileRepository.save(tileToUpdate);
     }
 
-    public Tile getTile(int id) {
-        Optional<Tile> tileOptional = findTile(id);
+    public Tile getTile(Tileset tileset, int id) {
+        Optional<Tile> tileOptional = findTile(tileset, id);
 
-        if(tileOptional.isEmpty())
+        if (tileOptional.isEmpty())
             throw new NotFoundException(id);
 
         return tileOptional.get();
     }
 
-    public Optional<Tile> findTile(int id) {
-        return tileRepository.findById(id);
+    public Optional<Tile> findTile(Tileset tileset, int id) {
+        return tileRepository.findByIdAndTileset(id, tileset);
     }
 
     public byte[] getTileImage(int tileId) {
