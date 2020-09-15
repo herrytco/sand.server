@@ -25,6 +25,8 @@ public class DiscordApplication {
             return;
         }
 
+        System.out.printf("Using Key '%s'%n", keyDiscordToken);
+
         try {
             JDA jda = new JDABuilder(key)
                     .addEventListeners(new DiceHandler())
