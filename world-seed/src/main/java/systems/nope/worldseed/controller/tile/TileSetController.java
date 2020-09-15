@@ -7,13 +7,14 @@ import systems.nope.worldseed.dto.TilesetDto;
 import systems.nope.worldseed.dto.request.AddTilesetRequest;
 import systems.nope.worldseed.dto.request.UpdateTileRequest;
 import systems.nope.worldseed.exception.FilesystemException;
-import systems.nope.worldseed.model.tile.Tile;
 import systems.nope.worldseed.model.tile.Tileset;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.tile.TilesetService;
 import systems.nope.worldseed.service.WorldService;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tile-sets")
@@ -25,6 +26,13 @@ public class TileSetController {
     public TileSetController(WorldService worldService, TilesetService tilesetService) {
         this.worldService = worldService;
         this.tilesetService = tilesetService;
+    }
+
+    @GetMapping("/world/{worldId}")
+    public List<TilesetDto> forWorld(
+            @PathVariable Integer worldId
+    ) {
+        return tilesetService.getTilesetRepository().findAllByWorld(worldService.get(worldId)).stream().map(TilesetDto::fromTileset).collect(Collectors.toList());
     }
 
     @PutMapping("/{tilesetId}/tile/{tileId}")
