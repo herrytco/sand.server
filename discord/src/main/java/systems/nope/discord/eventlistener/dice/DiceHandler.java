@@ -12,6 +12,19 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 public class DiceHandler extends ListenerAdapter {
+
+    @Override
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        String message = event.getMessage().getContentRaw();
+        message = message.replaceAll("\\s+", " ");
+
+        if (event.getChannelType() == ChannelType.GROUP &&
+                (handleSingleCommands(event, message) || handleMultiCommands(event, message.split(" ")))
+        ) {
+            System.out.println("> " + message);
+        }
+    }
+
     /**
      * sends the given message to the requesting channel
      *
@@ -337,15 +350,15 @@ public class DiceHandler extends ListenerAdapter {
                         if (numberOfRollsOptional.isEmpty())
                             return true;
 
-                        if(command.length == 2) {
+                        if (command.length == 2) {
                             de = new CumulativeRollEvent(event, numberOfRollsOptional.get());
                             break;
                         }
 
-                        if(command.length == 3) {
+                        if (command.length == 3) {
                             Optional<Integer> optionalModifier = parseInt(command[2], event, String.format("Please give me a detailed explanation about how I am able to add '%s' to a dicethrow...", command[2]));
 
-                            if(optionalModifier.isEmpty())
+                            if (optionalModifier.isEmpty())
                                 return true;
 
                             de = new ModifiedCumulativeRollEvent(event, numberOfRollsOptional.get(), optionalModifier.get());
@@ -366,14 +379,5 @@ public class DiceHandler extends ListenerAdapter {
         }
 
         return false;
-    }
-
-    @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        String message = event.getMessage().getContentRaw();
-        message = message.replaceAll("\\s+", " ");
-
-        if (!handleSingleCommands(event, message) && !handleMultiCommands(event, message.split(" "))) {
-        }
     }
 }

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: world-seed-discord
+  labels:
+    run: world-seed-discord
+spec:
+  selector:
+    app: world-seed-discord
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: world-seed-discord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: world-seed-discord
+  template:
+    metadata:
+      labels:
+        app: world-seed-discord
+    spec:
+      containers:
+        - name: world-seed-discord
+          image: herrykun/world.seed.discord
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: regcred
