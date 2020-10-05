@@ -18,7 +18,7 @@ public class DiceHandler extends ListenerAdapter {
         String message = event.getMessage().getContentRaw();
         message = message.replaceAll("\\s+", " ");
 
-        if (event.getChannelType() == ChannelType.GROUP &&
+        if (event.getChannelType() == ChannelType.TEXT &&
                 (handleSingleCommands(event, message) || handleMultiCommands(event, message.split(" ")))
         ) {
             System.out.println("> " + message);
@@ -47,7 +47,7 @@ public class DiceHandler extends ListenerAdapter {
             try {
                 event.getMessage().delete().complete();
             } catch (InsufficientPermissionException e) {
-                System.out.println("could not delete user message.");
+                System.out.println("Could not delete user message.");
             }
     }
 
