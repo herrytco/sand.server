@@ -116,7 +116,7 @@ public class LinkUtils {
     private static void enhancePerson(Person person) throws IOException {
 
         // fetch stat sheets
-        String sheets = BackendUtil.sendRequest(String.format("%s/stat-sheets/person/id/%d", ServerConstants.urlBackend, person.getId()));
+        String sheets = BackendUtil.sendRequest(String.format("%s/stat-sheets/person/id/%d", ServerConstants.urlBackend(), person.getId()));
         ObjectMapper mapper = new ObjectMapper();
 
         List<StatSheet> sheetList = new LinkedList<>();
@@ -136,7 +136,7 @@ public class LinkUtils {
         for (StatSheet sheet : person.getStatSheets()) {
             List<StatValue> valueList = new LinkedList<>();
 
-            String values = BackendUtil.sendRequest(String.format("%s/stat-values/stat-sheet/id/%d", ServerConstants.urlBackend, sheet.getId()));
+            String values = BackendUtil.sendRequest(String.format("%s/stat-values/stat-sheet/id/%d", ServerConstants.urlBackend(), sheet.getId()));
 
             try {
                 List<Map<String, Object>> data = mapper.readValue(values, List.class);
@@ -151,7 +151,7 @@ public class LinkUtils {
         }
 
         // fetch stat value INSTANCES for each sheet
-        String statValueInstances = BackendUtil.sendRequest(String.format("%s/stat-value-instances/person/id/%d", ServerConstants.urlBackend, person.getId()));
+        String statValueInstances = BackendUtil.sendRequest(String.format("%s/stat-value-instances/person/id/%d", ServerConstants.urlBackend(), person.getId()));
         try {
             List<Map<String, Object>> data = mapper.readValue(statValueInstances, List.class);
 
@@ -193,7 +193,7 @@ public class LinkUtils {
         String token = BackendUtil.getToken();
 
         if (token != null) {
-            String response = BackendUtil.sendRequest(String.format("%s/persons/api/%s", ServerConstants.urlBackend, apiKey));
+            String response = BackendUtil.sendRequest(String.format("%s/persons/api/%s", ServerConstants.urlBackend(), apiKey));
 
             System.out.println(response);
 
