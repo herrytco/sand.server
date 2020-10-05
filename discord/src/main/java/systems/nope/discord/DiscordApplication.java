@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import systems.nope.discord.eventlistener.dice.DiceHandler;
+import systems.nope.discord.eventlistener.dice.PrivateHandler;
 import systems.nope.discord.eventlistener.dice.ServerConstants;
 import systems.nope.discord.eventlistener.dice.file.DiscordFileManager;
 
@@ -36,6 +37,7 @@ public class DiscordApplication {
         try {
             JDA jda = new JDABuilder(key)
                     .addEventListeners(new DiceHandler())
+                    .addEventListeners(new PrivateHandler())
                     .build();
         } catch (LoginException e) {
             e.printStackTrace();
