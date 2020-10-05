@@ -5,6 +5,10 @@ metadata:
   labels:
     run: world-seed-discord
 spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30004
   selector:
     app: world-seed-discord
   type: NodePort
@@ -29,5 +33,13 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          hostPath:
+           path: /data/world.seed.discord
       imagePullSecrets:
         - name: regcred
+      nodeName: master
