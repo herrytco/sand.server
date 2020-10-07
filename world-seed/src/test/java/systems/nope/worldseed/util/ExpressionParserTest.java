@@ -7,6 +7,55 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ExpressionParserTest {
 
     @Test
+    public void testMin() {
+        double result = ExpressionUtil.parseExpression("min ( 0 1 )");
+
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testMin2() {
+        double result = ExpressionUtil.parseExpression("min ( 0 -1 )");
+
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void testMin3() {
+        double result = ExpressionUtil.parseExpression("( min ( 0 -1 ) + 5 )");
+
+        assertEquals(4, result);
+    }
+
+    @Test
+    public void testFloor() {
+        double result = ExpressionUtil.parseExpression("floor ( -0.1 )");
+
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void testMax() {
+        double result = ExpressionUtil.parseExpression("max ( 0 1 )");
+
+        assertEquals(1, result);
+    }
+
+    @Test
+    public void testMax2() {
+        double result = ExpressionUtil.parseExpression("max ( 0 -1 )");
+
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void testMax3() {
+        double result = ExpressionUtil.parseExpression("( max ( 0 -1 ) + 5 )");
+
+        assertEquals(5, result);
+    }
+
+    @Test
     public void testSimpleExpression1() {
         double result = ExpressionUtil.parseExpression("( 1 + 1 )");
 
