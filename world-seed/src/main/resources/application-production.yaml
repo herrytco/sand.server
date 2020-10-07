@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: "jdbc:mysql://sql-test2:3306/world_seed?useSSL=false&amp;allowPublicKeyRetrieval=true"
+    username: "sand"
+    password: "llH5CqypeHfILgJjUmCS#"

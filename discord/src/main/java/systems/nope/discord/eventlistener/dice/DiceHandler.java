@@ -12,30 +12,17 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 public class DiceHandler extends ListenerAdapter {
-    /**
-     * sends the given message to the requesting channel
-     *
-     * @param event   - message which is replied to
-     * @param message - String to send
-     */
-    private void sendMessage(MessageReceivedEvent event, String message) {
-        event.getChannel().sendMessage(message)
-                .queue(response -> {
-                            response.editMessageFormat(message).queue();
-                        }
-                );
-    }
 
-    /**
-     * @param event - message which should get deleted
-     */
-    private void removeMessage(MessageReceivedEvent event) {
-        if (event.getChannelType() != ChannelType.PRIVATE)
-            try {
-                event.getMessage().delete().complete();
-            } catch (InsufficientPermissionException e) {
-                System.out.println("could not delete user message.");
-            }
+    @Override
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        String message = event.getMessage().getContentRaw();
+        message = message.replaceAll("\\s+", " ");
+
+        if (event.getChannelType() == ChannelType.TEXT &&
+                (handleSingleCommands(event, message) || handleMultiCommands(event, message.split(" ")))
+        ) {
+            System.out.println("> " + message);
+        }
     }
 
     /**
@@ -114,7 +101,7 @@ public class DiceHandler extends ListenerAdapter {
             return Optional.of(Integer.parseInt(numberString));
         } catch (NumberFormatException e) {
             if (errorMessage != null)
-                sendMessage(event, errorMessage);
+                DiscordUtil.sendMessage(event, errorMessage);
             return Optional.empty();
         }
     }
@@ -155,12 +142,12 @@ public class DiceHandler extends ListenerAdapter {
                         int x = number.get();
 
                         if (x < 1) {
-                            sendMessage(event, String.format("The number of throws must be positive ... so please roll your %d dice yourself!", x));
+                            DiscordUtil.sendMessage(event, String.format("The number of throws must be positive ... so please roll your %d dice yourself!", x));
                             return true;
                         }
 
                         if (x > 50) {
-                            sendMessage(event, "I am quite limited by the technology of my time, 50 rolls is the maximum sir.");
+                            DiscordUtil.sendMessage(event, "I am quite limited by the technology of my time, 50 rolls is the maximum sir.");
                             return true;
                         }
 
@@ -205,7 +192,7 @@ public class DiceHandler extends ListenerAdapter {
                             }
 
                             if (thirdParameter.isEmpty() && fourthParameter.isEmpty()) {
-                                sendMessage(event, "At least one argument has to be a number sir.");
+                                DiscordUtil.sendMessage(event, "At least one argument has to be a number sir.");
                                 return true;
                             }
                         }
@@ -261,10 +248,10 @@ public class DiceHandler extends ListenerAdapter {
                             int x = Integer.parseInt(command[1]);
                             de = new DiceModifierEvent(event, x);
                         } catch (NumberFormatException e) {
-                            sendMessage(event, String.format("Please give me a detailed explanation about how many faces '%s' are...", command[1]));
+                            DiscordUtil.sendMessage(event, String.format("Please give me a detailed explanation about how many faces '%s' are...", command[1]));
                         }
                     } else if (command.length > 2) {
-                        sendMessage(event, "If you want two modifiers, just add them together. I'm not your butler or something");
+                        DiscordUtil.sendMessage(event, "If you want two modifiers, just add them together. I'm not your butler or something");
                         return true;
                     }
                     break;
@@ -272,14 +259,14 @@ public class DiceHandler extends ListenerAdapter {
                 case "!udice":
                     if (command.length == 2) {
                         try {
-                            removeMessage(event);
+                            DiscordUtil.removeMessage(event);
                             int x = Integer.parseInt(command[1]);
                             de = new DiceTypeEvent(event, x);
                         } catch (NumberFormatException e) {
-                            sendMessage(event, String.format("Roll your '%s'-sided dice yourself, sir.", command[1]));
+                            DiscordUtil.sendMessage(event, String.format("Roll your '%s'-sided dice yourself, sir.", command[1]));
                         }
                     } else if (command.length == 1) {
-                        sendMessage(event, "If you don't want to throw a die, just don't!");
+                        DiscordUtil.sendMessage(event, "If you don't want to throw a die, just don't!");
                         return true;
                     }
                     break;
@@ -296,13 +283,13 @@ public class DiceHandler extends ListenerAdapter {
 
                             de = new OtherRollEvent(event, targets);
                         } catch (NumberFormatException e) {
-                            sendMessage(event, "Try to use actual numbers for the roll-amounts please.\nRemember, the syntax is: !rollt [target] [nr] [tame] [nr] ...");
+                            DiscordUtil.sendMessage(event, "Try to use actual numbers for the roll-amounts please.\nRemember, the syntax is: !rollt [target] [nr] [tame] [nr] ...");
                         }
                     } else if (command.length == 1) {
-                        sendMessage(event, "I think you forgot to tell me something.");
+                        DiscordUtil.sendMessage(event, "I think you forgot to tell me something.");
                         return true;
                     } else {
-                        sendMessage(event, "I need a name and a number corresponding to it.");
+                        DiscordUtil.sendMessage(event, "I need a name and a number corresponding to it.");
                         return true;
                     }
                     break;
@@ -319,13 +306,13 @@ public class DiceHandler extends ListenerAdapter {
 
                             de = new TargetedRollEvent(event, targets);
                         } catch (NumberFormatException e) {
-                            sendMessage(event, "Try to use actual numbers for the roll-amounts please.\nRemember, the syntax is: !rollt [target] [nr] [tame] [nr] ...");
+                            DiscordUtil.sendMessage(event, "Try to use actual numbers for the roll-amounts please.\nRemember, the syntax is: !rollt [target] [nr] [tame] [nr] ...");
                         }
                     } else if (command.length == 1) {
-                        sendMessage(event, "I think you forgot to tell me something.");
+                        DiscordUtil.sendMessage(event, "I think you forgot to tell me something.");
                         return true;
                     } else {
-                        sendMessage(event, "I need a name and a number corresponding to it.");
+                        DiscordUtil.sendMessage(event, "I need a name and a number corresponding to it.");
                         return true;
                     }
                     break;
@@ -337,15 +324,15 @@ public class DiceHandler extends ListenerAdapter {
                         if (numberOfRollsOptional.isEmpty())
                             return true;
 
-                        if(command.length == 2) {
+                        if (command.length == 2) {
                             de = new CumulativeRollEvent(event, numberOfRollsOptional.get());
                             break;
                         }
 
-                        if(command.length == 3) {
+                        if (command.length == 3) {
                             Optional<Integer> optionalModifier = parseInt(command[2], event, String.format("Please give me a detailed explanation about how I am able to add '%s' to a dicethrow...", command[2]));
 
-                            if(optionalModifier.isEmpty())
+                            if (optionalModifier.isEmpty())
                                 return true;
 
                             de = new ModifiedCumulativeRollEvent(event, numberOfRollsOptional.get(), optionalModifier.get());
@@ -366,14 +353,5 @@ public class DiceHandler extends ListenerAdapter {
         }
 
         return false;
-    }
-
-    @Override
-    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-        String message = event.getMessage().getContentRaw();
-        message = message.replaceAll("\\s+", " ");
-
-        if (!handleSingleCommands(event, message) && !handleMultiCommands(event, message.split(" "))) {
-        }
     }
 }

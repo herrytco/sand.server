@@ -2,6 +2,7 @@ package systems.nope.worldseed.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import systems.nope.worldseed.model.stat.StatSheet;
+import systems.nope.worldseed.model.tile.Tileset;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -28,6 +29,9 @@ public class World {
 
     @OneToMany(mappedBy = "world")
     private List<StatSheet> sheets;
+
+    @OneToMany(mappedBy = "world")
+    private List<Tileset> tilesets;
 
     @NotNull
     String seed;
@@ -107,5 +111,13 @@ public class World {
 
     public void setSheets(List<StatSheet> sheets) {
         this.sheets = sheets;
+    }
+
+    public List<Tileset> getTilesets() {
+        return tilesets;
+    }
+
+    public void setTilesets(List<Tileset> tilesets) {
+        this.tilesets = tilesets;
     }
 }
