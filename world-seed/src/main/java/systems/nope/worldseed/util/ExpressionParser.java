@@ -27,6 +27,8 @@ public class ExpressionParser {
                 case "sqrt":
                 case "ceil":
                 case "floor":
+                case "min":
+                case "max":
                     operators.add(token);
                     break;
 
@@ -36,6 +38,12 @@ public class ExpressionParser {
                     double result;
 
                     switch (op) {
+                        case "min":
+                            result = Math.min(values.pop(), v1);
+                            break;
+                        case "max":
+                            result = Math.max(values.pop(), v1);
+                            break;
                         case "+":
                             result = values.pop() + v1;
                             break;

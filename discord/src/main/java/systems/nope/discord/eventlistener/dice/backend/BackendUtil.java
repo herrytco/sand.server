@@ -43,10 +43,10 @@ public class BackendUtil {
                     JSON
             );
 
-	    System.out.println(String.format("Calling: %s/tokens", ServerConstants.urlBackend));
+	    System.out.println(String.format("Calling: %s/tokens", ServerConstants.urlBackend()));
 
             Request request = new Request.Builder()
-                    .url(String.format("%s/tokens", ServerConstants.urlBackend))
+                    .url(String.format("%s/tokens", ServerConstants.urlBackend()))
                     .post(body)
                     .build();
 
