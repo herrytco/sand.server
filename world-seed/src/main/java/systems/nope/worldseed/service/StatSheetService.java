@@ -39,7 +39,9 @@ public class StatSheetService {
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
     }
 
-    public List<StatSheet> findByWorld(World world) { return statSheetRepository.findByWorld(world); }
+    public List<StatSheet> findByWorld(World world) {
+        return statSheetRepository.findByWorld(world);
+    }
 
     public Optional<StatSheet> findById(int id) {
         return statSheetRepository.findById(id);
@@ -48,7 +50,7 @@ public class StatSheetService {
     public StatSheet get(int id) {
         Optional<StatSheet> optionalStatSheet = findById(id);
 
-        if(optionalStatSheet.isEmpty())
+        if (optionalStatSheet.isEmpty())
             throw new NotFoundException(id);
 
         return optionalStatSheet.get();
@@ -131,14 +133,14 @@ public class StatSheetService {
     public void deleteStatValue(Integer id) {
         Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
 
-        if(optionalStatValueConstant.isPresent()) {
+        if (optionalStatValueConstant.isPresent()) {
             statValueConstantRepository.delete(optionalStatValueConstant.get());
             return;
         }
 
         Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
 
-        if(optionalStatValueSynthesized.isPresent()) {
+        if (optionalStatValueSynthesized.isPresent()) {
             statValueSynthesizedRepository.delete(optionalStatValueSynthesized.get());
             return;
         }
@@ -155,7 +157,7 @@ public class StatSheetService {
     public StatValueConstant getStatValueConstant(int id) {
         Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
 
-        if(optionalStatValueConstant.isEmpty())
+        if (optionalStatValueConstant.isEmpty())
             throw new NotFoundException(id);
 
         return optionalStatValueConstant.get();
@@ -174,7 +176,7 @@ public class StatSheetService {
     public StatValueSynthesized getStatValueSynthesized(int id) {
         Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
 
-        if(optionalStatValueSynthesized.isEmpty())
+        if (optionalStatValueSynthesized.isEmpty())
             throw new NotFoundException(id);
 
         return optionalStatValueSynthesized.get();
@@ -208,14 +210,18 @@ public class StatSheetService {
                             for (StatValueInstance stati : person.getStatValues()) {
                                 if (stati.getStatValue().getSheet() == sheet) {
                                     if (stati instanceof StatValueInstanceConstant)
-                                        formula = formula.replaceAll(stati.getStatValue().getNameShort(),
-                                                ((StatValueInstanceConstant) stati).getValue().toString());
+                                        formula = formula.replaceAll(
+                                                " " + stati.getStatValue().getNameShort() + " ",
+                                                " " + stati.getValue().toString() + " "
+                                        );
                                     else if (stati instanceof StatValueInstanceSynthesized) {
                                         StatValueInstanceSynthesized s = ((StatValueInstanceSynthesized) stati);
 
                                         if (s.getValue() != null)
-                                            formula = formula.replaceAll(stati.getStatValue().getNameShort(),
-                                                    s.getValue().toString());
+                                            formula = formula.replaceAll(
+                                                    " " + stati.getStatValue().getNameShort() + " ",
+                                                    " " + s.getValue().toString() + " "
+                                            );
                                     }
 
                                 }
@@ -288,7 +294,7 @@ public class StatSheetService {
 
         statValueSynthesizedRepository.save(valueNew);
 
-        for(Person assignedPerson : sheet.getAssignedPersons()) {
+        for (Person assignedPerson : sheet.getAssignedPersons()) {
             StatValueInstanceSynthesized instanceNew = StatValueInstanceSynthesized.fromStatValueAndPerson(valueNew, assignedPerson);
             statValueInstanceSynthesizedRepository.save(instanceNew);
         }
@@ -308,7 +314,7 @@ public class StatSheetService {
 
         statValueConstantRepository.save(valueNew);
 
-        for(Person assignedPerson : sheet.getAssignedPersons()) {
+        for (Person assignedPerson : sheet.getAssignedPersons()) {
             StatValueInstanceConstant instanceNew = StatValueInstanceConstant.fromStatValueAndPerson(valueNew, assignedPerson);
             statValueInstanceConstantRepository.save(instanceNew);
         }
