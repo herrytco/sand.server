@@ -2,7 +2,6 @@ package systems.nope.worldseed.dto.request;
 
 public class AddTilesetRequest extends AddNamedResourceRequest {
     private Integer tileWidth;
-
     private Integer tileHeight;
 
     public AddTilesetRequest() {

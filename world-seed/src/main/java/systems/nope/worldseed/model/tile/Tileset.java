@@ -25,6 +25,9 @@ public class Tileset {
     @NotNull
     private Integer tileHeight;
 
+    @NotNull
+    private Integer nTiles = 0;
+
     public Tileset() {
     }
 
@@ -77,5 +80,13 @@ public class Tileset {
 
     public void setTileHeight(Integer tileHeight) {
         this.tileHeight = tileHeight;
+    }
+
+    public Integer getnTiles() {
+        return nTiles;
+    }
+
+    public void setnTiles(Integer nTiles) {
+        this.nTiles = nTiles;
     }
 }
