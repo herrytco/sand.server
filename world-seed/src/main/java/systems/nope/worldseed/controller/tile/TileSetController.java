@@ -66,13 +66,15 @@ public class TileSetController {
     @PostMapping("/worlds/{worldId}")
     public TilesetDto add(
             @PathVariable Integer worldId,
-            @RequestBody AddTilesetRequest request,
-            @RequestParam(name = "image") MultipartFile tilesetImage
+            @RequestParam Integer tileWidth,
+            @RequestParam Integer tileHeight,
+            @RequestParam String name,
+            @RequestParam("image") MultipartFile tilesetImage
     ) {
         World world = worldService.get(worldId);
 
         try {
-            Tileset tilesetNew = tilesetService.add(world, request.getName(), request.getTileWidth(), request.getTileHeight(), tilesetImage.getBytes());
+            Tileset tilesetNew = tilesetService.add(world, name, tileWidth, tileHeight, tilesetImage.getBytes());
             return TilesetDto.fromTileset(tilesetNew);
         } catch (IOException e) {
             throw new FilesystemException();
