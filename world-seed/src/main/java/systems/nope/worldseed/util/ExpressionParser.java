@@ -91,7 +91,7 @@ public class ExpressionParser {
                             operand = 0d;
 
                             for (int i = 0; i < nDice; i++)
-                                operand += rng.nextInt(diceType);
+                                operand += rng.nextInt(diceType) + 1;
                         } else {
                             operand = Double.parseDouble(token);
                         }

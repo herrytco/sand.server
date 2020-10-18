@@ -21,7 +21,7 @@ public class ExpressionParserTest {
         for (int i = 0; i < 100; i++) {
             double result = ExpressionUtil.parseExpression("1d20");
 
-            assertTrue(1 <= result && result <= 20);
+            assertTrue(1 <= result && result <= 20, "Result was: "+result);
         }
     }
 
