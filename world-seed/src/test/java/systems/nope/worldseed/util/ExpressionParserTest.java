@@ -3,8 +3,27 @@ package systems.nope.worldseed.util;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExpressionParserTest {
+
+    @Test
+    public void testDice2() {
+        for (int i = 0; i < 100; i++) {
+            double result = ExpressionUtil.parseExpression("10d20");
+
+            assertTrue(10 <= result && result <= 200);
+        }
+    }
+
+    @Test
+    public void testDice1() {
+        for (int i = 0; i < 100; i++) {
+            double result = ExpressionUtil.parseExpression("1d20");
+
+            assertTrue(1 <= result && result <= 20);
+        }
+    }
 
     @Test
     public void testMin() {
