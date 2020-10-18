@@ -17,7 +17,7 @@ spring:
       max-file-size: 1024MB
       max-request-size: 1048MB
   datasource:
-    url: "jdbc:mysql://sql-test2.systems:3306/world_seed?useSSL=false&amp;allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://sql-test2:3306/world_seed?useSSL=false&amp;allowPublicKeyRetrieval=true"
     username: "sand"
     password: "llH5CqypeHfILgJjUmCS#"
     driver-class-name: com.mysql.jdbc.Driver
