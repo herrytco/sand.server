@@ -20,8 +20,8 @@ public class DiscordApplication {
 
     public static void main(String[] args) throws IOException {
 
-        if(args.length == 1)
-            ServerConstants.setHostBackend("http://"+args[0]);
+        if (args.length == 1)
+            ServerConstants.setHostBackend("http://" + args[0]);
 
         DiscordFileManager fileManager = new DiscordFileManager();
 
@@ -35,7 +35,8 @@ public class DiscordApplication {
         System.out.printf("Using Key '%s'%n", keyDiscordToken);
 
         try {
-            JDA jda = new JDABuilder(key)
+
+            JDA jda = JDABuilder.createDefault(key)
                     .addEventListeners(new DiceHandler())
                     .addEventListeners(new PrivateHandler())
                     .build();
