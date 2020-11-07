@@ -1,4 +1,4 @@
-package systems.nope.worldseed.model.stat.instance;
+package systems.nope.worldseed.model.stat.instance.person;
 
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.World;
@@ -9,20 +9,20 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 @Entity
-public class StatValueInstanceSynthesized extends StatValueInstance {
+public class StatValuePersonInstanceSynthesized extends StatValuePersonInstance {
     @Transient
     private Integer value;
 
-    public StatValueInstanceSynthesized() {
+    public StatValuePersonInstanceSynthesized() {
         setType("synthesized");
     }
 
-    public StatValueInstanceSynthesized(World world, StatValue statValue, Person person) {
+    public StatValuePersonInstanceSynthesized(World world, StatValue statValue, Person person) {
         super(world, statValue, person, "synthesized");
     }
 
-    public static StatValueInstanceSynthesized fromStatValueAndPerson(StatValueSynthesized valueNew, Person assignedPerson) {
-        return new StatValueInstanceSynthesized(
+    public static StatValuePersonInstanceSynthesized fromStatValueAndPerson(StatValueSynthesized valueNew, Person assignedPerson) {
+        return new StatValuePersonInstanceSynthesized(
                 valueNew.getWorld(),
                 valueNew,
                 assignedPerson

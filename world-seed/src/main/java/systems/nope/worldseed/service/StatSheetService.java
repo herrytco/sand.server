@@ -7,13 +7,11 @@ import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.StatValueInstance;
-import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
-import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.stat.*;
-import systems.nope.worldseed.util.ExpressionUtil;
 
 import java.util.*;
 
@@ -61,11 +59,11 @@ public class StatSheetService {
         return statValueSynthesizedRepository.findById(id);
     }
 
-    public Optional<StatValueInstanceConstant> findStatValueInstanceConstantById(int id) {
+    public Optional<StatValuePersonInstanceConstant> findStatValueInstanceConstantById(int id) {
         return statValueInstanceConstantRepository.findById(id);
     }
 
-    public Optional<StatValueInstanceSynthesized> findStatValueInstanceSynthesizedById(int id) {
+    public Optional<StatValuePersonInstanceSynthesized> findStatValueInstanceSynthesizedById(int id) {
         return statValueInstanceSynthesizedRepository.findById(id);
     }
 
@@ -73,7 +71,7 @@ public class StatSheetService {
         return statSheetRepository;
     }
 
-    public void updateConstantStatInstance(StatValueInstanceConstant instance, Integer valueNew) {
+    public void updateConstantStatInstance(StatValuePersonInstanceConstant instance, Integer valueNew) {
         instance.setValue(valueNew);
         statValueInstanceConstantRepository.save(instance);
     }
@@ -162,7 +160,7 @@ public class StatSheetService {
         statValueSynthesizedRepository.save(valueNew);
 
         for (Person assignedPerson : sheet.getAssignedPersons()) {
-            StatValueInstanceSynthesized instanceNew = StatValueInstanceSynthesized.fromStatValueAndPerson(valueNew, assignedPerson);
+            StatValuePersonInstanceSynthesized instanceNew = StatValuePersonInstanceSynthesized.fromStatValueAndPerson(valueNew, assignedPerson);
             statValueInstanceSynthesizedRepository.save(instanceNew);
         }
 
@@ -182,7 +180,7 @@ public class StatSheetService {
         statValueConstantRepository.save(valueNew);
 
         for (Person assignedPerson : sheet.getAssignedPersons()) {
-            StatValueInstanceConstant instanceNew = StatValueInstanceConstant.fromStatValueAndPerson(valueNew, assignedPerson);
+            StatValuePersonInstanceConstant instanceNew = StatValuePersonInstanceConstant.fromStatValueAndPerson(valueNew, assignedPerson);
             statValueInstanceConstantRepository.save(instanceNew);
         }
 

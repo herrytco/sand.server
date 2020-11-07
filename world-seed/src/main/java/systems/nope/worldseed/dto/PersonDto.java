@@ -1,7 +1,7 @@
 package systems.nope.worldseed.dto;
 
 import systems.nope.worldseed.model.Person;
-import systems.nope.worldseed.model.stat.instance.StatValueInstance;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
 import systems.nope.worldseed.model.stat.StatSheet;
 
 import java.util.LinkedList;
@@ -37,7 +37,7 @@ public class PersonDto {
                 person.getName(),
                 person.getApiKey(),
                 person.getStatSheets() != null ? person.getStatSheets().stream().map(StatSheet::getId).collect(Collectors.toList()) : new LinkedList<>(),
-                person.getStatValues() != null ? person.getStatValues().stream().map(StatValueInstance::getId).collect(Collectors.toList()) : new LinkedList<>()
+                person.getStatValues() != null ? person.getStatValues().stream().map(StatValuePersonInstance::getId).collect(Collectors.toList()) : new LinkedList<>()
         );
     }
 

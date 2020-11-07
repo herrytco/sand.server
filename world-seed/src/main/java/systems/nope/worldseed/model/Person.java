@@ -3,7 +3,7 @@ package systems.nope.worldseed.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.StatValueInstance;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
 
 import javax.persistence.*;
 import java.util.List;
@@ -33,7 +33,7 @@ public class Person {
     private List<StatSheet> statSheets;
 
     @OneToMany(mappedBy = "person")
-    private List<StatValueInstance> statValues;
+    private List<StatValuePersonInstance> statValues;
 
     @ManyToMany
     @JoinTable(
@@ -92,11 +92,11 @@ public class Person {
         this.statSheets = statSheets;
     }
 
-    public List<StatValueInstance> getStatValues() {
+    public List<StatValuePersonInstance> getStatValues() {
         return statValues;
     }
 
-    public void setStatValues(List<StatValueInstance> statValues) {
+    public void setStatValues(List<StatValuePersonInstance> statValues) {
         this.statValues = statValues;
     }
 

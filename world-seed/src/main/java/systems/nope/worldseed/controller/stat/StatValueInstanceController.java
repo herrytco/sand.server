@@ -2,9 +2,9 @@ package systems.nope.worldseed.controller.stat;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.dto.StatValueInstanceDto;
-import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
-import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
+import systems.nope.worldseed.dto.stat.person.StatValuePersonInstanceDto;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
 import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.exception.NotFoundException;
@@ -28,15 +28,15 @@ public class StatValueInstanceController {
 
     @Operation(summary = "Get a set of StatValueInstances all belonging to the same person.")
     @GetMapping("/person/id/{personId}")
-    public List<StatValueInstanceDto> forPerson(
+    public List<StatValuePersonInstanceDto> forPerson(
             @PathVariable int personId
     ) {
-        return personService.get(personId).getStatValues().stream().map(StatValueInstanceDto::fromInstance).collect(Collectors.toList());
+        return personService.get(personId).getStatValues().stream().map(StatValuePersonInstanceDto::fromInstance).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get a set of StatValueInstances identified by their ids.")
     @GetMapping
-    public List<StatValueInstanceDto> multiple(
+    public List<StatValuePersonInstanceDto> multiple(
             @RequestParam(name = "id") Integer[] ids
     ) {
         return Stream.of(ids).map(this::one).collect(Collectors.toList());
@@ -44,21 +44,21 @@ public class StatValueInstanceController {
 
     @Operation(summary = "Get one StatValueInstance identified by its id.")
     @GetMapping("/id/{id}")
-    public StatValueInstanceDto one(
+    public StatValuePersonInstanceDto one(
             @PathVariable int id
     ) {
-        Optional<StatValueInstanceConstant> optionalStatValueInstanceConstant = statSheetService.findStatValueInstanceConstantById(id);
+        Optional<StatValuePersonInstanceConstant> optionalStatValueInstanceConstant = statSheetService.findStatValueInstanceConstantById(id);
 
         if (optionalStatValueInstanceConstant.isPresent())
-            return StatValueInstanceDto.fromInstance(optionalStatValueInstanceConstant.get());
+            return StatValuePersonInstanceDto.fromInstance(optionalStatValueInstanceConstant.get());
 
-        Optional<StatValueInstanceSynthesized> optionalStatValueInstanceSynthesized = statSheetService.findStatValueInstanceSynthesizedById(id);
+        Optional<StatValuePersonInstanceSynthesized> optionalStatValueInstanceSynthesized = statSheetService.findStatValueInstanceSynthesizedById(id);
 
         if (optionalStatValueInstanceSynthesized.isPresent()) {
-            StatValueInstanceSynthesized stat = optionalStatValueInstanceSynthesized.get();
+            StatValuePersonInstanceSynthesized stat = optionalStatValueInstanceSynthesized.get();
             personService.enrichStatInstance(stat);
 
-            return StatValueInstanceDto.fromInstance(stat);
+            return StatValuePersonInstanceDto.fromInstance(stat);
         }
 
         throw new NotFoundException(id);

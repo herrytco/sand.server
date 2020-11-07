@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.model.Document;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
+import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,6 +31,17 @@ public class Item {
             inverseJoinColumns = @JoinColumn(name = "stat_sheet_id")
     )
     private Set<StatSheet> requiredStatSheets;
+
+    @ManyToMany
+    @JoinTable(
+            name = "item_stat_sheet",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "stat_sheet_id")
+    )
+    private Set<StatSheet> statSheets;
+
+    @OneToMany(mappedBy = "item")
+    private List<StatValueItemInstance> statValues;
 
     @ManyToOne
     @JoinColumn(name = "description_document")
@@ -72,5 +85,21 @@ public class Item {
 
     public void setDescriptionDocument(Document descriptionDocument) {
         this.descriptionDocument = descriptionDocument;
+    }
+
+    public Set<StatSheet> getStatSheets() {
+        return statSheets;
+    }
+
+    public void setStatSheets(Set<StatSheet> statSheets) {
+        this.statSheets = statSheets;
+    }
+
+    public List<StatValueItemInstance> getStatValues() {
+        return statValues;
+    }
+
+    public void setStatValues(List<StatValueItemInstance> statValues) {
+        this.statValues = statValues;
     }
 }

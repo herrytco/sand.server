@@ -1,4 +1,6 @@
-package systems.nope.worldseed.dto;
+package systems.nope.worldseed.dto.stat;
+
+import lombok.Data;
 
 public abstract class StatValueDto {
     private final int id;
