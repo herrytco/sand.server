@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
@@ -12,35 +13,25 @@ import java.io.Serializable;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Document {
 
+    /**
+     * marks the unique id for that DB row (changes during updates)
+     */
+    @Id
+    @GeneratedValue
+    private Integer id;
 
-    @Embeddable
-    public static class Pk implements Serializable {
-        int id;
+    /**
+     * marks the id of the document (stays the same during updates)
+     */
+    @NotNull
+    private Integer i;
 
-        int version;
+    /**
+     * marks the version of the document higher->later
+     */
+    @NotNull
+    private Integer version;
 
-        public Pk() {
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getVersion() {
-            return version;
-        }
-
-        public void setVersion(int version) {
-            this.version = version;
-        }
-    }
-
-    @EmbeddedId
-    private Pk id;
 
     @NotBlank
     private String richtext;
@@ -53,23 +44,22 @@ public class Document {
     public Document() {
     }
 
-    public Document(String richtext, World world, int id) {
-        this(richtext, world, id, 1);
-    }
-
-    public Document(String richtext, World world, int id, int version) {
+    public Document(@NotNull Integer i, @NotNull Integer version, @NotBlank String richtext, World world) {
+        this.i = i;
+        this.version = version;
         this.richtext = richtext;
         this.world = world;
-        this.id = new Pk();
-        this.id.setId(id);
-        this.id.setVersion(version);
     }
 
-    public Pk getId() {
+    public Document(@NotNull Integer i, @NotBlank String richtext, World world) {
+        this(i, 1, richtext, world);
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Pk id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -87,5 +77,21 @@ public class Document {
 
     public void setWorld(World world) {
         this.world = world;
+    }
+
+    public Integer getI() {
+        return i;
+    }
+
+    public void setI(Integer i) {
+        this.i = i;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.service.ItemService;
 import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
@@ -20,16 +21,29 @@ import java.util.stream.Stream;
 public class PersonController {
     private final PersonService personService;
     private final WorldService worldService;
+    private final ItemService itemService;
 
-    public PersonController(PersonService personService, WorldService worldService) {
+    public PersonController(PersonService personService, WorldService worldService, ItemService itemService) {
         this.personService = personService;
         this.worldService = worldService;
+        this.itemService = itemService;
+    }
+
+    @PostMapping("/id/{personId}/items/{itemId}")
+    public void giveItemToPerson(
+            @PathVariable Integer itemId,
+            @PathVariable Integer personId
+    ) {
+        personService.addItemToPerson(
+                personService.get(personId, false),
+                itemService.get(itemId)
+        );
     }
 
     @Operation(summary = "Get a set of Characters which belong to the given world.")
     @GetMapping("/world/id/{worldId}")
-    List<PersonDto> getByWorld(
-            @PathVariable int worldId
+    public List<PersonDto> getByWorld(
+            @PathVariable Integer worldId
     ) {
         return personService.findByWorld(worldService.get(worldId))
                 .stream().map(PersonDto::fromPerson)
@@ -38,7 +52,7 @@ public class PersonController {
 
     @Operation(summary = "Get a set of Characters identified by their ids.")
     @GetMapping
-    List<PersonDto> getMultiple(
+    public List<PersonDto> getMultiple(
             @RequestParam(name = "id") Integer[] ids
     ) {
         return Stream.of(ids).map(this::getById).collect(Collectors.toList());

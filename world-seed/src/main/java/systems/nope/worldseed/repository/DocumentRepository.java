@@ -6,7 +6,7 @@ import systems.nope.worldseed.model.Document;
 
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
-    @Query("select max(d.id.id) from Document d")
+    @Query("select max(d.i) from Document d")
     Integer lastId();
 
 }

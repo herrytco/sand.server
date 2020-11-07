@@ -8,7 +8,6 @@ import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.repository.UserWorldRoleRepository;
 import systems.nope.worldseed.repository.WorldRepository;
 
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Optional;
 
@@ -19,19 +18,19 @@ public class WorldService {
     private final RoleService roleService;
     private final UserWorldRoleRepository userWorldRoleRepository;
     private final CategoryService categoryService;
-    private final ArticleService articleService;
     private final PersonService personService;
 
     public WorldRepository getWorldRepository() {
         return worldRepository;
     }
 
-    public WorldService(WorldRepository worldRepository, RoleService roleService, UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService, ArticleService articleService, PersonService personService) {
+    public WorldService(WorldRepository worldRepository, RoleService roleService,
+                        UserWorldRoleRepository userWorldRoleRepository, CategoryService categoryService,
+                        PersonService personService) {
         this.worldRepository = worldRepository;
         this.roleService = roleService;
         this.userWorldRoleRepository = userWorldRoleRepository;
         this.categoryService = categoryService;
-        this.articleService = articleService;
         this.personService = personService;
     }
 
@@ -70,7 +69,6 @@ public class WorldService {
 
         if (world.isPresent()) {
             World result = world.get();
-            result.setArticles(articleService.getArticleRepository().findAllByWorld(result));
 
             for (Person p : result.getPersons())
                 personService.enrichPersonStats(p);
@@ -86,7 +84,6 @@ public class WorldService {
 
         if (world.isPresent()) {
             World result = world.get();
-            result.setArticles(articleService.getArticleRepository().findAllByWorld(result));
 
             for (Person p : result.getPersons())
                 personService.enrichPersonStats(p);
