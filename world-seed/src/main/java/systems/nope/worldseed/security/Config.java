@@ -51,6 +51,7 @@ public class Config extends WebSecurityConfigurerAdapter {
                 .antMatchers("/tokens").permitAll()
                 .antMatchers("/tile-sets/{\\d+}/tile/{\\d+}/tile.png").permitAll()
                 .antMatchers("/users").permitAll()
+                .antMatchers("/items/**").permitAll()
                 .antMatchers("/echo/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()

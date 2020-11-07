@@ -36,10 +36,6 @@ public class World {
     @NotNull
     String seed;
 
-    @OneToMany
-    @JoinColumn(name = "world")
-    List<Article> articles;
-
     public World() {
     }
 
@@ -95,14 +91,6 @@ public class World {
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
-    }
-
-    public List<Article> getArticles() {
-        return articles;
-    }
-
-    public void setArticles(List<Article> articles) {
-        this.articles = articles;
     }
 
     public List<StatSheet> getSheets() {

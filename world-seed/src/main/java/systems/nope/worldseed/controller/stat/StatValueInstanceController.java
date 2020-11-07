@@ -56,7 +56,7 @@ public class StatValueInstanceController {
 
         if (optionalStatValueInstanceSynthesized.isPresent()) {
             StatValueInstanceSynthesized stat = optionalStatValueInstanceSynthesized.get();
-            statSheetService.enrichStatInstance(stat);
+            personService.enrichStatInstance(stat);
 
             return StatValueInstanceDto.fromInstance(stat);
         }

@@ -15,11 +15,11 @@ public class DocumentService {
 
     public Document update(Document documentOld, String contentNew) {
         Document documentNew = new Document(
+                documentOld.getI(),
+                documentOld.getVersion() + 1,
                 contentNew,
-                documentOld.getWorld(),
-                documentOld.getId().getId(),
-                documentOld.getId().getVersion() + 1
-        );
+                documentOld.getWorld()
+                );
 
         documentRepository.save(documentNew);
 
@@ -31,18 +31,16 @@ public class DocumentService {
     }
 
     public Document add(World world, String richtext, int version) {
-        Integer lastId = documentRepository.lastId();
+        Integer lastI = documentRepository.lastId();
 
-        if (lastId == null)
-            lastId = 1;
-        else
-            lastId = lastId + 1;
+        if (lastI == null)
+            lastI = 1;
 
         Document document = new Document(
+                lastI + 1,
+                version,
                 richtext,
-                world,
-                lastId,
-                version
+                world
         );
         documentRepository.save(document);
 
