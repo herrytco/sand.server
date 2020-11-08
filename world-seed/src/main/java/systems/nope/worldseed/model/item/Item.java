@@ -34,7 +34,7 @@ public class Item {
     private Set<StatSheet> statSheets;
 
     @OneToMany(mappedBy = "item")
-    private List<StatValueItemInstance> statValues;
+    private List<StatValueItemInstance> statValueInstances;
 
     @ManyToOne
     @JoinColumn(name = "description_document")
@@ -88,12 +88,12 @@ public class Item {
         this.statSheets = statSheets;
     }
 
-    public List<StatValueItemInstance> getStatValues() {
-        return statValues;
+    public List<StatValueItemInstance> getStatValueInstances() {
+        return statValueInstances;
     }
 
-    public void setStatValues(List<StatValueItemInstance> statValues) {
-        this.statValues = statValues;
+    public void setStatValueInstances(List<StatValueItemInstance> statValues) {
+        this.statValueInstances = statValues;
     }
 
     public Set<Action> getActions() {

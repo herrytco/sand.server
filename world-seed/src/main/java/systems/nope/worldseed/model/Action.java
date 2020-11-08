@@ -25,6 +25,10 @@ public class Action {
     @NotNull
     private String formula;
 
+    @NotBlank
+    @NotNull
+    private String invokeMessage;
+
     @ManyToMany
     @JoinTable(
             name = "action_required_stat_sheet",
@@ -71,5 +75,13 @@ public class Action {
 
     public void setRequiredStatSheets(Set<StatSheet> requiredStatSheets) {
         this.requiredStatSheets = requiredStatSheets;
+    }
+
+    public String getInvokeMessage() {
+        return invokeMessage;
+    }
+
+    public void setInvokeMessage(String invokeMessage) {
+        this.invokeMessage = invokeMessage;
     }
 }

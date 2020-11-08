@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.value.StatValue;
+import systems.nope.worldseed.util.expression.Symbol;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "stat_value_instance")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class StatValuePersonInstance {
+public class StatValuePersonInstance implements Symbol {
 
     @Id
     @GeneratedValue
@@ -81,6 +82,11 @@ public class StatValuePersonInstance {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String getSymbolIdentifier() {
+        return getStatValue().getNameShort();
     }
 
     public Integer getValue() {

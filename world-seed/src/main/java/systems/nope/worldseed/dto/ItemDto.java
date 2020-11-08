@@ -33,7 +33,7 @@ public class ItemDto {
                         .collect(Collectors.toSet())
         );
         dto.setStatValueInstances(
-                item.getStatValues().stream()
+                item.getStatValueInstances().stream()
                         .map(StatValueItemInstanceDto::fromInstance)
                         .collect(Collectors.toSet())
         );

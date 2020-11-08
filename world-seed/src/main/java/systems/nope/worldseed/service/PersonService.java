@@ -17,7 +17,7 @@ import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.PersonRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceConstantRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceSynthesizedRepository;
-import systems.nope.worldseed.util.ExpressionUtil;
+import systems.nope.worldseed.util.expression.ExpressionUtil;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -266,6 +266,20 @@ public class PersonService {
     }
 
     public void addItemToPerson(Person person, Item item) {
+        final Set<StatSheet> requiredStatSheets = new HashSet<>();
+
+        item.getActions().forEach((action -> {
+            requiredStatSheets.addAll(action.getRequiredStatSheets());
+        }));
+
+        Set<StatSheet> groundedRequiredStatSheets = statSheetService.groundStatSheets(requiredStatSheets);
+        Set<StatSheet> providedStatSheets = new HashSet<>(item.getStatSheets());
+        providedStatSheets.addAll(person.getStatSheets());
+        providedStatSheets = statSheetService.groundStatSheets(providedStatSheets);
+
+        if (!providedStatSheets.containsAll(groundedRequiredStatSheets))
+            throw new ImpossibleException();
+
         person.getItems().add(item);
         personRepository.save(person);
     }
@@ -274,7 +288,7 @@ public class PersonService {
      * @param statSheets - sheets the tree should constructed of
      * @return - forest of dependencies of all given sheets
      */
-    private List<SheetNode> constructSheetForest(List<StatSheet> statSheets) {
+    public List<SheetNode> constructSheetForest(List<StatSheet> statSheets) {
         List<StatSheet> statSheetsWorkingSet = new LinkedList<>(statSheets);
         List<SheetNode> forest = new LinkedList<>();
         List<StatSheet> used = new LinkedList<>();

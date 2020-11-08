@@ -53,6 +53,7 @@ public class Config extends WebSecurityConfigurerAdapter {
                 .antMatchers("/users").permitAll()
                 .antMatchers("/items/**").permitAll()
                 .antMatchers("/actions/**").permitAll()
+                .antMatchers("/persons/**").permitAll()
                 .antMatchers("/echo/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()

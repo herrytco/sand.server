@@ -19,6 +19,8 @@ public class ActionDto {
 
     private Set<Integer> requiredStatSheets;
 
+    private String invokeMessageTemplate;
+
     public static ActionDto fromAction(Action action) {
         ActionDto dto = new ActionDto();
 
@@ -26,6 +28,7 @@ public class ActionDto {
         dto.setName(action.getName());
         dto.setDescription(action.getDescription());
         dto.setFormula(action.getFormula());
+        dto.setInvokeMessageTemplate(action.getInvokeMessage());
 
         dto.setRequiredStatSheets(
                 action.getRequiredStatSheets()

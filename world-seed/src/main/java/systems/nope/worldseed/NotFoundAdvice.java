@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.FilesystemException;
+import systems.nope.worldseed.exception.ImpossibleException;
 import systems.nope.worldseed.exception.NotFoundException;
 
 @ControllerAdvice
@@ -23,6 +24,13 @@ public class NotFoundAdvice {
     @ExceptionHandler(AlreadyExistingException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     String alreadyExistsHandler(AlreadyExistingException e) {
+        return e.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ImpossibleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String impossible(ImpossibleException e) {
         return e.getMessage();
     }
 

@@ -1,4 +1,4 @@
-package systems.nope.worldseed.util;
+package systems.nope.worldseed.util.expression;
 
 import systems.nope.worldseed.constants.ExpressionConstants;
 

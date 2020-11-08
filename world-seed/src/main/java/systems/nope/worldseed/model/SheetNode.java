@@ -69,4 +69,8 @@ public class SheetNode {
     public StatSheet getSheet() {
         return sheet;
     }
+
+    public List<SheetNode> getChildren() {
+        return children;
+    }
 }

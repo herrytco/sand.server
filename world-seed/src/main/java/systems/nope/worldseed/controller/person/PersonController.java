@@ -29,7 +29,7 @@ public class PersonController {
         this.itemService = itemService;
     }
 
-    @PostMapping("/id/{personId}/items/{itemId}")
+    @PostMapping("/{personId}/items/{itemId}")
     public void giveItemToPerson(
             @PathVariable Integer itemId,
             @PathVariable Integer personId
