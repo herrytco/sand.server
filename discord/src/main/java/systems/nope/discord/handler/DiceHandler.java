@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import systems.nope.discord.event.party.*;
+import systems.nope.discord.event.person.item.ActionEvent;
 import systems.nope.discord.event.person.link.CheckLinkEvent;
 import systems.nope.discord.event.person.link.LinkEvent;
 import systems.nope.discord.event.person.link.RelinkEvent;
@@ -117,6 +118,28 @@ public class DiceHandler extends ListenerAdapter {
             DiceEvent de = null;
 
             switch (command[0]) {
+                case "!action":
+                    if (command.length != 3) {
+                        DiscordUtil.sendMessage(
+                                event,
+                                "Please use the command like this: \"!action <ITEM-ID> <ACTION-ID>\". It's not that hard, thank you sir."
+                        );
+                        break;
+                    }
+
+                    Optional<Integer> optionalItemId = parseInt(command[1], event, "The Item-ID has to be numeric, sir. Like 1, 2, 3 or even 4.");
+                    Optional<Integer> optionalActionId = parseInt(command[2], event, "The Action-ID has to be numeric, sir. Like 1, 2, 3 or even 4.");
+
+                    if(optionalItemId.isEmpty() || optionalActionId.isEmpty())
+                        break;
+
+                    de = new ActionEvent(
+                            event,
+                            optionalItemId.get(),
+                            optionalActionId.get()
+                    );
+                    break;
+
                 case "!proll":
                     if (command.length == 2) {
                         Optional<Integer> modifier = parseInt(command[1], event, "The modifier has to be a whole number. Like 1, 2 or 3 ... you learn that in elementary school usually.");

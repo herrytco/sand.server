@@ -1,6 +1,7 @@
 package systems.nope.discord.util;
 
 import net.dv8tion.jda.api.entities.Member;
+import systems.nope.discord.constants.EmoteConstants;
 import systems.nope.discord.model.DiceResult;
 import systems.nope.discord.constants.ServerConstants;
 
@@ -35,12 +36,12 @@ public class DiceUtils {
         int best = diceTypes.getOrDefault(member, 20);
 
         if (result == 1)
-            return ServerConstants.emoteD20Result1;
+            return EmoteConstants.emoteD20Result1;
 
         if (result == best)
-            return ServerConstants.emoteD20Result20;
+            return EmoteConstants.emoteD20Result20;
 
-        return ServerConstants.emoteD20Result2To19;
+        return EmoteConstants.emoteD20Result2To19;
     }
 
     /**

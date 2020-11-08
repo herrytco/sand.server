@@ -1,6 +1,7 @@
 package systems.nope.discord.event.person.roll;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import systems.nope.discord.constants.EmoteConstants;
 import systems.nope.discord.model.DiceResult;
 import systems.nope.discord.model.person.Person;
 import systems.nope.discord.model.person.StatSheet;
@@ -58,7 +59,7 @@ public class AttributeRoleEvent extends DiceEvent {
                 "%s%d + %s%d = %d",
                 DiceUtils.getEmojiForResult(getAuthor(), result.getResult()),
                 result.getEffectiveResult(),
-                ServerConstants.emoteAttributeIcon,
+                EmoteConstants.emoteAttributeIcon,
                 statToRollOn.getValue(),
                 result.getEffectiveResult() + statToRollOn.getValue()
         );
