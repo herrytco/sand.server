@@ -83,6 +83,7 @@ public class ActionService {
         message = message.replaceAll("\\$RESULT", String.valueOf(result));
         message = message.replaceAll("\\$FORMULA", formula);
         message = message.replaceAll("\\$ITEM", item.getName());
+        message = message.replaceAll("\\$ACTION", action.getName());
 
         return InvokeActionDto.fromAction(
                 action,
