@@ -1,4 +1,4 @@
-package systems.nope.discord.event.person;
+package systems.nope.discord.event.person.link;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.event.DiceEvent;
@@ -17,19 +17,11 @@ public class UnlinkEvent extends DiceEvent {
     @Override
     public void handle() {
         try {
-            if (LinkUtils.unlinkMember(getAuthor())) {
-                message = "Link removed. You can now link to a new character sir.";
-                try {
-                    LinkUtils.revertPersonNicknamingFromMember(getAuthor());
-                } catch (IOException e) {
-                    System.out.println("Error reading from file. " + e.getMessage());
-                }
-            } else
-                message = "You are not linked to a character. Are you REALLY sure you linked before?";
+            message = "Link removed. You can now link to a new character sir.";
+            LinkUtils.revertPersonNicknamingFromMember(getAuthor());
         } catch (IOException e) {
             message = "Something bad happened, are you now linked forever?";
         }
-
 
         super.handle();
     }

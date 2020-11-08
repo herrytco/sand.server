@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class LinkUtils {
-    private static final Map<Member, Person> playerChars = new HashMap<>();
     private static final LinkFileManager fileManager = new LinkFileManager();
 
     /**
@@ -23,10 +22,64 @@ public class LinkUtils {
      * @return the stored person for a member
      */
     public static Optional<Person> getPersonForMember(Member member) {
-        if (playerChars.containsKey(member))
-            return Optional.of(playerChars.get(member));
+        try {
+            Person person = relinkPerson(member);
+
+            if (person != null)
+                return Optional.of(person);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return Optional.empty();
+    }
+
+    /**
+     * Tries to reestablish the link with the persisted apiKey.
+     *
+     * @param member - discord user
+     * @return retrieved World.Seed character from the backend
+     * @throws IOException - problem in the filesystem
+     */
+    public static Person relinkPerson(Member member) throws IOException {
+        String key = (String) fileManager.getValue(member.getId(), "links.json");
+
+        return linkMemberToPersonIdentifiedByApiKey(member, key);
+    }
+
+    /**
+     * @param member - discord user
+     * @param apiKey - 256 character ID of a World.Seed character
+     * @return the retrieved person for a member
+     */
+    public static Person linkMemberToPersonIdentifiedByApiKey(Member member, String apiKey) throws IOException {
+        String token = BackendUtil.getToken();
+
+        if (token != null) {
+            String response = BackendUtil.sendRequest(String.format("%s/persons/api/%s", ServerConstants.urlBackend(), apiKey));
+
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                HashMap<String, Object> data = mapper.readValue(response, HashMap.class);
+
+                Person linkedPerson = Person.fromJson(data);
+
+                enhancePerson(linkedPerson);
+
+                renameMemberToPerson(member, linkedPerson);
+                storeLink(member, apiKey);
+
+                return linkedPerson;
+            } catch (MismatchedInputException | JsonParseException e) {
+                if (apiKey != null)
+                    System.out.println("No data for apiKey: " + apiKey.substring(0, Math.min(apiKey.length(), 20)) + "...");
+                else
+                    System.out.println("No API key stored.");
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -37,23 +90,6 @@ public class LinkUtils {
      */
     public static void storeLink(Member member, String apiKey) throws IOException {
         fileManager.putKeyValuePair(member.getId(), apiKey, "links.json");
-    }
-
-    /**
-     * deletes the link to a Person
-     *
-     * @param member - discord user
-     * @return if a link existed
-     */
-    public static boolean unlinkMember(Member member) throws IOException {
-        if (playerChars.containsKey(member)) {
-            playerChars.remove(member);
-            return true;
-        }
-
-        fileManager.deleteKey(member.getId(), "links.json");
-
-        return false;
     }
 
     /**
@@ -70,7 +106,7 @@ public class LinkUtils {
             fileManager.putKeyValuePair(member.getId(), DiscordUtil.getMemberName(member), "names.json");
 
         } catch (HierarchyException e) {
-            System.out.println(String.format("Cannot rename %s due to hierarchy issues.", member.getEffectiveName()));
+            System.out.printf("Cannot rename %s due to hierarchy issues.%n", member.getEffectiveName());
         }
     }
 
@@ -87,22 +123,9 @@ public class LinkUtils {
             try {
                 member.modifyNickname(storedName).queue();
             } catch (HierarchyException e) {
-                System.out.println(String.format("Cannot rename %s due to hierarchy issues.\nMessage: %s", member.getEffectiveName(), e.getMessage()));
+                System.out.printf("Cannot rename %s due to hierarchy issues.\nMessage: %s%n", member.getEffectiveName(), e.getMessage());
             }
         }
-    }
-
-    /**
-     * Tries to reestablish the link with the persisted apiKey.
-     *
-     * @param member - discord user
-     * @return retrieved World.Seed character from the backend
-     * @throws IOException - problem in the filesystem
-     */
-    public static Person relinkPerson(Member member) throws IOException {
-        String key = (String) fileManager.getValue(member.getId(), "links.json");
-
-        return linkMemberToPersonIdentifiedByApiKey(member, key);
     }
 
     /**
@@ -183,43 +206,5 @@ public class LinkUtils {
 
     }
 
-    /**
-     * @param member - discord user
-     * @param apiKey - 256 character ID of a World.Seed character
-     * @return the retrieved person for a member
-     */
-    public static Person linkMemberToPersonIdentifiedByApiKey(Member member, String apiKey) throws IOException {
-        String token = BackendUtil.getToken();
 
-        if (token != null) {
-            String response = BackendUtil.sendRequest(String.format("%s/persons/api/%s", ServerConstants.urlBackend(), apiKey));
-
-            System.out.println(response);
-
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                HashMap<String, Object> data = mapper.readValue(response, HashMap.class);
-
-                Person linkedPerson = Person.fromJson(data);
-
-                playerChars.put(member, linkedPerson);
-
-                enhancePerson(linkedPerson);
-
-                renameMemberToPerson(member, linkedPerson);
-                storeLink(member, apiKey);
-
-                return linkedPerson;
-            } catch (MismatchedInputException | JsonParseException e) {
-                if (apiKey != null)
-                    System.out.println("No data for apiKey: " + apiKey.substring(0, Math.min(apiKey.length(), 20)) + "...");
-                else
-                    System.out.println("No API key stored.");
-                unlinkMember(member);
-                return null;
-            }
-        }
-
-        return null;
-    }
 }

@@ -1,4 +1,4 @@
-package systems.nope.discord.event.person;
+package systems.nope.discord.event.person.link;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.event.DiceEvent;

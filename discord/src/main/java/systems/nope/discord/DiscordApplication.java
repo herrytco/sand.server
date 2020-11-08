@@ -33,7 +33,6 @@ public class DiscordApplication {
         System.out.printf("Using Key '%s'%n", keyDiscordToken);
 
         try {
-
             JDA jda = JDABuilder.createDefault(key)
                     .addEventListeners(new DiceHandler())
                     .addEventListeners(new PrivateHandler())
