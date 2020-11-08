@@ -6,9 +6,11 @@ import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "stat_value_instance_constant")
 public class StatValuePersonInstanceConstant extends StatValuePersonInstance {
     @NotNull
     private Integer value;

@@ -6,9 +6,11 @@ import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
+@Table(name = "stat_value_instance_synthesized")
 public class StatValuePersonInstanceSynthesized extends StatValuePersonInstance {
     @Transient
     private Integer value;
