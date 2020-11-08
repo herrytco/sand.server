@@ -1,6 +1,7 @@
 package systems.nope.worldseed.model.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.Document;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
@@ -26,14 +27,6 @@ public class Item {
 
     @ManyToMany
     @JoinTable(
-            name = "item_required_stat_sheet",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "stat_sheet_id")
-    )
-    private Set<StatSheet> requiredStatSheets;
-
-    @ManyToMany
-    @JoinTable(
             name = "item_stat_sheet",
             joinColumns = @JoinColumn(name = "item_id"),
             inverseJoinColumns = @JoinColumn(name = "stat_sheet_id")
@@ -46,6 +39,14 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "description_document")
     private Document descriptionDocument;
+
+    @ManyToMany
+    @JoinTable(
+            name = "item_action",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "action_id")
+    )
+    private Set<Action> actions;
 
     public Integer getId() {
         return id;
@@ -71,14 +72,6 @@ public class Item {
         this.world = world;
     }
 
-    public Set<StatSheet> getRequiredStatSheets() {
-        return requiredStatSheets;
-    }
-
-    public void setRequiredStatSheets(Set<StatSheet> requiredStatSheets) {
-        this.requiredStatSheets = requiredStatSheets;
-    }
-
     public Document getDescriptionDocument() {
         return descriptionDocument;
     }
@@ -101,5 +94,13 @@ public class Item {
 
     public void setStatValues(List<StatValueItemInstance> statValues) {
         this.statValues = statValues;
+    }
+
+    public Set<Action> getActions() {
+        return actions;
+    }
+
+    public void setActions(Set<Action> actions) {
+        this.actions = actions;
     }
 }

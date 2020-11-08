@@ -1,12 +1,14 @@
-package systems.nope.worldseed.dto.stat;
+package systems.nope.worldseed.dto.stat.item;
 
+import systems.nope.worldseed.dto.stat.StatValueConstantDto;
+import systems.nope.worldseed.dto.stat.StatValueDto;
 import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.value.StatValueConstant;
 
 public class StatValueItemInstanceDto {
     private final int id;
 
-    private final int statValue;
+    private final StatValueDto statValue;
 
     private final int item;
 
@@ -14,7 +16,7 @@ public class StatValueItemInstanceDto {
 
     private final int value;
 
-    public StatValueItemInstanceDto(Integer id, Integer statValue, Integer item, String type, Integer value) {
+    public StatValueItemInstanceDto(Integer id, StatValueDto statValue, Integer item, String type, Integer value) {
         this.id = id;
         this.statValue = statValue;
         this.item = item;
@@ -26,7 +28,7 @@ public class StatValueItemInstanceDto {
         return id;
     }
 
-    public int getStatValue() {
+    public StatValueDto getStatValue() {
         return statValue;
     }
 
@@ -45,7 +47,7 @@ public class StatValueItemInstanceDto {
     public static StatValueItemInstanceDto fromInstance(StatValueItemInstance instance) {
         return new StatValueItemInstanceDto(
                 instance.getId(),
-                instance.getStatValue().getId(),
+                StatValueConstantDto.fromStatValueConstant((StatValueConstant) instance.getStatValue()),
                 instance.getItem().getId(),
                 instance.getType(),
                 instance.getValue()

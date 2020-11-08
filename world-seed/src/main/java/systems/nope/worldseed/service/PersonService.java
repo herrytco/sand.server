@@ -266,13 +266,6 @@ public class PersonService {
     }
 
     public void addItemToPerson(Person person, Item item) {
-        Set<StatSheet> sheets = item.getRequiredStatSheets();
-
-        Set<StatSheet> groundedPersonSheets = statSheetService.groundStatSheets(person.getStatSheets());
-
-        if (!groundedPersonSheets.containsAll(sheets))
-            throw new ImpossibleException();
-
         person.getItems().add(item);
         personRepository.save(person);
     }
