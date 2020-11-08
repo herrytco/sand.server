@@ -1,12 +1,15 @@
 package systems.nope.worldseed.model.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.Document;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
+import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,15 +27,26 @@ public class Item {
 
     @ManyToMany
     @JoinTable(
-            name = "item_required_stat_sheet",
+            name = "item_stat_sheet",
             joinColumns = @JoinColumn(name = "item_id"),
             inverseJoinColumns = @JoinColumn(name = "stat_sheet_id")
     )
-    private Set<StatSheet> requiredStatSheets;
+    private Set<StatSheet> statSheets;
+
+    @OneToMany(mappedBy = "item")
+    private List<StatValueItemInstance> statValueInstances;
 
     @ManyToOne
     @JoinColumn(name = "description_document")
     private Document descriptionDocument;
+
+    @ManyToMany
+    @JoinTable(
+            name = "item_action",
+            joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "action_id")
+    )
+    private Set<Action> actions;
 
     public Integer getId() {
         return id;
@@ -58,19 +72,35 @@ public class Item {
         this.world = world;
     }
 
-    public Set<StatSheet> getRequiredStatSheets() {
-        return requiredStatSheets;
-    }
-
-    public void setRequiredStatSheets(Set<StatSheet> requiredStatSheets) {
-        this.requiredStatSheets = requiredStatSheets;
-    }
-
     public Document getDescriptionDocument() {
         return descriptionDocument;
     }
 
     public void setDescriptionDocument(Document descriptionDocument) {
         this.descriptionDocument = descriptionDocument;
+    }
+
+    public Set<StatSheet> getStatSheets() {
+        return statSheets;
+    }
+
+    public void setStatSheets(Set<StatSheet> statSheets) {
+        this.statSheets = statSheets;
+    }
+
+    public List<StatValueItemInstance> getStatValueInstances() {
+        return statValueInstances;
+    }
+
+    public void setStatValueInstances(List<StatValueItemInstance> statValues) {
+        this.statValueInstances = statValues;
+    }
+
+    public Set<Action> getActions() {
+        return actions;
+    }
+
+    public void setActions(Set<Action> actions) {
+        this.actions = actions;
     }
 }

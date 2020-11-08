@@ -1,8 +1,8 @@
-package systems.nope.worldseed.dto;
+package systems.nope.worldseed.dto.stat.person;
 
-import systems.nope.worldseed.model.stat.instance.StatValueInstance;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
 
-public class StatValueInstanceDto {
+public class StatValuePersonInstanceDto {
     private final int id;
 
     private final int statValue;
@@ -13,7 +13,7 @@ public class StatValueInstanceDto {
 
     private final int value;
 
-    public StatValueInstanceDto(Integer id, Integer statValue, Integer person, String type, Integer value) {
+    public StatValuePersonInstanceDto(Integer id, Integer statValue, Integer person, String type, Integer value) {
         this.id = id;
         this.statValue = statValue;
         this.person = person;
@@ -41,8 +41,8 @@ public class StatValueInstanceDto {
         return value;
     }
 
-    public static StatValueInstanceDto fromInstance(StatValueInstance instance) {
-        return new StatValueInstanceDto(
+    public static StatValuePersonInstanceDto fromInstance(StatValuePersonInstance instance) {
+        return new StatValuePersonInstanceDto(
                 instance.getId(),
                 instance.getStatValue().getId(),
                 instance.getPerson().getId(),

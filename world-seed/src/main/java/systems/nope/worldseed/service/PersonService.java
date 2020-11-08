@@ -8,16 +8,16 @@ import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.StatValueInstance;
-import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
-import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
+import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.PersonRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceConstantRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceSynthesizedRepository;
-import systems.nope.worldseed.util.ExpressionUtil;
+import systems.nope.worldseed.util.expression.ExpressionUtil;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -121,11 +121,11 @@ public class PersonService {
         }
 
         for (StatValue value : sheet.getStatValues()) {
-            StatValueInstance instance = null;
+            StatValuePersonInstance instance = null;
 
             boolean duplicate = false;
 
-            for (StatValueInstance i : person.getStatValues())
+            for (StatValuePersonInstance i : person.getStatValues())
                 if (i.getStatValue().getId() == value.getId()) {
                     duplicate = true;
                     break;
@@ -135,11 +135,11 @@ public class PersonService {
                 continue;
 
             if (value instanceof StatValueConstant) {
-                instance = new StatValueInstanceConstant(person.getWorld(), value, person, ((StatValueConstant) value).getInitalValue());
-                statValueInstanceConstantRepository.save((StatValueInstanceConstant) instance);
+                instance = new StatValuePersonInstanceConstant(person.getWorld(), value, person, ((StatValueConstant) value).getInitalValue());
+                statValueInstanceConstantRepository.save((StatValuePersonInstanceConstant) instance);
             } else if (value instanceof StatValueSynthesized) {
-                instance = new StatValueInstanceSynthesized(person.getWorld(), value, person);
-                statValueInstanceSynthesizedRepository.save((StatValueInstanceSynthesized) instance);
+                instance = new StatValuePersonInstanceSynthesized(person.getWorld(), value, person);
+                statValueInstanceSynthesizedRepository.save((StatValuePersonInstanceSynthesized) instance);
             }
 
             if (instance != null)
@@ -155,7 +155,7 @@ public class PersonService {
      *
      * @param instanceSynthesized - instance to be enriched
      */
-    public void enrichStatInstance(StatValueInstanceSynthesized instanceSynthesized) {
+    public void enrichStatInstance(StatValuePersonInstanceSynthesized instanceSynthesized) {
         Person person = instanceSynthesized.getPerson();
         List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
 
@@ -172,13 +172,13 @@ public class PersonService {
                     StatSheet sheet = scope.getSheet();
 
                     // substitute variables in formula with Persons stats
-                    for (StatValueInstance stati : person.getStatValues()) {
+                    for (StatValuePersonInstance stati : person.getStatValues()) {
                         if (stati.getStatValue().getSheet() == sheet) {
-                            if (stati instanceof StatValueInstanceConstant)
+                            if (stati instanceof StatValuePersonInstanceConstant)
                                 formula = formula.replaceAll(stati.getStatValue().getNameShort(),
-                                        ((StatValueInstanceConstant) stati).getValue().toString());
-                            else if (stati instanceof StatValueInstanceSynthesized) {
-                                StatValueInstanceSynthesized s = ((StatValueInstanceSynthesized) stati);
+                                        ((StatValuePersonInstanceConstant) stati).getValue().toString());
+                            else if (stati instanceof StatValuePersonInstanceSynthesized) {
+                                StatValuePersonInstanceSynthesized s = ((StatValuePersonInstanceSynthesized) stati);
 
                                 if (s.getValue() != null)
                                     formula = formula.replaceAll(stati.getStatValue().getNameShort(),
@@ -207,10 +207,10 @@ public class PersonService {
     public void enrichPersonStats(Person person) {
         List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
 
-        for (StatValueInstance statValueInstance : person.getStatValues()) {
+        for (StatValuePersonInstance statValueInstance : person.getStatValues()) {
 
-            if (statValueInstance instanceof StatValueInstanceSynthesized) {
-                StatValueInstanceSynthesized statInstance = (StatValueInstanceSynthesized) statValueInstance;
+            if (statValueInstance instanceof StatValuePersonInstanceSynthesized) {
+                StatValuePersonInstanceSynthesized statInstance = (StatValuePersonInstanceSynthesized) statValueInstance;
                 StatValueSynthesized stat = (StatValueSynthesized) statInstance.getStatValue();
 
                 String formula = stat.getFormula();
@@ -226,15 +226,15 @@ public class PersonService {
                             StatSheet sheet = scope.getSheet();
 
                             // substitute variables in formula with Persons stats
-                            for (StatValueInstance stati : person.getStatValues()) {
+                            for (StatValuePersonInstance stati : person.getStatValues()) {
                                 if (stati.getStatValue().getSheet() == sheet) {
-                                    if (stati instanceof StatValueInstanceConstant)
+                                    if (stati instanceof StatValuePersonInstanceConstant)
                                         formula = formula.replaceAll(
                                                 " " + stati.getStatValue().getNameShort() + " ",
                                                 " " + stati.getValue().toString() + " "
                                         );
-                                    else if (stati instanceof StatValueInstanceSynthesized) {
-                                        StatValueInstanceSynthesized s = ((StatValueInstanceSynthesized) stati);
+                                    else if (stati instanceof StatValuePersonInstanceSynthesized) {
+                                        StatValuePersonInstanceSynthesized s = ((StatValuePersonInstanceSynthesized) stati);
 
                                         if (s.getValue() != null)
                                             formula = formula.replaceAll(
@@ -266,11 +266,18 @@ public class PersonService {
     }
 
     public void addItemToPerson(Person person, Item item) {
-        Set<StatSheet> sheets = item.getRequiredStatSheets();
+        final Set<StatSheet> requiredStatSheets = new HashSet<>();
 
-        Set<StatSheet> groundedPersonSheets = statSheetService.groundStatSheets(person.getStatSheets());
+        item.getActions().forEach((action -> {
+            requiredStatSheets.addAll(action.getRequiredStatSheets());
+        }));
 
-        if (!groundedPersonSheets.containsAll(sheets))
+        Set<StatSheet> groundedRequiredStatSheets = statSheetService.groundStatSheets(requiredStatSheets);
+        Set<StatSheet> providedStatSheets = new HashSet<>(item.getStatSheets());
+        providedStatSheets.addAll(person.getStatSheets());
+        providedStatSheets = statSheetService.groundStatSheets(providedStatSheets);
+
+        if (!providedStatSheets.containsAll(groundedRequiredStatSheets))
             throw new ImpossibleException();
 
         person.getItems().add(item);
@@ -281,7 +288,7 @@ public class PersonService {
      * @param statSheets - sheets the tree should constructed of
      * @return - forest of dependencies of all given sheets
      */
-    private List<SheetNode> constructSheetForest(List<StatSheet> statSheets) {
+    public List<SheetNode> constructSheetForest(List<StatSheet> statSheets) {
         List<StatSheet> statSheetsWorkingSet = new LinkedList<>(statSheets);
         List<SheetNode> forest = new LinkedList<>();
         List<StatSheet> used = new LinkedList<>();

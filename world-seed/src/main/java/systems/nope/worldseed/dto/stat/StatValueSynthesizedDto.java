@@ -1,4 +1,4 @@
-package systems.nope.worldseed.dto;
+package systems.nope.worldseed.dto.stat;
 
 import lombok.Data;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;

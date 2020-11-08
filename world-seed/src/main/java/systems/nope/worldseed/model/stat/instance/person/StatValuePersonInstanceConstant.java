@@ -1,4 +1,4 @@
-package systems.nope.worldseed.model.stat.instance;
+package systems.nope.worldseed.model.stat.instance.person;
 
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.World;
@@ -6,24 +6,26 @@ import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class StatValueInstanceConstant extends StatValueInstance {
+@Table(name = "stat_value_instance_constant")
+public class StatValuePersonInstanceConstant extends StatValuePersonInstance {
     @NotNull
     private Integer value;
 
-    public StatValueInstanceConstant() {
+    public StatValuePersonInstanceConstant() {
         setType("constant");
     }
 
-    public StatValueInstanceConstant(World world, StatValue statValue, Person person, @NotNull Integer value) {
+    public StatValuePersonInstanceConstant(World world, StatValue statValue, Person person, @NotNull Integer value) {
         super(world, statValue, person, "constant");
         this.value = value;
     }
 
-    public static StatValueInstanceConstant fromStatValueAndPerson(StatValueConstant statValue, Person person) {
-        return new StatValueInstanceConstant(
+    public static StatValuePersonInstanceConstant fromStatValueAndPerson(StatValueConstant statValue, Person person) {
+        return new StatValuePersonInstanceConstant(
                 statValue.getWorld(),
                 statValue,
                 person,
