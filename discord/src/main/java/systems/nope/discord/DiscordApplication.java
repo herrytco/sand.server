@@ -3,15 +3,13 @@ package systems.nope.discord;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import systems.nope.discord.eventlistener.dice.DiceHandler;
-import systems.nope.discord.eventlistener.dice.PrivateHandler;
-import systems.nope.discord.eventlistener.dice.ServerConstants;
-import systems.nope.discord.eventlistener.dice.file.DiscordFileManager;
+import systems.nope.discord.handler.DiceHandler;
+import systems.nope.discord.handler.PrivateHandler;
+import systems.nope.discord.constants.ServerConstants;
+import systems.nope.discord.file.DiscordFileManager;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 @SpringBootApplication
 public class DiscordApplication {
