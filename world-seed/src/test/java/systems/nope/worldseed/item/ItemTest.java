@@ -27,6 +27,7 @@ import systems.nope.worldseed.world.WorldTestUtil;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -138,6 +139,37 @@ public class ItemTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void getByIdTest() throws Exception {
+        World testWorld = worldTestUtil.getEnsuredInstance();
+        String token = userTestUtil.authenticateTestUser();
+
+        MvcResult result = mockMvc.perform(
+                post(String.format("%s/worlds/%d", ItemTestConstants.endpoint, testWorld.getId()))
+                        .header("Authorization", String.format("Bearer %s", token))
+                        .content(createAddItemRequest())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        ItemDto addedItem = builder.build().readValue(result.getResponse().getContentAsString(), ItemDto.class);
+        assertEquals(addedItem.getName(), ItemTestConstants.volatileItemName);
+
+        mockMvc.perform(
+                get(String.format("%s/worlds/%d/items/%d",
+                        ItemTestConstants.endpoint,
+                        testWorld.getId(),
+                        addedItem.getId())
+                ).header("Authorization", String.format("Bearer %s", token))
+                        .content(createAddItemRequest())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test

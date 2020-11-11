@@ -3,6 +3,7 @@ package systems.nope.worldseed.controller.item;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.request.AddItemRequest;
+import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.repository.item.ItemRepository;
 import systems.nope.worldseed.service.ItemService;
@@ -43,6 +44,19 @@ public class ItemController {
     ) {
         return itemRepository.findAllByWorld(worldService.get(worldId))
                 .stream().map(ItemDto::fromItem).collect(Collectors.toList());
+    }
+
+    @GetMapping("/worlds/{worldId}/items/{itemId}")
+    private ItemDto byId(
+            @PathVariable Integer worldId,
+            @PathVariable Integer itemId
+    ) {
+        Item result = itemService.get(itemId);
+
+        if(result.getWorld().getId() != worldId)
+            throw new NotFoundException(worldId);
+
+        return ItemDto.fromItem(result);
     }
 
     @GetMapping
