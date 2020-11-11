@@ -13,10 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.request.AddItemRequest;
+import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
+import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
+import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.repository.item.ItemRepository;
 import systems.nope.worldseed.service.ItemService;
+import systems.nope.worldseed.stat.StatSheetTestUtil;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 
@@ -35,6 +39,12 @@ public class ItemTest {
 
     @Autowired
     private WorldTestUtil worldTestUtil;
+
+    @Autowired
+    private StatSheetTestUtil statSheetTestUtil;
+
+    @Autowired
+    private ItemTestUtil itemTestUtil;
 
     @Autowired
     private ItemRepository itemRepository;
@@ -128,5 +138,28 @@ public class ItemTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addSheetToPerson() throws Exception {
+        StatSheet testSheet = statSheetTestUtil.ensureTestStatSheet();
+        Item testItem = itemTestUtil.ensureTestItemExists();
+
+        mockMvc.perform(
+                post("/item-stat-sheet-mapping")
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                builder.build().writeValueAsString(
+                                        new AddResourceToStatSheetRequest(
+                                                testItem.getId(),
+                                                testSheet.getId()
+                                        )
+                                )
+                        )
+        ).andDo(print());
+
+        System.out.println("done");
     }
 }

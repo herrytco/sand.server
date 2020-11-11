@@ -7,9 +7,12 @@ import systems.nope.worldseed.model.Document;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
+import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstanceConstant;
 import systems.nope.worldseed.model.stat.value.StatValue;
+import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.repository.item.ItemRepository;
+import systems.nope.worldseed.repository.stat.StatValueItemInstanceConstantRepository;
 
 import java.util.Optional;
 
@@ -17,10 +20,13 @@ import java.util.Optional;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final DocumentService documentService;
+    private final StatValueItemInstanceConstantRepository statValueItemInstanceConstantRepository;
 
-    public ItemService(ItemRepository itemRepository, DocumentService documentService) {
+    public ItemService(ItemRepository itemRepository, DocumentService documentService,
+                       StatValueItemInstanceConstantRepository statValueItemInstanceConstantRepository) {
         this.itemRepository = itemRepository;
         this.documentService = documentService;
+        this.statValueItemInstanceConstantRepository = statValueItemInstanceConstantRepository;
     }
 
     public void delete(Item item) {
@@ -69,6 +75,7 @@ public class ItemService {
      * @param sheet - target stat sheet
      */
     public void addStatSheetToItem(Item item, StatSheet sheet) {
+        // recursively add all parent stat sheets
         if (sheet.getParent() != null)
             addStatSheetToItem(item, sheet.getParent());
 
@@ -78,29 +85,32 @@ public class ItemService {
         }
 
         for (StatValue value : sheet.getStatValues()) {
-            StatValuePersonInstance instance = null;
+            StatValueItemInstanceConstant instance = null;
 
             boolean duplicate = false;
 
-//            for (StatValuePersonInstance i : person.getStatValues())
-//                if (i.getStatValue().getId() == value.getId()) {
-//                    duplicate = true;
-//                    break;
-//                }
-//
-//            if (duplicate)
-//                continue;
-//
-//            if (value instanceof StatValueConstant) {
-//                instance = new StatValuePersonInstanceConstant(person.getWorld(), value, person, ((StatValueConstant) value).getInitalValue());
-//                statValueInstanceConstantRepository.save((StatValuePersonInstanceConstant) instance);
-//            } else if (value instanceof StatValueSynthesized) {
-//                instance = new StatValuePersonInstanceSynthesized(person.getWorld(), value, person);
-//                statValueInstanceSynthesizedRepository.save((StatValuePersonInstanceSynthesized) instance);
-//            }
-//
-//            if (instance != null)
-//                person.getStatValues().add(instance);
+            for (StatValueItemInstance i : item.getStatValueInstances())
+                if (i.getStatValue().getId() == value.getId()) {
+                    duplicate = true;
+                    break;
+                }
+
+            if (duplicate)
+                continue;
+
+            if (value instanceof StatValueConstant) {
+                instance = new StatValueItemInstanceConstant(
+                        item.getWorld(),
+                        value,
+                        item,
+                        ((StatValueConstant) value).getInitalValue()
+                );
+
+                statValueItemInstanceConstantRepository.save(instance);
+            }
+
+            item.getStatSheets().add(sheet);
+            itemRepository.save(item);
         }
 
         item.getStatSheets().add(sheet);

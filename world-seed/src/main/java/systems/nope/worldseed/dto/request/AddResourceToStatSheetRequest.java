@@ -1,23 +1,23 @@
 package systems.nope.worldseed.dto.request;
 
-public class AddPersonStatsheetRequest {
-    private int personId;
+public class AddResourceToStatSheetRequest {
+    private int targetId;
     private int statsheetId;
 
-    public AddPersonStatsheetRequest() {
+    public AddResourceToStatSheetRequest() {
     }
 
-    public AddPersonStatsheetRequest(int personId, int statsheetId) {
-        this.personId = personId;
+    public AddResourceToStatSheetRequest(int targetId, int statsheetId) {
+        this.targetId = targetId;
         this.statsheetId = statsheetId;
     }
 
-    public int getPersonId() {
-        return personId;
+    public int getTargetId() {
+        return targetId;
     }
 
-    public void setPersonId(int personId) {
-        this.personId = personId;
+    public void setTargetId(int targetId) {
+        this.targetId = targetId;
     }
 
     public int getStatsheetId() {
@@ -31,7 +31,7 @@ public class AddPersonStatsheetRequest {
     @Override
     public String toString() {
         return "AddPersonStatsheetRequest{" +
-                "personId=" + personId +
+                "personId=" + targetId +
                 ", statsheetId=" + statsheetId +
                 '}';
     }

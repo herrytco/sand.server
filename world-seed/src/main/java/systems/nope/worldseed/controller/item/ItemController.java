@@ -1,4 +1,4 @@
-package systems.nope.worldseed.controller;
+package systems.nope.worldseed.controller.item;
 
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ItemDto;
@@ -6,7 +6,6 @@ import systems.nope.worldseed.dto.request.AddItemRequest;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.repository.item.ItemRepository;
 import systems.nope.worldseed.service.ItemService;
-import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.service.WorldService;
 
 import java.util.List;
@@ -16,17 +15,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
 
-    public ItemController(ItemRepository itemRepository, ItemService itemService, StatSheetService statSheetService,
-                          WorldService worldService) {
+    public ItemController(ItemRepository itemRepository, ItemService itemService, WorldService worldService) {
         this.itemRepository = itemRepository;
         this.itemService = itemService;
-        this.statSheetService = statSheetService;
         this.worldService = worldService;
     }
 
     private final ItemRepository itemRepository;
     private final ItemService itemService;
-    private final StatSheetService statSheetService;
     private final WorldService worldService;
 
     @PostMapping("/worlds/{worldId}")
