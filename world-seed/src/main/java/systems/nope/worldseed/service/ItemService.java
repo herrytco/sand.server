@@ -1,7 +1,10 @@
 package systems.nope.worldseed.service;
 
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.NotFoundException;
+import systems.nope.worldseed.model.Document;
+import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
@@ -13,9 +16,20 @@ import java.util.Optional;
 @Service
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final DocumentService documentService;
 
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, DocumentService documentService) {
         this.itemRepository = itemRepository;
+        this.documentService = documentService;
+    }
+
+    public void delete(Item item) {
+        if (item.getDescriptionDocument() != null) {
+            documentService.delete(item.getDescriptionDocument());
+            item.setDescriptionDocument(null);
+        }
+
+        itemRepository.delete(item);
     }
 
     public Item get(Integer itemId) {
@@ -29,6 +43,23 @@ public class ItemService {
 
     public Optional<Item> find(Integer itemId) {
         return itemRepository.findById(itemId);
+    }
+
+    public Item add(World world, String name, String description) {
+        Optional<Item> referenceItem = itemRepository.findByWorldAndName(world, name);
+
+        if (referenceItem.isPresent())
+            throw new AlreadyExistingException(name);
+
+        Document descriptionDocument = documentService.add(world, description);
+
+        Item itemNew = new Item();
+        itemNew.setName(name);
+        itemNew.setWorld(world);
+        itemNew.setDescriptionDocument(descriptionDocument);
+        itemRepository.save(itemNew);
+
+        return itemNew;
     }
 
     /**

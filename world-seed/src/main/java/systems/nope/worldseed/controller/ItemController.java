@@ -1,12 +1,11 @@
 package systems.nope.worldseed.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ItemDto;
+import systems.nope.worldseed.dto.request.AddItemRequest;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.repository.item.ItemRepository;
+import systems.nope.worldseed.service.ItemService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.service.WorldService;
 
@@ -17,16 +16,30 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 public class ItemController {
 
-    public ItemController(ItemRepository itemRepository, StatSheetService statSheetService,
+    public ItemController(ItemRepository itemRepository, ItemService itemService, StatSheetService statSheetService,
                           WorldService worldService) {
         this.itemRepository = itemRepository;
+        this.itemService = itemService;
         this.statSheetService = statSheetService;
         this.worldService = worldService;
     }
 
     private final ItemRepository itemRepository;
+    private final ItemService itemService;
     private final StatSheetService statSheetService;
     private final WorldService worldService;
+
+    @PostMapping("/worlds/{worldId}")
+    private ItemDto add(
+            @PathVariable Integer worldId,
+            @RequestBody AddItemRequest request
+    ) {
+        return ItemDto.fromItem(itemService.add(
+                worldService.get(worldId),
+                request.getName(),
+                request.getDescription()
+        ));
+    }
 
     @GetMapping("/worlds/{worldId}")
     private List<ItemDto> forWorld(
