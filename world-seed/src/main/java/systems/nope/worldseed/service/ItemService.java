@@ -51,6 +51,25 @@ public class ItemService {
         return itemRepository.findById(itemId);
     }
 
+    public StatValueItemInstanceConstant getStatValueInstance(Integer id) {
+        Optional<StatValueItemInstanceConstant> optionalInstance = findStatValueInstance(id);
+
+        if(optionalInstance.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalInstance.get();
+    }
+
+    public Optional<StatValueItemInstanceConstant> findStatValueInstance(Integer id) {
+        return statValueItemInstanceConstantRepository.findById(id);
+    }
+
+    public StatValueItemInstanceConstant updateStatValueInstance(StatValueItemInstanceConstant target, Integer value) {
+        target.setValue(value);
+        statValueItemInstanceConstantRepository.save(target);
+        return target;
+    }
+
     public Item add(World world, String name, String description) {
         Optional<Item> referenceItem = itemRepository.findByWorldAndName(world, name);
 
