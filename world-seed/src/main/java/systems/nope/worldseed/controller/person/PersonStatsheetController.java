@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.service.PersonService;
-import systems.nope.worldseed.dto.request.AddPersonStatsheetRequest;
+import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
 import systems.nope.worldseed.dto.request.UpdateConstantStatValueIntanceRequest;
@@ -48,13 +48,13 @@ public class PersonStatsheetController {
     @Operation(summary = "Add a StatSheet identified by its id to a Character, identified by its id.")
     @PostMapping
     public void addStatsheetMapping(
-            @RequestBody AddPersonStatsheetRequest request
+            @RequestBody AddResourceToStatSheetRequest request
     ) {
         logger.info(request.toString());
-        Optional<Person> optionalPerson = personService.getPersonRepository().findById(request.getPersonId());
+        Optional<Person> optionalPerson = personService.getPersonRepository().findById(request.getTargetId());
 
         if (optionalPerson.isEmpty())
-            throw new NotFoundException(request.getPersonId());
+            throw new NotFoundException(request.getTargetId());
 
         Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findById(request.getStatsheetId());
 

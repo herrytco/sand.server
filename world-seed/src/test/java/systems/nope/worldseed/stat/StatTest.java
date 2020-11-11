@@ -95,7 +95,7 @@ public class StatTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 builder.build().writeValueAsString(
-                                        new AddPersonStatsheetRequest(
+                                        new AddResourceToStatSheetRequest(
                                                 testPerson.getId(),
                                                 testSheet.getId()
                                         )
@@ -119,7 +119,7 @@ public class StatTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 builder.build().writeValueAsString(
-                                        new AddPersonStatsheetRequest(
+                                        new AddResourceToStatSheetRequest(
                                                 testPerson.getId(),
                                                 testSheet.getId()
                                         )
@@ -185,7 +185,7 @@ public class StatTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 builder.build().writeValueAsString(
-                                        new AddPersonStatsheetRequest(
+                                        new AddResourceToStatSheetRequest(
                                                 testPerson.getId(),
                                                 testSheet.getId()
                                         )
@@ -245,7 +245,7 @@ public class StatTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 builder.build().writeValueAsString(
-                                        new AddPersonStatsheetRequest(
+                                        new AddResourceToStatSheetRequest(
                                                 testPerson.getId(),
                                                 testSheet.getId()
                                         )
@@ -286,7 +286,7 @@ public class StatTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 builder.build().writeValueAsString(
-                                        new AddPersonStatsheetRequest(
+                                        new AddResourceToStatSheetRequest(
                                                 testPerson.getId(),
                                                 testSheet.getId()
                                         )
