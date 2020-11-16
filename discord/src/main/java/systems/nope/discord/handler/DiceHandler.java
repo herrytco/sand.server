@@ -28,7 +28,7 @@ public class DiceHandler extends ListenerAdapter {
         if (event.getChannelType() == ChannelType.TEXT &&
                 (handleSingleCommands(event, message) || handleMultiCommands(event, message.split(" ")))
         ) {
-            System.out.println("> " + message);
+            System.out.printf("%s> %s\n", message, DiscordUtil.getMemberName(event.getMember()));
         }
     }
 
