@@ -200,10 +200,6 @@ public class LinkUtils {
         } catch (MismatchedInputException | JsonParseException e) {
             System.out.println("Unable to decode Stat-Sheet response: " + sheets);
         }
-
-
-        System.out.println("done");
-
     }
 
 

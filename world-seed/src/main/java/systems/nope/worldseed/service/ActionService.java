@@ -8,10 +8,7 @@ import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.SheetNode;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.repository.ActionRepository;
 import systems.nope.worldseed.util.expression.ExpressionUtil;
@@ -20,7 +17,6 @@ import systems.nope.worldseed.util.expression.Symbol;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Queue;
 
 @Service
 public class ActionService {
@@ -82,6 +78,8 @@ public class ActionService {
         message = message.replaceAll("\\$USER", person.getName());
         message = message.replaceAll("\\$RESULT", String.valueOf(result));
         message = message.replaceAll("\\$FORMULA", formula);
+        message = message.replaceAll("\\$ITEM", item.getName());
+        message = message.replaceAll("\\$ACTION", action.getName());
 
         return InvokeActionDto.fromAction(
                 action,

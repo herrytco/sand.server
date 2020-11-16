@@ -1,6 +1,7 @@
 package systems.nope.discord.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import systems.nope.discord.constants.EmoteConstants;
 import systems.nope.discord.constants.ServerConstants;
 import systems.nope.discord.model.person.Person;
 
@@ -23,6 +24,8 @@ public class ActionUtils {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> data = mapper.readValue(actions, HashMap.class);
 
-        return (String) data.get("invokeMessage");
+        String message = (String) data.get("invokeMessage");
+
+        return message.replaceAll("\\$ICON", EmoteConstants.emoteAttack);
     }
 }

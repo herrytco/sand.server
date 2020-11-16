@@ -15,6 +15,7 @@ import java.util.Set;
 @Entity
 public class Item {
     @Id
+    @GeneratedValue
     private Integer id;
 
     @NotBlank

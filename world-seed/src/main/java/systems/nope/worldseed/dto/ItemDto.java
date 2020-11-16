@@ -27,25 +27,31 @@ public class ItemDto {
 
         dto.setId(item.getId());
         dto.setName(item.getName());
-        dto.setStatSheets(
-                item.getStatSheets().stream()
-                        .map(StatSheet::getId)
-                        .collect(Collectors.toSet())
-        );
-        dto.setStatValueInstances(
-                item.getStatValueInstances().stream()
-                        .map(StatValueItemInstanceDto::fromInstance)
-                        .collect(Collectors.toSet())
-        );
-        dto.setDescription(
-                item.getDescriptionDocument() != null ? item.getDescriptionDocument().getRichtext() : ""
-        );
+        if (item.getStatSheets() != null)
+            dto.setStatSheets(
+                    item.getStatSheets().stream()
+                            .map(StatSheet::getId)
+                            .collect(Collectors.toSet())
+            );
 
-        dto.setActions(
-                item.getActions().stream()
-                        .map(ActionDto::fromAction)
-                        .collect(Collectors.toSet())
-        );
+        if(item.getStatValueInstances() != null)
+            dto.setStatValueInstances(
+                    item.getStatValueInstances().stream()
+                            .map(StatValueItemInstanceDto::fromInstance)
+                            .collect(Collectors.toSet())
+            );
+
+        if(item.getDescriptionDocument() != null)
+            dto.setDescription(
+                    item.getDescriptionDocument() != null ? item.getDescriptionDocument().getRichtext() : ""
+            );
+
+        if(item.getActions() != null)
+            dto.setActions(
+                    item.getActions().stream()
+                            .map(ActionDto::fromAction)
+                            .collect(Collectors.toSet())
+            );
 
         return dto;
     }

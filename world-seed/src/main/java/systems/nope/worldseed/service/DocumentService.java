@@ -46,4 +46,8 @@ public class DocumentService {
 
         return document;
     }
+
+    public void delete(Document document) {
+        documentRepository.delete(document);
+    }
 }
