@@ -1,23 +1,28 @@
 package systems.nope.discord.model;
 
-public class DiceResult {
-    private final int diceType;
-    private final int result;
-    private final int modifier;
-    private final String emoji;
+import systems.nope.discord.event.rolls.RollSpecification;
 
-    public DiceResult(int diceType, int result, int modifier, String emoji) {
-        this.diceType = diceType;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class DiceResult {
+    private final RollSpecification specification;
+    private final List<Integer> result;
+    private final Integer modifier;
+    private final List<String> emoji;
+
+    public DiceResult(RollSpecification specification, List<Integer> result, Integer modifier, List<String> emoji) {
+        this.specification = specification;
         this.result = result;
         this.modifier = modifier;
         this.emoji = emoji;
     }
 
     public int getDiceType() {
-        return diceType;
+        return specification.getDiceType();
     }
 
-    public int getResult() {
+    public List<Integer> getResult() {
         return result;
     }
 
@@ -25,11 +30,19 @@ public class DiceResult {
         return modifier;
     }
 
-    public int getEffectiveResult() {
-        return result+modifier;
+    public List<Integer> getEffectiveResult(int tempModifier) {
+        return result.stream().map((i) -> i + modifier + tempModifier).collect(Collectors.toList());
     }
 
-    public String getEmoji() {
+    public List<Integer> getEffectiveResult() {
+        return result.stream().map((i) -> i + modifier).collect(Collectors.toList());
+    }
+
+    public List<String> getEmoji() {
         return emoji;
+    }
+
+    public RollSpecification getSpecification() {
+        return specification;
     }
 }

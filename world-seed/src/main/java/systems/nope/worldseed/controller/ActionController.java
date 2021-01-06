@@ -1,11 +1,9 @@
 package systems.nope.worldseed.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ActionDto;
 import systems.nope.worldseed.dto.InvokeActionDto;
+import systems.nope.worldseed.dto.request.AddActionRequest;
 import systems.nope.worldseed.repository.ActionRepository;
 import systems.nope.worldseed.service.ActionService;
 import systems.nope.worldseed.service.ItemService;
@@ -28,6 +26,19 @@ public class ActionController {
         this.actionService = actionService;
         this.personService = personService;
         this.itemService = itemService;
+    }
+
+    public ActionDto add(
+            @RequestBody AddActionRequest request
+    ) {
+        return ActionDto.fromAction(
+                actionService.add(
+                        request.getName(),
+                        request.getDescription(),
+                        request.getFormula(),
+                        request.getInvokeMessage()
+                )
+        );
     }
 
     @GetMapping("/{actionId}/items/{itemId}/persons/{personId}")

@@ -2,6 +2,7 @@ package systems.nope.discord.util;
 
 import net.dv8tion.jda.api.entities.Member;
 import systems.nope.discord.constants.EmoteConstants;
+import systems.nope.discord.event.rolls.RollSpecification;
 import systems.nope.discord.model.DiceResult;
 import systems.nope.discord.constants.ServerConstants;
 
@@ -10,14 +11,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DiceUtils {
-    private static final Map<Member, Integer> nTries = new HashMap<>();
-    private static final Map<Member, Integer> sum = new HashMap<>();
     private static final Map<Member, Integer> diceTypes = new HashMap<>();
     private static final Map<Member, Integer> difficulties = new HashMap<>();
     private static final Map<Member, SecureRandom> rngs = new HashMap<>();
 
-    public static void setDiceTypeForMember(Member member, int modifier) {
-        diceTypes.put(member, modifier);
+    public static void setDiceTypeForMember(Member member, int type) {
+        diceTypes.put(member, type);
+    }
+
+    public static int getDiceTypeForMember(Member member) {
+        return diceTypes.getOrDefault(member, 20);
     }
 
     public static int getDiceModifierForMember(Member member) {
@@ -28,31 +31,18 @@ public class DiceUtils {
         difficulties.put(member, modifier);
     }
 
-    /**
-     * @param result - diceroll result (unmodified)
-     * @return the correct dice emoji for the diceroll result
-     */
-    public static String getEmojiForResult(Member member, int result) {
-        int best = diceTypes.getOrDefault(member, 20);
 
-        if (result == 1)
-            return EmoteConstants.emoteD20Result1;
+    public static DiceResult rollOnce(Member member, RollSpecification specification) {
+        if (!rngs.containsKey(member))
+            rngs.put(member, new SecureRandom());
 
-        if (result == best)
-            return EmoteConstants.emoteD20Result20;
+        int diceType = specification.getDiceType();
+        int result = 0;
 
-        return EmoteConstants.emoteD20Result2To19;
-    }
+        for (int i = 0; i < specification.getnRolls(); i++)
+            result += rngs.get(member).nextInt(diceType) + 1;
 
-    /**
-     * adds the unmodified result to the statistics of the member
-     *
-     * @param member - issuer of the diceroll
-     * @param result - unmodified result
-     */
-    private static void addResultToStatistics(Member member, int result) {
-        sum.put(member, sum.getOrDefault(member, 0) + result);
-        nTries.put(member, nTries.getOrDefault(member, 0) + 1);
+        return null;
     }
 
     /**
@@ -70,13 +60,9 @@ public class DiceUtils {
                 .get(member)
                 .nextInt(diceType) + 1;
 
-        addResultToStatistics(member, result);
+        RollSpecification specification = new RollSpecification(1, diceType);
 
-        return new DiceResult(
-                diceType,
-                result,
-                difficulties.getOrDefault(member, 0),
-                getEmojiForResult(member, result));
+        return null;
     }
 
     public static String getModifiedCalculation(DiceResult result, int modifier) {
@@ -84,7 +70,7 @@ public class DiceUtils {
     }
 
     public static String getDiceModificationString(DiceResult result, int modifier) {
-        return getDiceModificationString(result, modifier, result.getEffectiveResult() + modifier);
+        return "";
     }
 
     public static String getDiceModificationString(DiceResult result, int modifier, int calculationResult) {
@@ -95,7 +81,6 @@ public class DiceUtils {
                 calculationResult
         );
     }
-
 
     /**
      * builds the string for a diceroll calculation.
@@ -145,10 +130,7 @@ public class DiceUtils {
      * @return average roll score || -1 if no data is stored
      */
     public static float avgOfMember(Member member) {
-        if (nTries.getOrDefault(member, 0) > 0)
-            return (float) sum.get(member) / nTries.get(member);
-        else
-            return -1;
+        return -1;
     }
 
     /**
@@ -158,33 +140,14 @@ public class DiceUtils {
         float avg = 0;
         int k = 0;
 
-        for (Member u : nTries.keySet()) {
-            avg += avgOfMember(u);
-            k++;
-        }
+//        for (Member u : nTries.keySet()) {
+//            avg += avgOfMember(u);
+//            k++;
+//        }
 
         if (k > 0)
             avg /= k;
 
         return avg;
-    }
-
-    /**
-     * sets the tries and sum of the given member to 0
-     *
-     * @param member - issuer of the command
-     */
-    public static void resetAvgOfMember(Member member) {
-        nTries.put(member, 0);
-        sum.put(member, 0);
-    }
-
-    /**
-     * clears all data in sums and ntries to reset the
-     * average calculation
-     */
-    public static void resetAvgOfSever() {
-        nTries.clear();
-        sum.clear();
     }
 }

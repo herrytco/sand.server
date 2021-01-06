@@ -28,6 +28,18 @@ public class ActionService {
         this.personService = personService;
     }
 
+    public Action add(String name, String description, String formula, String message) {
+        Action actionNew = new Action();
+
+        actionNew.setName(name);
+        actionNew.setDescription(description);
+        actionNew.setFormula(formula);
+        actionNew.setInvokeMessage(message);
+
+        actionRepository.save(actionNew);
+        return actionNew;
+    }
+
     public Action get(Integer id) {
         Optional<Action> optionalAction = find(id);
 

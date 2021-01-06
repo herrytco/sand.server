@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
+import systems.nope.discord.exceptions.NotFoundException;
 import systems.nope.discord.model.person.Person;
 import systems.nope.discord.model.person.StatSheet;
 import systems.nope.discord.model.person.StatValue;
@@ -27,7 +28,7 @@ public class LinkUtils {
 
             if (person != null)
                 return Optional.of(person);
-        } catch (IOException e) {
+        } catch (IOException | NotFoundException e) {
             e.printStackTrace();
         }
 
@@ -41,8 +42,11 @@ public class LinkUtils {
      * @return retrieved World.Seed character from the backend
      * @throws IOException - problem in the filesystem
      */
-    public static Person relinkPerson(Member member) throws IOException {
+    public static Person relinkPerson(Member member) throws IOException, NotFoundException {
         String key = (String) fileManager.getValue(member.getId(), "links.json");
+
+        if (key == null)
+            throw new NotFoundException();
 
         return linkMemberToPersonIdentifiedByApiKey(member, key);
     }
@@ -101,10 +105,9 @@ public class LinkUtils {
      */
     public static void renameMemberToPerson(Member member, Person person) throws IOException {
         try {
+            if (fileManager.getValue(member.getId(), "names.json") == null)
+                fileManager.putKeyValuePair(member.getId(), DiscordUtil.getMemberName(member), "names.json");
             member.modifyNickname(person.getName()).queue();
-
-            fileManager.putKeyValuePair(member.getId(), DiscordUtil.getMemberName(member), "names.json");
-
         } catch (HierarchyException e) {
             System.out.printf("Cannot rename %s due to hierarchy issues.%n", member.getEffectiveName());
         }

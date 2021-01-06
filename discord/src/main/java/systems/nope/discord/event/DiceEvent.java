@@ -8,7 +8,8 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 
 public abstract class DiceEvent {
     private final MessageReceivedEvent event;
-    boolean handled = false;
+
+    public boolean handled = false;
 
     public DiceEvent(MessageReceivedEvent event) {
         this.event = event;

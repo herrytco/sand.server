@@ -24,13 +24,10 @@ public class DiscordApplication {
         DiscordFileManager fileManager = new DiscordFileManager();
 
         String key = (String) fileManager.getValue(keyDiscordToken);
-
         if (key == null) {
             System.out.println("No API key accessible! Add the .json file containing the key at data/discord-api-key/data.json under the key " + keyDiscordToken);
             return;
         }
-
-        System.out.printf("Using Key '%s'%n", keyDiscordToken);
 
         try {
             JDA jda = JDABuilder.createDefault(key)
