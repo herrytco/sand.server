@@ -132,6 +132,9 @@ public class TilesetService {
             }
         }
 
+        tilesetNew.setnTiles(i+1);
+        tilesetRepository.save(tilesetNew);
+
         return tilesetNew;
     }
 

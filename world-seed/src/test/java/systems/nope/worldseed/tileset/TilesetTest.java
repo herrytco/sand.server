@@ -51,14 +51,6 @@ public class TilesetTest {
     @Autowired
     private TilesetRepository tilesetRepository;
 
-    public AddTilesetRequest createAddRequest() {
-        return new AddTilesetRequest(
-                TileTestConstants.tilesetTestName,
-                TileTestConstants.tileSize,
-                TileTestConstants.tileSize
-        );
-    }
-
     @BeforeEach
     public void setup() {
         userTestUtil.ensureTestuserExists();
@@ -86,12 +78,19 @@ public class TilesetTest {
         );
 
         MvcResult result = mockMvc.perform(
-                multipart(String.format("/tile-sets/worlds/%d", worldTestUtil.getEnsuredInstance().getId()))
+                multipart(
+                        String.format(
+                                "/tile-sets/worlds/%d?name=%s&tileWidth=%d&tileHeight=%d",
+                                worldTestUtil.getEnsuredInstance().getId(),
+                                TileTestConstants.tilesetTestName,
+                                TileTestConstants.tileSize,
+                                TileTestConstants.tileSize
+                        )
+                )
                         .file(file)
                         .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(builder.build().writeValueAsString(createAddRequest()))
         ).andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();

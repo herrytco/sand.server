@@ -1,6 +1,7 @@
 package systems.nope.worldseed.util;
 
 import org.junit.jupiter.api.Test;
+import systems.nope.worldseed.util.expression.ExpressionUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,7 +22,7 @@ public class ExpressionParserTest {
         for (int i = 0; i < 100; i++) {
             double result = ExpressionUtil.parseExpression("1d20");
 
-            assertTrue(1 <= result && result <= 20);
+            assertTrue(1 <= result && result <= 20, "Result was: "+result);
         }
     }
 

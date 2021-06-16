@@ -1,9 +1,12 @@
+
 jwt:
   secret: IzSE2A5hlNetgD3XTooA
 file:
   upload-dir: "data"
 server:
-  port: 80
+  port: 8080
+  tomcat:
+    max-http-form-post-size: 10MB
 springdoc:
   api-docs:
     path: "/docs"
@@ -15,7 +18,7 @@ spring:
       max-file-size: 1024MB
       max-request-size: 1048MB
   datasource:
-    url: "jdbc:mysql://test2.nope-api.systems:3306/world_seed?useSSL=false&amp;allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://test.nope-api.systems:30003/world_seed?useSSL=false&amp;allowPublicKeyRetrieval=true"
     username: "sand"
     password: "llH5CqypeHfILgJjUmCS#"
     driver-class-name: com.mysql.jdbc.Driver
