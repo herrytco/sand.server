@@ -85,8 +85,9 @@ public class WorldService {
         if (world.isPresent()) {
             World result = world.get();
 
-            for (Person p : result.getPersons())
-                personService.enrichPersonStats(p);
+            if(result.getPersons() != null)
+                for (Person p : result.getPersons())
+                    personService.enrichPersonStats(p);
 
             return Optional.of(result);
         }
@@ -102,7 +103,7 @@ public class WorldService {
 
         World world = optionalWorld.get();
 
-        if (enrich)
+        if (enrich && world.getPersons() != null)
             for (Person p : world.getPersons())
                 personService.enrichPersonStats(p);
 

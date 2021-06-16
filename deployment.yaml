@@ -1,3 +1,54 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: world-seed-server
+  labels:
+    run: world-seed-server
+spec:
+  ports:
+    - port: 443
+      targetPort: 443
+      nodePort: 30005
+  selector:
+    app: world-seed-server
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: world-seed-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: world-seed-server
+  template:
+    metadata:
+      labels:
+        app: world-seed-server
+    spec:
+      containers:
+        - name: pointify-client
+          image: herrykun/world.seed.server
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+        - name: nginx-rerouter
+          image: herrykun/nginx.rerouter
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 443
+          volumeMounts:
+            - mountPath: /certs
+              name: certs
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: certs
+          persistentVolumeClaim:
+            claimName: longhorn-cert-claim
+---
 apiVersion: v1
 kind: Service
 metadata:

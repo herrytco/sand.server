@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.TestConstants;
 import systems.nope.worldseed.dto.request.AddConstantStatRequest;
 import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
+import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.repository.stat.StatValueConstantRepository;
 import systems.nope.worldseed.repository.stat.StatValueSynthesizedRepository;
 import systems.nope.worldseed.user.UserTestUtil;
@@ -58,7 +59,7 @@ public class StatValueTest {
 
     @AfterEach
     public void cleanup() {
-        if(!TestConstants.keepData) {
+        if (!TestConstants.keepData) {
             statValueConstantRepository.deleteAllByWorldAndName(worldTestUtil.getEnsuredInstance(), StatSheetConstants.testConstantStatName);
             statValueSynthesizedRepository.deleteAllByWorldAndName(worldTestUtil.getEnsuredInstance(), StatSheetConstants.testSyntheticStatName);
         }
@@ -66,8 +67,10 @@ public class StatValueTest {
 
     @Test
     public void addConstantStat() throws Exception {
+        StatSheet testSheet = statSheetTestUtil.ensureStatSheet(StatSheetConstants.testSheetName);
+
         mockMvc.perform(
-                post(String.format("/stat-sheets/worlds/%d/sheet/%d/constant-stat", worldTestUtil.getEnsuredInstance().getId(), 2))
+                post(String.format("/stat-sheets/worlds/%d/sheet/%d/constant-stat", worldTestUtil.getEnsuredInstance().getId(), testSheet.getId()))
                         .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -82,7 +85,7 @@ public class StatValueTest {
                                 )
                         )
         ).andDo(print())
-        .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
 
     @Test

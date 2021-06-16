@@ -62,12 +62,14 @@ public class WorldController {
 
     @Operation(summary = "Add a new world to the system.")
     @PostMapping
-    public UserWorldRoleDto add(
+    public WorldDto add(
             @RequestBody NewWorldRequest request,
             Authentication authentication
     ) {
         User requester = (User) authentication.getPrincipal();
 
-        return worldService.add(requester, request.getName(), request.description);
+        UserWorldRoleDto dto = worldService.add(requester, request.getName(), request.description);
+
+        return WorldDto.fromWorld(worldService.get(dto.getWorld()));
     }
 }
