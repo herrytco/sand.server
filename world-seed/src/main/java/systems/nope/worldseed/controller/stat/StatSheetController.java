@@ -2,6 +2,7 @@ package systems.nope.worldseed.controller.stat;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.dto.request.AddStatSheetRequest;
 import systems.nope.worldseed.dto.stat.StatSheetDto;
 import systems.nope.worldseed.dto.stat.StatValueConstantDto;
 import systems.nope.worldseed.dto.stat.StatValueDto;
@@ -141,14 +142,20 @@ public class StatSheetController {
     @PostMapping("/worlds/{worldId}")
     public StatSheetDto add(
             @PathVariable int worldId,
-            @RequestBody AddNamedResourceRequest request
+            @RequestBody AddStatSheetRequest request
     ) {
         Optional<World> optionalWorld = worldService.find(worldId);
         if (optionalWorld.isEmpty())
             throw new NotFoundException(worldId);
         World world = optionalWorld.get();
 
-        StatSheet sheetNew = statSheetService.add(world, request.getName());
+        StatSheet sheetNew;
+
+        if (request.getParentId() == null)
+            sheetNew = statSheetService.add(world, request.getName());
+        else
+            sheetNew = statSheetService.add(world, request.getName(), statSheetService.get(request.getParentId()));
+
         return StatSheetDto.fromStatSheet(sheetNew);
     }
 }

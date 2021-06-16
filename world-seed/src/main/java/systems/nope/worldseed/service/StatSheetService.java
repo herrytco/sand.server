@@ -188,12 +188,19 @@ public class StatSheetService {
     }
 
     public StatSheet add(World world, String name) {
+        return add(world, name, null);
+    }
+
+    public StatSheet add(World world, String name, StatSheet parent) {
         Optional<StatSheet> referenceStatSheet = statSheetRepository.findByWorldAndName(world, name);
 
         if (referenceStatSheet.isPresent())
             throw new AlreadyExistingException(name);
 
         StatSheet sheetNew = new StatSheet(name, world);
+
+        if(parent != null)
+            sheetNew.setParent(parent);
 
         statSheetRepository.save(sheetNew);
 
