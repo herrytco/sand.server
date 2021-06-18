@@ -93,9 +93,7 @@ spec:
             claimName: longhorn-cert-claim
       imagePullSecrets:
         - name: regcred
-      nodeName: master
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
