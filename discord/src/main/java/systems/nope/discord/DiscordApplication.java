@@ -19,7 +19,7 @@ public class DiscordApplication {
     public static void main(String[] args) throws IOException {
 
         if (args.length == 1)
-            ServerConstants.setHostBackend("http://" + args[0]);
+            ServerConstants.setHostBackend(args[0]);
 
         DiscordFileManager fileManager = new DiscordFileManager();
 
