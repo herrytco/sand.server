@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
+import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
@@ -36,6 +37,10 @@ public class StatSheetService {
 
     public List<StatSheet> findByWorld(World world) {
         return statSheetRepository.findByWorld(world);
+    }
+
+    public List<StatSheet> findByItem(Item item) {
+        return statSheetRepository.findByAssignedItems(item);
     }
 
     public Optional<StatSheet> findById(int id) {
@@ -199,7 +204,7 @@ public class StatSheetService {
 
         StatSheet sheetNew = new StatSheet(name, world);
 
-        if(parent != null)
+        if (parent != null)
             sheetNew.setParent(parent);
 
         statSheetRepository.save(sheetNew);

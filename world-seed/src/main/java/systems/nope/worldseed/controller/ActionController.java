@@ -28,19 +28,6 @@ public class ActionController {
         this.itemService = itemService;
     }
 
-    public ActionDto add(
-            @RequestBody AddActionRequest request
-    ) {
-        return ActionDto.fromAction(
-                actionService.add(
-                        request.getName(),
-                        request.getDescription(),
-                        request.getFormula(),
-                        request.getInvokeMessage()
-                )
-        );
-    }
-
     @GetMapping("/{actionId}/items/{itemId}/persons/{personId}")
     public InvokeActionDto invokeAction(
             @PathVariable Integer actionId,

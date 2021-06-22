@@ -3,6 +3,7 @@ package systems.nope.worldseed.model.stat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.World;
+import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.value.StatValue;
 
 import javax.persistence.*;
@@ -38,6 +39,14 @@ public class StatSheet {
             inverseJoinColumns = @JoinColumn(name = "person_id")
     )
     private List<Person> assignedPersons;
+
+    @OneToMany
+    @JoinTable(
+            name = "item_stat_sheet",
+            joinColumns = @JoinColumn(name = "stat_sheet_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
+    )
+    private List<Item> assignedItems;
 
     public StatSheet() {
     }
@@ -93,5 +102,13 @@ public class StatSheet {
 
     public List<Person> getAssignedPersons() {
         return assignedPersons;
+    }
+
+    public List<Item> getAssignedItems() {
+        return assignedItems;
+    }
+
+    public void setAssignedItems(List<Item> assignedItems) {
+        this.assignedItems = assignedItems;
     }
 }

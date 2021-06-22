@@ -1,5 +1,6 @@
 package systems.nope.worldseed.model;
 
+import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 
 import javax.persistence.*;
@@ -28,6 +29,14 @@ public class Action {
     @NotBlank
     @NotNull
     private String invokeMessage;
+
+    @ManyToOne
+    @JoinColumn(name = "world")
+    private World world;
+
+    @ManyToOne
+    @JoinColumn(name = "item")
+    private Item item;
 
     @ManyToMany
     @JoinTable(
@@ -83,5 +92,21 @@ public class Action {
 
     public void setInvokeMessage(String invokeMessage) {
         this.invokeMessage = invokeMessage;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 }
