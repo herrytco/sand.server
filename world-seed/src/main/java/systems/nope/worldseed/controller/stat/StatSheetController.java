@@ -12,10 +12,10 @@ import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
+import systems.nope.worldseed.service.ItemService;
 import systems.nope.worldseed.service.PersonService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.exception.NotFoundException;
-import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.WorldService;
 
@@ -30,11 +30,21 @@ public class StatSheetController {
     private final StatSheetService statSheetService;
     private final PersonService personService;
     private final WorldService worldService;
+    private final ItemService itemService;
 
-    public StatSheetController(StatSheetService statSheetService, PersonService personService, WorldService worldService) {
+    public StatSheetController(StatSheetService statSheetService, PersonService personService, WorldService worldService, ItemService itemService) {
         this.statSheetService = statSheetService;
         this.personService = personService;
         this.worldService = worldService;
+        this.itemService = itemService;
+    }
+
+    @Operation(summary = "Get a set of StatSheets all belonging to the same item.")
+    @GetMapping("/item/id/{itemId}")
+    public List<StatSheetDto> allForItem(
+            @PathVariable int itemId
+    ) {
+        return itemService.get(itemId).getStatSheets().stream().map(StatSheetDto::fromStatSheet).collect(Collectors.toList());
     }
 
     @Operation(summary = "Get a set of StatSheets all belonging to the same person.")

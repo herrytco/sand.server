@@ -6,6 +6,7 @@ import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.SheetNode;
+import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
@@ -28,9 +29,15 @@ public class ActionService {
         this.personService = personService;
     }
 
-    public Action add(String name, String description, String formula, String message) {
+    public List<Action> allForItem(Item item) {
+        return actionRepository.findAllByItem(item);
+    }
+
+    public Action add(Item item, World world, String name, String description, String formula, String message) {
         Action actionNew = new Action();
 
+        actionNew.setWorld(world);
+        actionNew.setItem(item);
         actionNew.setName(name);
         actionNew.setDescription(description);
         actionNew.setFormula(formula);
