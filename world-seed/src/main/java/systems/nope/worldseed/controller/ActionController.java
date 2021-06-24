@@ -3,7 +3,7 @@ package systems.nope.worldseed.controller;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ActionDto;
 import systems.nope.worldseed.dto.InvokeActionDto;
-import systems.nope.worldseed.dto.request.AddActionRequest;
+import systems.nope.worldseed.dto.request.action.UpdateActionRequest;
 import systems.nope.worldseed.repository.ActionRepository;
 import systems.nope.worldseed.service.ActionService;
 import systems.nope.worldseed.service.ItemService;
@@ -26,6 +26,22 @@ public class ActionController {
         this.actionService = actionService;
         this.personService = personService;
         this.itemService = itemService;
+    }
+
+    @PutMapping("/{actionId}")
+    public ActionDto updateAction(
+            @PathVariable Integer actionId,
+            @RequestBody UpdateActionRequest request
+    ) {
+        return ActionDto.fromAction(
+                actionService.update(
+                        actionService.get(actionId),
+                        request.getName(),
+                        request.getDescription(),
+                        request.getFormula(),
+                        request.getInvokeMessage()
+                )
+        );
     }
 
     @GetMapping("/{actionId}/items/{itemId}/persons/{personId}")

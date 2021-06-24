@@ -47,6 +47,16 @@ public class ActionService {
         return actionNew;
     }
 
+    public Action update(Action action, String name, String description, String formula, String message) {
+        action.setName(name);
+        action.setDescription(description);
+        action.setFormula(formula);
+        action.setInvokeMessage(message);
+
+        actionRepository.save(action);
+        return action;
+    }
+
     public Action get(Integer id) {
         Optional<Action> optionalAction = find(id);
 
