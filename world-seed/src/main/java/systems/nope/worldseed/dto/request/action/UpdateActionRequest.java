@@ -1,12 +1,13 @@
-package systems.nope.worldseed.dto.request;
+package systems.nope.worldseed.dto.request.action;
 
-public class AddActionRequest extends AddNamedResourceRequest {
+import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+
+public class UpdateActionRequest extends AddNamedResourceRequest {
     private String description;
     private String formula;
     private String invokeMessage;
-    private Integer worldId;
 
-    public AddActionRequest() {
+    public UpdateActionRequest() {
     }
 
     public String getDescription() {
@@ -31,13 +32,5 @@ public class AddActionRequest extends AddNamedResourceRequest {
 
     public void setInvokeMessage(String invokeMessage) {
         this.invokeMessage = invokeMessage;
-    }
-
-    public Integer getWorldId() {
-        return worldId;
-    }
-
-    public void setWorldId(Integer worldId) {
-        this.worldId = worldId;
     }
 }
