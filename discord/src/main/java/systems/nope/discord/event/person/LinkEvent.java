@@ -20,7 +20,7 @@ public class LinkEvent extends DiceEvent {
         throw new ParseException("Sir, please use the command like !link <API-KEY>. The key can usually be found in your character sheet.");
     }
 
-    private Person linkedPerson;
+    private final Person linkedPerson;
     private final String message;
 
     public LinkEvent(MessageReceivedEvent event, String apiKey) throws ParseException {

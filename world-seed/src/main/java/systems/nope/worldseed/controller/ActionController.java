@@ -44,6 +44,13 @@ public class ActionController {
         );
     }
 
+    @GetMapping("/{actionId}")
+    public ActionDto getAction(
+            @PathVariable Integer actionId
+    ) {
+        return ActionDto.fromAction(actionService.get(actionId));
+    }
+
     @GetMapping("/{actionId}/items/{itemId}/persons/{personId}")
     public InvokeActionDto invokeAction(
             @PathVariable Integer actionId,

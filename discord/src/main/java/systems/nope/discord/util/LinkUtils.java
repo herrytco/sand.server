@@ -1,16 +1,12 @@
 package systems.nope.discord.util;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import systems.nope.discord.exceptions.NotFoundException;
+import systems.nope.discord.exceptions.ServerException;
 import systems.nope.discord.model.person.Person;
-import systems.nope.discord.model.person.StatSheet;
-import systems.nope.discord.model.person.StatValue;
-import systems.nope.discord.constants.ServerConstants;
 import systems.nope.discord.file.LinkFileManager;
+import systems.nope.discord.service.PersonService;
 
 import java.io.IOException;
 import java.util.*;
@@ -57,33 +53,16 @@ public class LinkUtils {
      * @return the retrieved person for a member
      */
     public static Person linkMemberToPersonIdentifiedByApiKey(Member member, String apiKey) throws IOException {
-        String token = BackendUtil.getToken();
+        try {
+            Person person = PersonService.getPersonForApiKey(apiKey);
 
-        if (token != null) {
-            String response = BackendUtil.sendRequest(String.format("%s/persons/api/%s", ServerConstants.urlBackend(), apiKey));
+            renameMemberToPerson(member, person);
+            storeLink(member, apiKey);
 
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                HashMap<String, Object> data = mapper.readValue(response, HashMap.class);
-
-                Person linkedPerson = Person.fromJson(data);
-
-                enhancePerson(linkedPerson);
-
-                renameMemberToPerson(member, linkedPerson);
-                storeLink(member, apiKey);
-
-                return linkedPerson;
-            } catch (MismatchedInputException | JsonParseException e) {
-                if (apiKey != null)
-                    System.out.println("No data for apiKey: " + apiKey.substring(0, Math.min(apiKey.length(), 20)) + "...");
-                else
-                    System.out.println("No API key stored.");
-                return null;
-            }
+            return person;
+        } catch (ServerException e) {
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -128,80 +107,6 @@ public class LinkUtils {
             } catch (HierarchyException e) {
                 System.out.printf("Cannot rename %s due to hierarchy issues.\nMessage: %s%n", member.getEffectiveName(), e.getMessage());
             }
-        }
-    }
-
-    /**
-     * query statsheet and -value information from the backend and store it
-     * in the Person given
-     *
-     * @param person - target person
-     * @throws IOException - problem during HTTP communication
-     */
-    private static void enhancePerson(Person person) throws IOException {
-
-        // fetch stat sheets
-        String sheets = BackendUtil.sendRequest(String.format("%s/stat-sheets/person/id/%d", ServerConstants.urlBackend(), person.getId()));
-        ObjectMapper mapper = new ObjectMapper();
-
-        List<StatSheet> sheetList = new LinkedList<>();
-
-        try {
-            List<Map<String, Object>> data = mapper.readValue(sheets, List.class);
-
-            for (Map<String, Object> row : data)
-                sheetList.add(StatSheet.fromJson(row));
-
-            person.setStatSheets(sheetList);
-        } catch (MismatchedInputException | JsonParseException e) {
-            System.out.println("Unable to decode Stat-Sheet response: " + sheets);
-        }
-
-        // fetch stat values for each sheet
-        for (StatSheet sheet : person.getStatSheets()) {
-            List<StatValue> valueList = new LinkedList<>();
-
-            String values = BackendUtil.sendRequest(String.format("%s/stat-values/stat-sheet/id/%d", ServerConstants.urlBackend(), sheet.getId()));
-
-            try {
-                List<Map<String, Object>> data = mapper.readValue(values, List.class);
-
-                for (Map<String, Object> row : data)
-                    valueList.add(StatValue.fromJson(row));
-
-                sheet.setValues(valueList);
-            } catch (MismatchedInputException | JsonParseException e) {
-                System.out.println("Unable to decode Stat-Sheet response: " + sheets);
-            }
-        }
-
-        // fetch stat value INSTANCES for each sheet
-        String statValueInstances = BackendUtil.sendRequest(String.format("%s/stat-value-instances/person/id/%d", ServerConstants.urlBackend(), person.getId()));
-        try {
-            List<Map<String, Object>> data = mapper.readValue(statValueInstances, List.class);
-
-            for (Map<String, Object> row : data) {
-
-                Integer statValueId = (Integer) row.get("statValue");
-
-                for (StatSheet sheet : person.getStatSheets()) {
-
-                    boolean found = false;
-
-                    for (StatValue value : sheet.getValues()) {
-                        if (value.getId() == statValueId) {
-                            value.setValue((Integer) row.get("value"));
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (found)
-                        break;
-                }
-            }
-        } catch (MismatchedInputException | JsonParseException e) {
-            System.out.println("Unable to decode Stat-Sheet response: " + sheets);
         }
     }
 

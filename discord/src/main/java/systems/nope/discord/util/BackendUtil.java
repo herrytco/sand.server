@@ -5,16 +5,18 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import systems.nope.discord.constants.ServerConstants;
+import systems.nope.discord.file.DiscordFileManager;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
 public class BackendUtil {
-
     private static String token;
 
     public static final OkHttpClient httpClient = new OkHttpClient();
+
+    private static final DiscordFileManager fileManager = new DiscordFileManager();
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -45,7 +47,7 @@ public class BackendUtil {
                     JSON
             );
 
-            System.out.println(String.format("Calling: %s/tokens", ServerConstants.urlBackend()));
+            System.out.printf("Calling: %s/tokens%n", ServerConstants.urlBackend());
 
             Request request = new Request.Builder()
                     .url(String.format("%s/tokens", ServerConstants.urlBackend()))
@@ -58,6 +60,8 @@ public class BackendUtil {
             HashMap<String, String> data = mapper.readValue(response.body().string(), HashMap.class);
 
             token = data.get("token");
+
+            fileManager.putKeyValuePair(DiscordFileManager.keyJwtToken, token);
 
             System.out.println("server> token: " + token);
             return token;
@@ -82,6 +86,4 @@ public class BackendUtil {
 
         return expDate.before(new Date());
     }
-
-
 }
