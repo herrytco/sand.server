@@ -42,7 +42,7 @@ public class ActionEvent extends DiceEvent {
 
     @Override
     public String toString() {
-        return "ActionEvent{" +
+        return invokedAction != null ? String.format("Sir, I am looking up the details for the action '%s' for you...", invokedAction.getName()) : " ActionEvent {" +
                 "actionId=" + actionId +
                 '}';
     }
