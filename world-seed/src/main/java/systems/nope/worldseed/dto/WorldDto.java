@@ -24,14 +24,18 @@ public class WorldDto {
 
     private final List<Integer> tilesets;
 
+    private final List<UserWorldRoleDto> joinedUsers;
+
     private final String seed;
 
-    private WorldDto(Integer id, String name, String description, List<Integer> persons, List<Integer> sheets, List<Integer> tilesets, String seed) {
+    private WorldDto(Integer id, String name, String description, List<Integer> persons, List<Integer> sheets,
+                     List<Integer> tilesets, List<UserWorldRoleDto> joinedUsers, String seed) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.persons = persons;
         this.sheets = sheets;
+        this.joinedUsers = joinedUsers;
         this.seed = seed;
         this.tilesets = tilesets;
     }
@@ -50,6 +54,9 @@ public class WorldDto {
                 world.getTilesets() == null
                         ? new LinkedList<>()
                         : world.getTilesets().stream().map(Tileset::getId).collect(Collectors.toList()),
+                world.getWorldUsers() == null
+                        ? new LinkedList<>()
+                        : world.getWorldUsers().stream().map(UserWorldRoleDto::fromUserWorldRole).collect(Collectors.toList()),
                 world.getSeed()
         );
     }

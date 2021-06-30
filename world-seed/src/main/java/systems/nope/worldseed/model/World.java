@@ -33,6 +33,9 @@ public class World {
     @OneToMany(mappedBy = "world")
     private List<Tileset> tilesets;
 
+    @OneToMany(mappedBy = "world")
+    private List<UserWorldRole> worldUsers;
+
     @NotNull
     String seed;
 
@@ -107,5 +110,13 @@ public class World {
 
     public void setTilesets(List<Tileset> tilesets) {
         this.tilesets = tilesets;
+    }
+
+    public List<UserWorldRole> getWorldUsers() {
+        return worldUsers;
+    }
+
+    public void setWorldUsers(List<UserWorldRole> worldUsers) {
+        this.worldUsers = worldUsers;
     }
 }
