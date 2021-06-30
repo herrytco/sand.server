@@ -5,10 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import systems.nope.worldseed.exception.AlreadyExistingException;
-import systems.nope.worldseed.exception.FilesystemException;
-import systems.nope.worldseed.exception.ImpossibleException;
-import systems.nope.worldseed.exception.NotFoundException;
+import systems.nope.worldseed.exception.*;
 
 @ControllerAdvice
 public class NotFoundAdvice {
@@ -31,6 +28,13 @@ public class NotFoundAdvice {
     @ExceptionHandler(ImpossibleException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     String impossible(ImpossibleException e) {
+        return e.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(DataMissmatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String missmatch(DataMissmatchException e) {
         return e.getMessage();
     }
 

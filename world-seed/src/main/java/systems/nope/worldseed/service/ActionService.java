@@ -2,6 +2,8 @@ package systems.nope.worldseed.service;
 
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.dto.InvokeActionDto;
+import systems.nope.worldseed.exception.DataMissmatchException;
+import systems.nope.worldseed.exception.ImpossibleException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.Person;
@@ -70,7 +72,21 @@ public class ActionService {
         return actionRepository.findById(id);
     }
 
-    public InvokeActionDto invokeAction(Person person, Item item, Action action) {
+    public InvokeActionDto invokeAction(Person person, Action action) throws DataMissmatchException {
+        Item item = action.getItem();
+
+        boolean found = false;
+
+        for (Item personItem : person.getItems()) {
+            if (personItem.getId().equals(item.getId())) {
+                found = true;
+                break;
+            }
+        }
+
+        if(!found)
+            throw new DataMissmatchException("Item does not belong to Person!");
+
         List<StatSheet> inputStatSheets = new LinkedList<>(
                 person.getStatSheets()
         );
