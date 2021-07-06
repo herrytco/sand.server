@@ -39,12 +39,7 @@ public class WorldController {
     public WorldDto byId(
             @PathVariable Integer id
     ) {
-        Optional<World> optionalWorld = worldService.find(id);
-
-        if (optionalWorld.isEmpty())
-            throw new NotFoundException(id);
-
-        return WorldDto.fromWorld(optionalWorld.get());
+        return WorldDto.fromWorld(worldService.get(id));
     }
 
     @Operation(summary = "Get a single World by its unique seed.")

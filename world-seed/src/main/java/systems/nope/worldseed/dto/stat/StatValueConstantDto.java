@@ -6,8 +6,9 @@ public class StatValueConstantDto extends StatValueDto {
 
     private final Integer initialValue;
 
-    public StatValueConstantDto(int id, String name, String nameShort, int statSheet, String unit, int world, String type, Integer initialValue) {
-        super(id, name, nameShort, statSheet, unit, world, type);
+    public StatValueConstantDto(int id, String name, String nameShort, int statSheet, String unit, int world,
+                                String type, Integer initialValue, Boolean isResource) {
+        super(id, name, nameShort, statSheet, unit, world, type, isResource);
         this.initialValue = initialValue;
     }
 
@@ -20,7 +21,8 @@ public class StatValueConstantDto extends StatValueDto {
                 statValueConstant.getUnit(),
                 statValueConstant.getWorld().getId(),
                 statValueConstant.getType(),
-                statValueConstant.getInitalValue()
+                statValueConstant.getInitalValue(),
+                statValueConstant.getResource()
         );
     }
 

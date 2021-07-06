@@ -124,7 +124,6 @@ public class StatSheetController {
                 request.getUnit(),
                 request.getFormula(),
                 request.getResource()
-
         );
         return StatValueSynthesizedDto.fromStatValueSynthesized(value);
     }
