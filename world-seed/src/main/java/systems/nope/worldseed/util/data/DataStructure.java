@@ -1,4 +1,4 @@
-package systems.nope.worldseed.util;
+package systems.nope.worldseed.util.data;
 
 import systems.nope.worldseed.exception.DataMissmatchException;
 

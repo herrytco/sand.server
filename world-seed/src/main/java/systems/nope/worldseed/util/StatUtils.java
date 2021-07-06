@@ -5,12 +5,29 @@ import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.util.data.DataStack;
 import systems.nope.worldseed.util.data.DataStructure;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class StatUtils {
+
+    public String enrichExpression(String expression, Collection<Symbol> symbols) {
+        expression = padExpression(expression);
+
+        for (Symbol symbol : symbols)
+            expression = expression.replaceAll(
+                    padExpression(symbol.getSymbol()),
+                    padExpression(symbol.getValue().toString())
+            );
+
+        return expression.trim();
+    }
+
+    private String padExpression(String expression) {
+        return " " + expression.trim() + " ";
+    }
 
     public List<DataStructure<StatSheet>> constructSheetForest(List<StatSheet> sheets) {
         List<DataStructure<StatSheet>> result = new LinkedList<>();
@@ -51,10 +68,5 @@ public class StatUtils {
 
         return result;
     }
-
-    public String enrichExpression(String expression, List<Symbol> symbols) {
-        return "";
-    }
-
 
 }

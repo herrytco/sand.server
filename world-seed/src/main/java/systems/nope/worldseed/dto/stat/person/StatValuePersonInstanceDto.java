@@ -1,22 +1,19 @@
 package systems.nope.worldseed.dto.stat.person;
 
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 
 public class StatValuePersonInstanceDto {
     private final int id;
 
     private final int statValue;
 
-    private final int person;
-
     private final String type;
 
     private final int value;
 
-    public StatValuePersonInstanceDto(Integer id, Integer statValue, Integer person, String type, Integer value) {
+    public StatValuePersonInstanceDto(Integer id, Integer statValue, String type, Integer value) {
         this.id = id;
         this.statValue = statValue;
-        this.person = person;
         this.type = type;
         this.value = value;
     }
@@ -29,9 +26,6 @@ public class StatValuePersonInstanceDto {
         return statValue;
     }
 
-    public int getPerson() {
-        return person;
-    }
 
     public String getType() {
         return type;
@@ -41,11 +35,10 @@ public class StatValuePersonInstanceDto {
         return value;
     }
 
-    public static StatValuePersonInstanceDto fromInstance(StatValuePersonInstance instance) {
+    public static StatValuePersonInstanceDto fromInstance(StatValueInstance instance) {
         return new StatValuePersonInstanceDto(
                 instance.getId(),
                 instance.getStatValue().getId(),
-                instance.getPerson().getId(),
                 instance.getType(),
                 instance.getValue()
         );

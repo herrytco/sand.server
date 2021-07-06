@@ -1,4 +1,4 @@
-package systems.nope.worldseed.security;
+package systems.nope.worldseed.config.security;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;

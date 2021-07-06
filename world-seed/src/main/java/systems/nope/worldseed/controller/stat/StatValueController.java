@@ -82,12 +82,12 @@ public class StatValueController {
     public StatValueDto one(
             @PathVariable int id
     ) {
-        Optional<StatValueConstant> statValueConstantOptional = statSheetService.findStatValueConstantById(id);
+        Optional<StatValueConstant> statValueConstantOptional = statSheetService.findConstant(id);
 
         if (statValueConstantOptional.isPresent())
             return StatValueConstantDto.fromStatValueConstant(statValueConstantOptional.get());
 
-        Optional<StatValueSynthesized> optionalStatValueSynthesized = statSheetService.findStatValueSynthesizedById(id);
+        Optional<StatValueSynthesized> optionalStatValueSynthesized = statSheetService.findSynthesized(id);
 
         if (optionalStatValueSynthesized.isPresent())
             return StatValueSynthesizedDto.fromStatValueSynthesized(optionalStatValueSynthesized.get());

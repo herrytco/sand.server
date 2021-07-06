@@ -7,12 +7,11 @@ import systems.nope.worldseed.model.Document;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
-import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstanceConstant;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
+import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.item.ItemRepository;
-import systems.nope.worldseed.repository.stat.StatValueItemInstanceConstantRepository;
 
 import java.util.Optional;
 
@@ -20,13 +19,13 @@ import java.util.Optional;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final DocumentService documentService;
-    private final StatValueItemInstanceConstantRepository statValueItemInstanceConstantRepository;
+    private final StatValueInstanceService statValueInstanceService;
 
     public ItemService(ItemRepository itemRepository, DocumentService documentService,
-                       StatValueItemInstanceConstantRepository statValueItemInstanceConstantRepository) {
+                       StatValueInstanceService statValueInstanceService) {
         this.itemRepository = itemRepository;
         this.documentService = documentService;
-        this.statValueItemInstanceConstantRepository = statValueItemInstanceConstantRepository;
+        this.statValueInstanceService = statValueInstanceService;
     }
 
     public void delete(Item item) {
@@ -49,25 +48,6 @@ public class ItemService {
 
     public Optional<Item> find(Integer itemId) {
         return itemRepository.findById(itemId);
-    }
-
-    public StatValueItemInstanceConstant getStatValueInstance(Integer id) {
-        Optional<StatValueItemInstanceConstant> optionalInstance = findStatValueInstance(id);
-
-        if(optionalInstance.isEmpty())
-            throw new NotFoundException(id);
-
-        return optionalInstance.get();
-    }
-
-    public Optional<StatValueItemInstanceConstant> findStatValueInstance(Integer id) {
-        return statValueItemInstanceConstantRepository.findById(id);
-    }
-
-    public StatValueItemInstanceConstant updateStatValueInstance(StatValueItemInstanceConstant target, Integer value) {
-        target.setValue(value);
-        statValueItemInstanceConstantRepository.save(target);
-        return target;
     }
 
     public Item add(World world, String name, String description) {
@@ -104,11 +84,11 @@ public class ItemService {
         }
 
         for (StatValue value : sheet.getStatValues()) {
-            StatValueItemInstanceConstant instance = null;
+            StatValueInstance instance = null;
 
             boolean duplicate = false;
 
-            for (StatValueItemInstance i : item.getStatValueInstances())
+            for (StatValueInstance i : item.getStatValueInstances())
                 if (i.getStatValue().getId() == value.getId()) {
                     duplicate = true;
                     break;
@@ -117,18 +97,19 @@ public class ItemService {
             if (duplicate)
                 continue;
 
-            if (value instanceof StatValueConstant) {
-                instance = new StatValueItemInstanceConstant(
+            if (value instanceof StatValueConstant)
+                instance = statValueInstanceService.add(
                         item.getWorld(),
                         value,
-                        item,
                         ((StatValueConstant) value).getInitalValue()
                 );
+            else if (value instanceof StatValueSynthesized)
+                instance = statValueInstanceService.add(
+                        item.getWorld(),
+                        value
+                );
 
-                statValueItemInstanceConstantRepository.save(instance);
-            }
-
-            item.getStatSheets().add(sheet);
+            item.getStatValueInstances().add(instance);
             itemRepository.save(item);
         }
 
