@@ -1,6 +1,7 @@
 package systems.nope.worldseed.dto;
 
 import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
 import systems.nope.worldseed.model.stat.StatSheet;
 
@@ -21,13 +22,16 @@ public class PersonDto {
 
     private final List<Integer> stats;
 
-    private PersonDto(int id, int world, String name, String apiKey, List<Integer> sheets, List<Integer> stats) {
+    private final List<Integer> items;
+
+    private PersonDto(int id, int world, String name, String apiKey, List<Integer> sheets, List<Integer> stats, List<Integer> items) {
         this.id = id;
         this.world = world;
         this.name = name;
         this.apiKey = apiKey;
         this.sheets = sheets;
         this.stats = stats;
+        this.items = items;
     }
 
     public static PersonDto fromPerson(Person person) {
@@ -37,7 +41,8 @@ public class PersonDto {
                 person.getName(),
                 person.getApiKey(),
                 person.getStatSheets() != null ? person.getStatSheets().stream().map(StatSheet::getId).collect(Collectors.toList()) : new LinkedList<>(),
-                person.getStatValues() != null ? person.getStatValues().stream().map(StatValuePersonInstance::getId).collect(Collectors.toList()) : new LinkedList<>()
+                person.getStatValues() != null ? person.getStatValues().stream().map(StatValuePersonInstance::getId).collect(Collectors.toList()) : new LinkedList<>(),
+                person.getItems() != null ? person.getItems().stream().map(Item::getId).collect(Collectors.toList()) : new LinkedList<>()
         );
     }
 
@@ -63,5 +68,9 @@ public class PersonDto {
 
     public List<Integer> getStats() {
         return stats;
+    }
+
+    public List<Integer> getItems() {
+        return items;
     }
 }

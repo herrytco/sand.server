@@ -1,13 +1,13 @@
-package systems.nope.worldseed.dto.request;
+package systems.nope.worldseed.dto.request.action;
 
-public class AddActionRequest extends AddNamedResourceRequest {
+import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+
+public class UpdateActionRequest extends AddNamedResourceRequest {
     private String description;
-
     private String formula;
-
     private String invokeMessage;
 
-    public AddActionRequest() {
+    public UpdateActionRequest() {
     }
 
     public String getDescription() {

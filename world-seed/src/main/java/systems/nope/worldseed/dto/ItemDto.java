@@ -2,6 +2,7 @@ package systems.nope.worldseed.dto;
 
 import lombok.Data;
 import systems.nope.worldseed.dto.stat.item.StatValueItemInstanceDto;
+import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 
@@ -20,7 +21,7 @@ public class ItemDto {
 
     private Set<StatValueItemInstanceDto> statValueInstances;
 
-    private Set<ActionDto> actions;
+    private Set<Integer> actions;
 
     public static ItemDto fromItem(Item item) {
         ItemDto dto = new ItemDto();
@@ -34,22 +35,22 @@ public class ItemDto {
                             .collect(Collectors.toSet())
             );
 
-        if(item.getStatValueInstances() != null)
+        if (item.getStatValueInstances() != null)
             dto.setStatValueInstances(
                     item.getStatValueInstances().stream()
                             .map(StatValueItemInstanceDto::fromInstance)
                             .collect(Collectors.toSet())
             );
 
-        if(item.getDescriptionDocument() != null)
+        if (item.getDescriptionDocument() != null)
             dto.setDescription(
                     item.getDescriptionDocument() != null ? item.getDescriptionDocument().getRichtext() : ""
             );
 
-        if(item.getActions() != null)
+        if (item.getActions() != null)
             dto.setActions(
                     item.getActions().stream()
-                            .map(ActionDto::fromAction)
+                            .map(Action::getId)
                             .collect(Collectors.toSet())
             );
 

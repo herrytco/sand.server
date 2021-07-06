@@ -3,7 +3,8 @@ package systems.nope.worldseed.controller;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ActionDto;
 import systems.nope.worldseed.dto.InvokeActionDto;
-import systems.nope.worldseed.dto.request.AddActionRequest;
+import systems.nope.worldseed.dto.request.action.UpdateActionRequest;
+import systems.nope.worldseed.exception.DataMissmatchException;
 import systems.nope.worldseed.repository.ActionRepository;
 import systems.nope.worldseed.service.ActionService;
 import systems.nope.worldseed.service.ItemService;
@@ -19,20 +20,21 @@ public class ActionController {
 
     private final ActionService actionService;
     private final PersonService personService;
-    private final ItemService itemService;
 
-    public ActionController(ActionRepository actionRepository, ActionService actionService, PersonService personService, ItemService itemService) {
+    public ActionController(ActionRepository actionRepository, ActionService actionService, PersonService personService) {
         this.actionRepository = actionRepository;
         this.actionService = actionService;
         this.personService = personService;
-        this.itemService = itemService;
     }
 
-    public ActionDto add(
-            @RequestBody AddActionRequest request
+    @PutMapping("/{actionId}")
+    public ActionDto updateAction(
+            @PathVariable Integer actionId,
+            @RequestBody UpdateActionRequest request
     ) {
         return ActionDto.fromAction(
-                actionService.add(
+                actionService.update(
+                        actionService.get(actionId),
                         request.getName(),
                         request.getDescription(),
                         request.getFormula(),
@@ -41,15 +43,20 @@ public class ActionController {
         );
     }
 
-    @GetMapping("/{actionId}/items/{itemId}/persons/{personId}")
+    @GetMapping("/{actionId}")
+    public ActionDto getAction(
+            @PathVariable Integer actionId
+    ) {
+        return ActionDto.fromAction(actionService.get(actionId));
+    }
+
+    @GetMapping("/{actionId}/persons/{personId}")
     public InvokeActionDto invokeAction(
             @PathVariable Integer actionId,
-            @PathVariable Integer itemId,
             @PathVariable Integer personId
-    ) {
+    ) throws DataMissmatchException {
         return actionService.invokeAction(
                 personService.get(personId),
-                itemService.get(itemId),
                 actionService.get(actionId)
         );
     }

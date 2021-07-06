@@ -41,12 +41,7 @@ public class Item {
     @JoinColumn(name = "description_document")
     private Document descriptionDocument;
 
-    @ManyToMany
-    @JoinTable(
-            name = "item_action",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "action_id")
-    )
+    @OneToMany(mappedBy = "item")
     private Set<Action> actions;
 
     public Integer getId() {

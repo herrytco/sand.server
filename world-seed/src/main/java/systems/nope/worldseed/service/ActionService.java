@@ -2,10 +2,13 @@ package systems.nope.worldseed.service;
 
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.dto.InvokeActionDto;
+import systems.nope.worldseed.exception.DataMissmatchException;
+import systems.nope.worldseed.exception.ImpossibleException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.Person;
 import systems.nope.worldseed.model.SheetNode;
+import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
@@ -28,9 +31,15 @@ public class ActionService {
         this.personService = personService;
     }
 
-    public Action add(String name, String description, String formula, String message) {
+    public List<Action> allForItem(Item item) {
+        return actionRepository.findAllByItem(item);
+    }
+
+    public Action add(Item item, World world, String name, String description, String formula, String message) {
         Action actionNew = new Action();
 
+        actionNew.setWorld(world);
+        actionNew.setItem(item);
         actionNew.setName(name);
         actionNew.setDescription(description);
         actionNew.setFormula(formula);
@@ -38,6 +47,16 @@ public class ActionService {
 
         actionRepository.save(actionNew);
         return actionNew;
+    }
+
+    public Action update(Action action, String name, String description, String formula, String message) {
+        action.setName(name);
+        action.setDescription(description);
+        action.setFormula(formula);
+        action.setInvokeMessage(message);
+
+        actionRepository.save(action);
+        return action;
     }
 
     public Action get(Integer id) {
@@ -53,7 +72,21 @@ public class ActionService {
         return actionRepository.findById(id);
     }
 
-    public InvokeActionDto invokeAction(Person person, Item item, Action action) {
+    public InvokeActionDto invokeAction(Person person, Action action) throws DataMissmatchException {
+        Item item = action.getItem();
+
+        boolean found = false;
+
+        for (Item personItem : person.getItems()) {
+            if (personItem.getId().equals(item.getId())) {
+                found = true;
+                break;
+            }
+        }
+
+        if(!found)
+            throw new DataMissmatchException("Item does not belong to Person!");
+
         List<StatSheet> inputStatSheets = new LinkedList<>(
                 person.getStatSheets()
         );

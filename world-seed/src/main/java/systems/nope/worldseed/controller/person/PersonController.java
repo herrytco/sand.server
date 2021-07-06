@@ -2,6 +2,7 @@ package systems.nope.worldseed.controller.person;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
+import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.Person;
@@ -27,6 +28,13 @@ public class PersonController {
         this.personService = personService;
         this.worldService = worldService;
         this.itemService = itemService;
+    }
+
+    @GetMapping("/{personId}/items")
+    public List<ItemDto> itemsForPerson(
+            @PathVariable Integer personId
+    ) {
+        return personService.get(personId).getItems().stream().map(ItemDto::fromItem).collect(Collectors.toList());
     }
 
     @PostMapping("/{personId}/items/{itemId}")

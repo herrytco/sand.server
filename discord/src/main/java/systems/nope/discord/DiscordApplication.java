@@ -13,19 +13,16 @@ import java.io.IOException;
 
 @SpringBootApplication
 public class DiscordApplication {
-
-    public static final String keyDiscordToken = "discord-key";
-
     public static void main(String[] args) throws IOException {
 
         if (args.length == 1)
-            ServerConstants.setHostBackend("http://" + args[0]);
+            ServerConstants.setHostBackend(args[0]);
 
         DiscordFileManager fileManager = new DiscordFileManager();
 
-        String key = (String) fileManager.getValue(keyDiscordToken);
+        String key = (String) fileManager.getValue(DiscordFileManager.keyDiscordToken);
         if (key == null) {
-            System.out.println("No API key accessible! Add the .json file containing the key at data/discord-api-key/data.json under the key " + keyDiscordToken);
+            System.out.println("No API key accessible! Add the .json file containing the key at data/discord-api-key/data.json under the key " + DiscordFileManager.keyDiscordToken);
             return;
         }
 

@@ -7,12 +7,10 @@ import java.util.stream.Collectors;
 
 @Data
 public class UserDto {
+
     private int id;
-
     private List<UserWorldRoleDto> worlds;
-
     private String name;
-
     private String email;
 
     public UserDto(int id, String name, String email, List<UserWorldRoleDto> worlds) {

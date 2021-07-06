@@ -2,6 +2,7 @@ package systems.nope.discord.util;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import systems.nope.discord.event.DiceEvent;
+import systems.nope.discord.event.person.ActionEvent;
 import systems.nope.discord.event.person.AttributeRoleEvent;
 import systems.nope.discord.event.HelpEvent;
 import systems.nope.discord.event.modifiers.DiceTypeEvent;
@@ -23,6 +24,9 @@ public class CommandUtil {
         String[] parts = command.split(" ");
 
         switch (parts[0]) {
+            case "!action":
+                return ActionEvent.fromString(event, parts);
+
             case "!link":
                 return LinkEvent.fromString(event, parts);
 

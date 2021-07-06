@@ -207,47 +207,49 @@ public class PersonService {
     public void enrichPersonStats(Person person) {
         List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
 
-        for (StatValuePersonInstance statValueInstance : person.getStatValues()) {
+        for (StatValuePersonInstance personInstance : person.getStatValues()) {
 
-            if (statValueInstance instanceof StatValuePersonInstanceSynthesized) {
-                StatValuePersonInstanceSynthesized statInstance = (StatValuePersonInstanceSynthesized) statValueInstance;
+            if (personInstance instanceof StatValuePersonInstanceSynthesized) {
+                StatValuePersonInstanceSynthesized statInstance = (StatValuePersonInstanceSynthesized) personInstance;
                 StatValueSynthesized stat = (StatValueSynthesized) statInstance.getStatValue();
 
                 String formula = stat.getFormula();
 
                 // substitute variables in order of sheet inheritance
                 for (SheetNode tree : sheetForest) {
-                    Optional<Stack<SheetNode>> optionalScopeStack = tree.findStackForStatValueInstance(statValueInstance);
+                    Optional<Stack<SheetNode>> optionalScopeStack = tree.findStackForStatValueInstance(personInstance);
 
-                    if (optionalScopeStack.isPresent()) {
-                        Stack<SheetNode> scopeStack = optionalScopeStack.get();
+                    if (optionalScopeStack.isEmpty())
+                        continue;
 
-                        for (SheetNode scope : scopeStack) {
-                            StatSheet sheet = scope.getSheet();
+                    Stack<SheetNode> scopeStack = optionalScopeStack.get();
 
-                            // substitute variables in formula with Persons stats
-                            for (StatValuePersonInstance stati : person.getStatValues()) {
-                                if (stati.getStatValue().getSheet() == sheet) {
-                                    if (stati instanceof StatValuePersonInstanceConstant)
+                    for (SheetNode scope : scopeStack) {
+                        StatSheet sheet = scope.getSheet();
+
+                        // substitute variables in formula with Persons stats
+                        for (StatValuePersonInstance stati : person.getStatValues()) {
+                            if (stati.getStatValue().getSheet() == sheet) {
+                                if (stati instanceof StatValuePersonInstanceConstant)
+                                    formula = formula.replaceAll(
+                                            " " + stati.getStatValue().getNameShort() + " ",
+                                            " " + stati.getValue().toString() + " "
+                                    );
+                                else if (stati instanceof StatValuePersonInstanceSynthesized) {
+                                    StatValuePersonInstanceSynthesized s = ((StatValuePersonInstanceSynthesized) stati);
+
+                                    if (s.getValue() != null)
                                         formula = formula.replaceAll(
                                                 " " + stati.getStatValue().getNameShort() + " ",
-                                                " " + stati.getValue().toString() + " "
+                                                " " + s.getValue().toString() + " "
                                         );
-                                    else if (stati instanceof StatValuePersonInstanceSynthesized) {
-                                        StatValuePersonInstanceSynthesized s = ((StatValuePersonInstanceSynthesized) stati);
-
-                                        if (s.getValue() != null)
-                                            formula = formula.replaceAll(
-                                                    " " + stati.getStatValue().getNameShort() + " ",
-                                                    " " + s.getValue().toString() + " "
-                                            );
-                                    }
-
                                 }
+
                             }
                         }
-                        break;
                     }
+                    break;
+
                 }
 
                 try {

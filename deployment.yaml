@@ -89,8 +89,19 @@ spec:
               mountPath: /data
       volumes:
         - name: data
-          hostPath:
-           path: /data/world.seed.discord
+          persistentVolumeClaim:
+            claimName: longhorn-cert-claim
       imagePullSecrets:
         - name: regcred
-      nodeName: master
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-worldseed-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi

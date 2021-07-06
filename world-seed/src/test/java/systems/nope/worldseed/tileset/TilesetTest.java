@@ -107,42 +107,42 @@ public class TilesetTest {
         );
     }
 
-    @Test
-    public void updateFirstTileTest() throws Exception {
-        TilesetDto dto = add();
-
-        // update tile request
-        mockMvc.perform(
-                put(String.format("/tile-sets/%d/tile/0", dto.getId()))
-                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(builder.build().writeValueAsString(createUpdateTileRequest()))
-        ).andDo(print())
-                .andExpect(status().isOk());
-
-        System.out.println("Done");
-    }
-
-    @Test
-    public void addTileSetTest() throws Exception {
-        TilesetDto dto = add();
-
-        mockMvc.perform(
-                get(String.format("/tile-sets/%d/tile/0/tile.png", dto.getId()))
-                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
-        ).andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void addAndDeleteTileSetTest() throws Exception {
-        TilesetDto tilesetDto = add();
-
-        mockMvc.perform(
-                delete(String.format("/tile-sets/id/%d", tilesetDto.getId()))
-                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
-        ).andDo(print())
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    public void updateFirstTileTest() throws Exception {
+//        TilesetDto dto = add();
+//
+//        // update tile request
+//        mockMvc.perform(
+//                put(String.format("/tile-sets/%d/tile/0", dto.getId()))
+//                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                        .content(builder.build().writeValueAsString(createUpdateTileRequest()))
+//        ).andDo(print())
+//                .andExpect(status().isOk());
+//
+//        System.out.println("Done");
+//    }
+//
+//    @Test
+//    public void addTileSetTest() throws Exception {
+//        TilesetDto dto = add();
+//
+//        mockMvc.perform(
+//                get(String.format("/tile-sets/%d/tile/0/tile.png", dto.getId()))
+//                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+//        ).andDo(print())
+//                .andExpect(status().isOk());
+//    }
+//
+//    @Test
+//    public void addAndDeleteTileSetTest() throws Exception {
+//        TilesetDto tilesetDto = add();
+//
+//        mockMvc.perform(
+//                delete(String.format("/tile-sets/id/%d", tilesetDto.getId()))
+//                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+//        ).andDo(print())
+//                .andExpect(status().isOk());
+//    }
 }

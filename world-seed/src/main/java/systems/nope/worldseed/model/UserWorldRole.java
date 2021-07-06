@@ -17,9 +17,7 @@ public class UserWorldRole {
     @Embeddable
     public static class Pk implements Serializable {
         private int world_id;
-
         private int role_id;
-
         private int user_id;
 
         public Pk() {
