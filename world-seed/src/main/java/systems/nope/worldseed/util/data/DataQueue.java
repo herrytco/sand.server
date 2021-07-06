@@ -1,8 +1,11 @@
-package systems.nope.worldseed.util;
+package systems.nope.worldseed.util.data;
 
 import systems.nope.worldseed.exception.DataMissmatchException;
 
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 public class DataQueue<T> implements DataStructure<T> {
 
@@ -21,5 +24,20 @@ public class DataQueue<T> implements DataStructure<T> {
 
     public int size() {
         return data.size();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return data.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer action) {
+        data.forEach(action);
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return data.spliterator();
     }
 }

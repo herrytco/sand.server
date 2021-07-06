@@ -1,4 +1,4 @@
-package systems.nope.worldseed.util;
+package systems.nope.worldseed.util.data;
 
 import systems.nope.worldseed.exception.DataMissmatchException;
 
@@ -33,12 +33,11 @@ public class DataStack<T> implements DataStructure<T> {
 
     @Override
     public void forEach(Consumer action) {
-        for(T t : this)
-            action.accept(t);
+        data.forEach(action);
     }
 
     @Override
     public Spliterator<T> spliterator() {
-        return DataStructure.super.spliterator();
+        return data.spliterator();
     }
 }
