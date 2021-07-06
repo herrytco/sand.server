@@ -15,8 +15,8 @@ public class StatValueSynthesized extends StatValue {
         setType("synthesized");
     }
 
-    public StatValueSynthesized(StatSheet sheet, String name, String nameShort, String unit, World world, @NotBlank String formula) {
-        super(sheet, name, nameShort, unit, world, "synthesized");
+    public StatValueSynthesized(StatSheet sheet, String name, String nameShort, String unit, World world, @NotBlank String formula, Boolean isResource) {
+        super(sheet, name, nameShort, unit, world, "synthesized", isResource);
         this.formula = formula;
     }
 

@@ -1,9 +1,7 @@
 package systems.nope.worldseed.model.stat.instance;
 
-import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.value.StatValue;
-import systems.nope.worldseed.model.stat.value.StatValueConstant;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -22,14 +20,6 @@ public class StatValueInstanceConstant extends StatValueInstance {
     public StatValueInstanceConstant(World world, StatValue statValue, @NotNull Integer value) {
         super(world, statValue, "constant");
         this.value = value;
-    }
-
-    public static StatValueInstanceConstant fromStatValueAndPerson(StatValueConstant statValue, Person person) {
-        return new StatValueInstanceConstant(
-                statValue.getWorld(),
-                statValue,
-                statValue.getInitalValue()
-        );
     }
 
     @Override

@@ -46,7 +46,7 @@ public class StatTestUtil {
 
         statValueConstant = statValueConstantOptional.orElseGet(() -> (StatValueConstant) statSheetService.addConstantStatValueToSheet(testWorld, testSheet,
                 StatSheetConstants.testConstantStatName, StatSheetConstants.testConstantStatName,
-                StatSheetConstants.testConstantStatUnit, StatSheetConstants.testConstantStatDefault));
+                StatSheetConstants.testConstantStatUnit, StatSheetConstants.testConstantStatDefault, false));
 
         Optional<StatValueSynthesized> statValueSynthesizedOptional = statValueSynthesizedRepository.findByWorldAndNameAndSheet(
                 testWorld,
@@ -57,7 +57,7 @@ public class StatTestUtil {
         statValueSynthesized = statValueSynthesizedOptional
                 .orElseGet(() -> (StatValueSynthesized) statSheetService.addSynthesizedStatValueToSheet(testWorld,
                         testSheet, StatSheetConstants.testSyntheticStatName, StatSheetConstants.testSyntheticStatName,
-                        StatSheetConstants.testConstantStatUnit, StatSheetConstants.testSyntheticStatFormula));
+                        StatSheetConstants.testConstantStatUnit, StatSheetConstants.testSyntheticStatFormula, false));
     }
 
     public StatValueSynthesized getStatValueSynthesized() {

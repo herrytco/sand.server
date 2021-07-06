@@ -113,17 +113,19 @@ public class StatSheetController {
             @PathVariable int sheetId,
             @RequestBody AddSynthesizedStatRequest request
     ) {
-        Optional<World> optionalWorld = worldService.find(worldId);
-        if (optionalWorld.isEmpty())
-            throw new NotFoundException(worldId);
-        World world = optionalWorld.get();
+        World world = worldService.get(worldId);
+        StatSheet sheet = statSheetService.get(sheetId);
 
-        Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findById(sheetId);
-        if (optionalStatSheet.isEmpty())
-            throw new NotFoundException(sheetId);
-        StatSheet sheet = optionalStatSheet.get();
+        StatValueSynthesized value = statSheetService.addSynthesizedStatValueToSheet(
+                world,
+                sheet,
+                request.getName(),
+                request.getNameShort(),
+                request.getUnit(),
+                request.getFormula(),
+                request.getResource()
 
-        StatValueSynthesized value = statSheetService.addSynthesizedStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getFormula());
+        );
         return StatValueSynthesizedDto.fromStatValueSynthesized(value);
     }
 
@@ -134,17 +136,18 @@ public class StatSheetController {
             @PathVariable int sheetId,
             @RequestBody AddConstantStatRequest request
     ) {
-        Optional<World> optionalWorld = worldService.find(worldId);
-        if (optionalWorld.isEmpty())
-            throw new NotFoundException(worldId);
-        World world = optionalWorld.get();
+        World world = worldService.get(worldId);
+        StatSheet sheet = statSheetService.get(sheetId);
 
-        Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findById(sheetId);
-        if (optionalStatSheet.isEmpty())
-            throw new NotFoundException(sheetId);
-        StatSheet sheet = optionalStatSheet.get();
-
-        StatValueConstant value = statSheetService.addConstantStatValueToSheet(world, sheet, request.getName(), request.getNameShort(), request.getUnit(), request.getInitialValue());
+        StatValueConstant value = statSheetService.addConstantStatValueToSheet(
+                world,
+                sheet,
+                request.getName(),
+                request.getNameShort(),
+                request.getUnit(),
+                request.getInitialValue(),
+                request.getResource()
+        );
         return StatValueConstantDto.fromStatValueConstant(value);
     }
 
@@ -154,10 +157,7 @@ public class StatSheetController {
             @PathVariable int worldId,
             @RequestBody AddStatSheetRequest request
     ) {
-        Optional<World> optionalWorld = worldService.find(worldId);
-        if (optionalWorld.isEmpty())
-            throw new NotFoundException(worldId);
-        World world = optionalWorld.get();
+        World world = worldService.get(worldId);
 
         StatSheet sheetNew;
 

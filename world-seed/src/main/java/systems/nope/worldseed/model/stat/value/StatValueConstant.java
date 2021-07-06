@@ -17,8 +17,9 @@ public class StatValueConstant extends StatValue {
         setType("constant");
     }
 
-    public StatValueConstant(StatSheet sheet, String name, String nameShort, String unit, World world, Integer initalValue) {
-        super(sheet, name, nameShort, unit, world, "constant");
+    public StatValueConstant(StatSheet sheet, String name, String nameShort, String unit, World world,
+                             Integer initalValue, Boolean isResource) {
+        super(sheet, name, nameShort, unit, world, "constant", isResource);
         this.initalValue = initalValue;
     }
 

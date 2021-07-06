@@ -139,7 +139,8 @@ public class StatTest {
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testConstantStatDefault
+                                                StatSheetConstants.testConstantStatDefault,
+                                                false
                                         )
                                 )
                         )
@@ -158,7 +159,8 @@ public class StatTest {
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testConstantStatDefault
+                                                StatSheetConstants.testConstantStatDefault,
+                                                false
                                         )
                                 )
                         )
@@ -205,7 +207,8 @@ public class StatTest {
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testConstantStatDefault
+                                                StatSheetConstants.testConstantStatDefault,
+                                                false
                                         )
                                 )
                         )
@@ -224,7 +227,8 @@ public class StatTest {
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testConstantStatDefault
+                                                StatSheetConstants.testConstantStatDefault,
+                                                false
                                         )
                                 )
                         )
@@ -265,7 +269,8 @@ public class StatTest {
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testConstantStatDefault
+                                                StatSheetConstants.testConstantStatDefault,
+                                                false
                                         )
                                 )
                         )
@@ -306,7 +311,8 @@ public class StatTest {
                                                 StatSheetConstants.testSyntheticStatName,
                                                 StatSheetConstants.testSyntheticStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testSyntheticStatFormula
+                                                StatSheetConstants.testSyntheticStatFormula,
+                                                false
                                         )
                                 )
                         )

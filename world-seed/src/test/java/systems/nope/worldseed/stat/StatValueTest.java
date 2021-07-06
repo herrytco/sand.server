@@ -80,7 +80,8 @@ public class StatValueTest {
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testConstantStatDefault
+                                                StatSheetConstants.testConstantStatDefault,
+                                                false
                                         )
                                 )
                         )
@@ -101,7 +102,8 @@ public class StatValueTest {
                                                 StatSheetConstants.testSyntheticStatName,
                                                 StatSheetConstants.testSyntheticStatName,
                                                 StatSheetConstants.testConstantStatUnit,
-                                                StatSheetConstants.testSyntheticStatFormula
+                                                StatSheetConstants.testSyntheticStatFormula,
+                                                false
                                         )
                                 )
                         )
