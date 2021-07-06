@@ -11,6 +11,7 @@ import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.person.PersonRepository;
 import systems.nope.worldseed.repository.stat.*;
+import systems.nope.worldseed.service.person.PersonService;
 
 import java.util.*;
 
@@ -21,17 +22,19 @@ public class StatSheetService {
     private final StatValueSynthesizedRepository statValueSynthesizedRepository;
 
     private final PersonRepository personRepository;
+    private final PersonService personService;
 
     private final StatValueInstanceService statValueInstanceService;
 
     public StatSheetService(StatSheetRepository statSheetRepository,
                             StatValueConstantRepository statValueConstantRepository,
                             StatValueSynthesizedRepository statValueSynthesizedRepository,
-                            PersonRepository personRepository, StatValueInstanceService statValueInstanceService) {
+                            PersonRepository personRepository, PersonService personService, StatValueInstanceService statValueInstanceService) {
         this.statSheetRepository = statSheetRepository;
         this.statValueConstantRepository = statValueConstantRepository;
         this.statValueSynthesizedRepository = statValueSynthesizedRepository;
         this.personRepository = personRepository;
+        this.personService = personService;
         this.statValueInstanceService = statValueInstanceService;
     }
 
@@ -136,21 +139,6 @@ public class StatSheetService {
         statValueSynthesizedRepository.save(statValueSynthesized);
     }
 
-    public Set<StatSheet> groundStatSheets(Collection<StatSheet> sheets) {
-        Set<StatSheet> result = new HashSet<>(sheets);
-
-        for (StatSheet sheet : sheets) {
-            StatSheet parent = sheet.getParent();
-
-            while (parent != null) {
-                result.add(parent);
-                parent = parent.getParent();
-            }
-        }
-
-        return result;
-    }
-
     public StatValueSynthesized addSynthesizedStatValueToSheet(World world, StatSheet sheet, String name,
                                                                String nameShort, String unit, String formula,
                                                                Boolean isResource) {
@@ -173,6 +161,7 @@ public class StatSheetService {
             );
 
             personRepository.save(assignedPerson);
+            personService.realizePersonResources(assignedPerson);
         }
 
         return valueNew;

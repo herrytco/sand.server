@@ -4,10 +4,13 @@ import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
+import systems.nope.worldseed.model.stat.instance.StatValueInstanceResource;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.repository.stat.StatValueInstanceConstantRepository;
+import systems.nope.worldseed.repository.stat.StatValueInstanceResourceRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceSynthesizedRepository;
+import systems.nope.worldseed.util.StatUtils;
 
 import java.util.Optional;
 
@@ -16,7 +19,8 @@ public class StatValueInstanceService {
     private final StatValueInstanceConstantRepository statValueInstanceConstantRepository;
     private final StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository;
 
-    public StatValueInstanceService(StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository) {
+    public StatValueInstanceService(StatValueInstanceConstantRepository statValueInstanceConstantRepository,
+                                    StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository) {
         this.statValueInstanceConstantRepository = statValueInstanceConstantRepository;
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
     }
@@ -48,9 +52,17 @@ public class StatValueInstanceService {
     }
 
     public StatValueInstanceConstant add(World world, StatValue stat, Integer initialValue) {
-        StatValueInstanceConstant statNew = new StatValueInstanceConstant(
-                world, stat, initialValue
-        );
+        StatValueInstanceConstant statNew = new StatValueInstanceConstant(world, stat, initialValue);
+        statValueInstanceConstantRepository.save(statNew);
+
+        if (stat.getResource()) {
+            StatValueInstanceResource resource = new StatValueInstanceResource();
+            resource.setStatValueInstance(statNew);
+            resource.setId(statNew.getId());
+            resource.setValue(statNew.getValue());
+
+            statNew.setResource(resource);
+        }
 
         statValueInstanceConstantRepository.save(statNew);
 
@@ -61,6 +73,16 @@ public class StatValueInstanceService {
         StatValueInstanceSynthesized statNew = new StatValueInstanceSynthesized(
                 world, stat
         );
+
+        statValueInstanceSynthesizedRepository.save(statNew);
+
+        if (stat.getResource()) {
+            StatValueInstanceResource resource = new StatValueInstanceResource();
+            resource.setStatValueInstance(statNew);
+            resource.setId(statNew.getId());
+
+            statNew.setResource(resource);
+        }
 
         statValueInstanceSynthesizedRepository.save(statNew);
 

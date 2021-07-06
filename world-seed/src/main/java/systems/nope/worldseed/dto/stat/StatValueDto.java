@@ -1,7 +1,5 @@
 package systems.nope.worldseed.dto.stat;
 
-import lombok.Data;
-
 public abstract class StatValueDto {
     private final int id;
 
@@ -17,7 +15,9 @@ public abstract class StatValueDto {
 
     private final String type;
 
-    public StatValueDto(int id, String name, String nameShort, int statSheet, String unit, int world, String type) {
+    private final Boolean isResource;
+
+    public StatValueDto(int id, String name, String nameShort, int statSheet, String unit, int world, String type, Boolean isResource) {
         this.id = id;
         this.name = name;
         this.nameShort = nameShort;
@@ -25,6 +25,7 @@ public abstract class StatValueDto {
         this.unit = unit;
         this.world = world;
         this.type = type;
+        this.isResource = isResource;
     }
 
     public int getId() {
@@ -53,5 +54,9 @@ public abstract class StatValueDto {
 
     public String getType() {
         return type;
+    }
+
+    public Boolean getResource() {
+        return isResource;
     }
 }

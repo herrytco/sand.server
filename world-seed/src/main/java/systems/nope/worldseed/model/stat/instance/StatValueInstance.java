@@ -25,8 +25,7 @@ public class StatValueInstance implements Symbol {
     @JoinColumn(name = "stat_value_id")
     private StatValue statValue;
 
-    @OneToOne
-    @JoinColumn(name = "resource_id")
+    @OneToOne(mappedBy = "statValueInstance", cascade = CascadeType.ALL)
     private StatValueInstanceResource resource;
 
     @Transient

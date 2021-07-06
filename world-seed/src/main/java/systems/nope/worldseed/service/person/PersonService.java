@@ -154,17 +154,34 @@ public class PersonService {
                         value,
                         ((StatValueConstant) value).getInitalValue()
                 );
-            else if (value instanceof StatValueSynthesized)
+            else if (value instanceof StatValueSynthesized) {
                 instance = statValueInstanceService.add(
                         person.getWorld(),
                         value
                 );
+            }
 
             if (instance != null)
                 person.getStatValues().add(instance);
         }
 
         person.getStatSheets().add(sheet);
+        personRepository.save(person);
+
+        realizePersonResources(person);
+    }
+
+    public void realizePersonResources(Person person) {
+        enrichPersonStats(person);
+
+        for (StatValueInstance instance : person.getStatValues()) {
+            if (instance instanceof StatValueInstanceSynthesized && instance.getStatValue().getResource()
+                    && instance.getResource() != null && instance.getResource().getValue() == null) {
+
+                instance.getResource().setValue(instance.getValue());
+            }
+        }
+
         personRepository.save(person);
     }
 
