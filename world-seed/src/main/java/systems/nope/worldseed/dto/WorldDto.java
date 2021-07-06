@@ -1,7 +1,7 @@
 package systems.nope.worldseed.dto;
 
 import lombok.Data;
-import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.tile.Tileset;

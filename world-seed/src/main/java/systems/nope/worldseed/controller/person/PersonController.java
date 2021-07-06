@@ -3,11 +3,12 @@ package systems.nope.worldseed.controller.person;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ItemDto;
-import systems.nope.worldseed.dto.PersonDto;
+import systems.nope.worldseed.dto.person.PersonDto;
+import systems.nope.worldseed.dto.person.PersonNoteDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
-import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.service.ItemService;
-import systems.nope.worldseed.service.PersonService;
+import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.WorldService;
@@ -30,6 +31,9 @@ public class PersonController {
         this.itemService = itemService;
     }
 
+    ////
+    // ITEMS
+    ////
     @GetMapping("/{personId}/items")
     public List<ItemDto> itemsForPerson(
             @PathVariable Integer personId
@@ -45,6 +49,27 @@ public class PersonController {
         personService.addItemToPerson(
                 personService.get(personId, false),
                 itemService.get(itemId)
+        );
+    }
+
+    ////
+    // NOTES
+    ////
+    @GetMapping("/{personId}/notes")
+    public List<PersonNoteDto> notesForPerson(
+            @PathVariable Integer personId
+    ) {
+        return personService.get(personId).getNotes().stream().map(PersonNoteDto::fromNote).collect(Collectors.toList());
+    }
+
+    @PostMapping("/{personId}/notes")
+    public void addNoteToPerson(
+            @PathVariable Integer personId,
+            @RequestBody PersonNoteDto note
+    ) {
+        personService.addNoteToPerson(
+                personService.get(personId),
+                note.getContent()
         );
     }
 

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.stat.person.StatValuePersonInstanceDto;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
-import systems.nope.worldseed.service.PersonService;
+import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.exception.NotFoundException;
 

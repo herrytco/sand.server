@@ -1,6 +1,7 @@
-package systems.nope.worldseed.model;
+package systems.nope.worldseed.model.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
@@ -42,6 +43,9 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
     private List<Item> items;
+
+    @OneToMany(mappedBy = "person")
+    private List<PersonNote> notes;
 
     public Person(World world, String name, String apiKey) {
         this.world = world;
@@ -106,5 +110,13 @@ public class Person {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public List<PersonNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<PersonNote> notes) {
+        this.notes = notes;
     }
 }

@@ -11,10 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import systems.nope.worldseed.dto.PersonDto;
+import systems.nope.worldseed.dto.person.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
-import systems.nope.worldseed.model.Person;
-import systems.nope.worldseed.repository.PersonRepository;
+import systems.nope.worldseed.model.person.Person;
+import systems.nope.worldseed.repository.person.PersonRepository;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 import systems.nope.worldseed.model.World;
@@ -132,18 +132,5 @@ public class PersonTest {
         ).andDo(print())
                 .andExpect(status().isOk());
     }
-
-//    @Test
-//    public void getByCustomApiTest() throws Exception {
-//        String token = userTestUtil.authenticateTestUser();
-//
-//        String apiKey = "ozedawpqwxcksniuhlswtbfruonxfofexxnwbqlfjoihdwptutrorwlmunbrsibxvxfjdenkormbydautimannwinvoekfghpygohmpvmhwbkrujjvjwgoqmdqgndwoxhroydtpclreexzlcfvsbcnjgboddoolhjrcuilruwrcxsplkuzlbpfcrahfefjhfckdleytofqkfgfxwmiquycmrncubztxyzdvxbyrahqoffhigiuilrqwgpbidzwln";
-//
-//        mockMvc.perform(
-//                get(String.format("%s/api/%s", PersonConstants.endpoint, apiKey))
-//                        .header("Authorization", String.format("Bearer %s", token))
-//        ).andDo(print())
-//                .andExpect(status().isOk());
-//    }
 
 }

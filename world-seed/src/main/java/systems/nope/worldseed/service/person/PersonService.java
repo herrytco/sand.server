@@ -1,4 +1,4 @@
-package systems.nope.worldseed.service;
+package systems.nope.worldseed.service.person;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,8 @@ import systems.nope.worldseed.exception.ImpossibleException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.item.Item;
+import systems.nope.worldseed.model.person.Person;
+import systems.nope.worldseed.model.person.PersonNote;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
@@ -14,9 +16,14 @@ import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
-import systems.nope.worldseed.repository.PersonRepository;
+import systems.nope.worldseed.repository.person.PersonNoteRepository;
+import systems.nope.worldseed.repository.person.PersonRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceConstantRepository;
 import systems.nope.worldseed.repository.stat.StatValueInstanceSynthesizedRepository;
+import systems.nope.worldseed.service.StatSheetService;
+import systems.nope.worldseed.util.data.DataStack;
+import systems.nope.worldseed.util.Symbol;
+import systems.nope.worldseed.util.data.DataStructure;
 import systems.nope.worldseed.util.expression.ExpressionUtil;
 
 import javax.transaction.Transactional;
@@ -30,14 +37,16 @@ public class PersonService {
     private final StatSheetService statSheetService;
     private final StatValueInstanceConstantRepository statValueInstanceConstantRepository;
     private final StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository;
+    private final PersonNoteRepository personNoteRepository;
 
     private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
 
-    public PersonService(PersonRepository personRepository, StatSheetService statSheetService, StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository) {
+    public PersonService(PersonRepository personRepository, StatSheetService statSheetService, StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository, PersonNoteRepository personNoteRepository) {
         this.personRepository = personRepository;
         this.statSheetService = statSheetService;
         this.statValueInstanceConstantRepository = statValueInstanceConstantRepository;
         this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
+        this.personNoteRepository = personNoteRepository;
     }
 
     public Optional<Person> find(int id) {
@@ -103,6 +112,14 @@ public class PersonService {
         enrichPersonStats(person);
 
         return Optional.of(person);
+    }
+
+    public void addNoteToPerson(Person person, String content) {
+        PersonNote noteNew = new PersonNote();
+        noteNew.setContent(content);
+        noteNew.setPerson(person);
+        personNoteRepository.save(noteNew);
+        person.getNotes().add(noteNew);
     }
 
     /**
@@ -205,6 +222,11 @@ public class PersonService {
     }
 
     public void enrichPersonStats(Person person) {
+
+
+
+
+
         List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
 
         for (StatValuePersonInstance personInstance : person.getStatValues()) {
@@ -284,6 +306,27 @@ public class PersonService {
 
         person.getItems().add(item);
         personRepository.save(person);
+    }
+
+    public Collection<Symbol> symbolsOfStatSheet(Person person, StatSheet sheet) {
+        DataStructure<StatSheet> sheetStack = new DataStack<>();
+        HashMap<String, Symbol> symbols = new HashMap<>();
+
+        do {
+            sheetStack.push(sheet);
+            sheet = sheet.getParent();
+        } while (sheet != null);
+
+        for (StatSheet s : sheetStack) {
+            for (StatValuePersonInstance instance : person.getStatValues()) {
+                if (instance.getStatValue().getSheet().getId() != s.getId())
+                    continue;
+
+                symbols.put(instance.getSymbolIdentifier(), new Symbol(instance.getSymbolIdentifier(), instance.getValue()));
+            }
+        }
+
+        return symbols.values();
     }
 
     /**

@@ -1,4 +1,4 @@
-package systems.nope.worldseed.model;
+package systems.nope.worldseed.model.person;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

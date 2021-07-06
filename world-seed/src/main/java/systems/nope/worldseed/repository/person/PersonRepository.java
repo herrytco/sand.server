@@ -1,8 +1,8 @@
-package systems.nope.worldseed.repository;
+package systems.nope.worldseed.repository.person;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
-import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
 
 import javax.transaction.Transactional;

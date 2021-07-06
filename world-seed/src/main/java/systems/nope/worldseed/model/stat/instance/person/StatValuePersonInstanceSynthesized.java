@@ -1,6 +1,6 @@
 package systems.nope.worldseed.model.stat.instance.person;
 
-import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
