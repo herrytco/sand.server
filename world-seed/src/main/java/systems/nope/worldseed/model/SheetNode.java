@@ -1,7 +1,7 @@
 package systems.nope.worldseed.model;
 
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class SheetNode {
         children.add(new SheetNode(childNew, this));
     }
 
-    public Optional<Stack<SheetNode>> findStackForStatValueInstance(StatValuePersonInstance instance) {
+    public Optional<Stack<SheetNode>> findStackForStatValueInstance(StatValueInstance instance) {
         StatSheet scope = instance.getStatValue().getSheet();
 
         Optional<SheetNode> containingNode = findSheetNodeContainingSheet(scope);

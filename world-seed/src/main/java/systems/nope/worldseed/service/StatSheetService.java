@@ -1,7 +1,5 @@
 package systems.nope.worldseed.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.NotFoundException;
@@ -9,10 +7,9 @@ import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
+import systems.nope.worldseed.repository.person.PersonRepository;
 import systems.nope.worldseed.repository.stat.*;
 
 import java.util.*;
@@ -23,17 +20,19 @@ public class StatSheetService {
     private final StatValueConstantRepository statValueConstantRepository;
     private final StatValueSynthesizedRepository statValueSynthesizedRepository;
 
-    private final StatValueInstanceConstantRepository statValueInstanceConstantRepository;
-    private final StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository;
+    private final PersonRepository personRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(StatSheetService.class);
+    private final StatValueInstanceService statValueInstanceService;
 
-    public StatSheetService(StatSheetRepository statSheetRepository, StatValueConstantRepository statValueConstantRepository, StatValueSynthesizedRepository statValueSynthesizedRepository, StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository) {
+    public StatSheetService(StatSheetRepository statSheetRepository,
+                            StatValueConstantRepository statValueConstantRepository,
+                            StatValueSynthesizedRepository statValueSynthesizedRepository,
+                            PersonRepository personRepository, StatValueInstanceService statValueInstanceService) {
         this.statSheetRepository = statSheetRepository;
         this.statValueConstantRepository = statValueConstantRepository;
         this.statValueSynthesizedRepository = statValueSynthesizedRepository;
-        this.statValueInstanceConstantRepository = statValueInstanceConstantRepository;
-        this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
+        this.personRepository = personRepository;
+        this.statValueInstanceService = statValueInstanceService;
     }
 
     public List<StatSheet> findByWorld(World world) {
@@ -57,40 +56,65 @@ public class StatSheetService {
         return optionalStatSheet.get();
     }
 
-    public Optional<StatValueConstant> findStatValueConstantById(int id) {
+    public StatSheet add(World world, String name) {
+        return add(world, name, null);
+    }
+
+    public StatSheet add(World world, String name, StatSheet parent) {
+        Optional<StatSheet> referenceStatSheet = statSheetRepository.findByWorldAndName(world, name);
+
+        if (referenceStatSheet.isPresent())
+            throw new AlreadyExistingException(name);
+
+        StatSheet sheetNew = new StatSheet(name, world);
+
+        if (parent != null)
+            sheetNew.setParent(parent);
+
+        statSheetRepository.save(sheetNew);
+
+        return sheetNew;
+    }
+
+    public StatValueConstant getConstant(int id) {
+        Optional<StatValueConstant> optionalStatValueConstant = findConstant(id);
+
+        if (optionalStatValueConstant.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatValueConstant.get();
+    }
+
+    public Optional<StatValueConstant> findConstant(int id) {
         return statValueConstantRepository.findById(id);
     }
 
-    public Optional<StatValueSynthesized> findStatValueSynthesizedById(int id) {
+    public StatValueSynthesized getSynthesized(int id) {
+        Optional<StatValueSynthesized> optionalStatValueSynthesized = findSynthesized(id);
+
+        if (optionalStatValueSynthesized.isEmpty())
+            throw new NotFoundException(id);
+
+        return optionalStatValueSynthesized.get();
+    }
+
+    public Optional<StatValueSynthesized> findSynthesized(int id) {
         return statValueSynthesizedRepository.findById(id);
-    }
-
-    public Optional<StatValuePersonInstanceConstant> findStatValueInstanceConstantById(int id) {
-        return statValueInstanceConstantRepository.findById(id);
-    }
-
-    public Optional<StatValuePersonInstanceSynthesized> findStatValueInstanceSynthesizedById(int id) {
-        return statValueInstanceSynthesizedRepository.findById(id);
     }
 
     public StatSheetRepository getStatSheetRepository() {
         return statSheetRepository;
     }
 
-    public void updateConstantStatInstance(StatValuePersonInstanceConstant instance, Integer valueNew) {
-        instance.setValue(valueNew);
-        statValueInstanceConstantRepository.save(instance);
-    }
-
     public void deleteStatValue(Integer id) {
-        Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
+        Optional<StatValueConstant> optionalStatValueConstant = findConstant(id);
 
         if (optionalStatValueConstant.isPresent()) {
             statValueConstantRepository.delete(optionalStatValueConstant.get());
             return;
         }
 
-        Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
+        Optional<StatValueSynthesized> optionalStatValueSynthesized = findSynthesized(id);
 
         if (optionalStatValueSynthesized.isPresent()) {
             statValueSynthesizedRepository.delete(optionalStatValueSynthesized.get());
@@ -101,41 +125,15 @@ public class StatSheetService {
     }
 
     public void updateStatValueContant(Integer id, Integer initialValueNew) {
-        StatValueConstant statValueToUpdate = getStatValueConstant(id);
+        StatValueConstant statValueToUpdate = getConstant(id);
         statValueToUpdate.setInitalValue(initialValueNew);
         statValueConstantRepository.save(statValueToUpdate);
     }
 
-    public StatValueConstant getStatValueConstant(int id) {
-        Optional<StatValueConstant> optionalStatValueConstant = findStatValueConstant(id);
-
-        if (optionalStatValueConstant.isEmpty())
-            throw new NotFoundException(id);
-
-        return optionalStatValueConstant.get();
-    }
-
-    public Optional<StatValueConstant> findStatValueConstant(int id) {
-        return statValueConstantRepository.findById(id);
-    }
-
     public void updateStatValueSynthesized(Integer id, String formulaNew) {
-        StatValueSynthesized statValueSynthesized = getStatValueSynthesized(id);
+        StatValueSynthesized statValueSynthesized = getSynthesized(id);
         statValueSynthesized.setFormula(formulaNew);
         statValueSynthesizedRepository.save(statValueSynthesized);
-    }
-
-    public StatValueSynthesized getStatValueSynthesized(int id) {
-        Optional<StatValueSynthesized> optionalStatValueSynthesized = findStatValueSynthesized(id);
-
-        if (optionalStatValueSynthesized.isEmpty())
-            throw new NotFoundException(id);
-
-        return optionalStatValueSynthesized.get();
-    }
-
-    public Optional<StatValueSynthesized> findStatValueSynthesized(int id) {
-        return statValueSynthesizedRepository.findById(id);
     }
 
     public Set<StatSheet> groundStatSheets(Collection<StatSheet> sheets) {
@@ -166,8 +164,14 @@ public class StatSheetService {
         statValueSynthesizedRepository.save(valueNew);
 
         for (Person assignedPerson : sheet.getAssignedPersons()) {
-            StatValuePersonInstanceSynthesized instanceNew = StatValuePersonInstanceSynthesized.fromStatValueAndPerson(valueNew, assignedPerson);
-            statValueInstanceSynthesizedRepository.save(instanceNew);
+            assignedPerson.getStatValues().add(
+                    statValueInstanceService.add(
+                            assignedPerson.getWorld(),
+                            valueNew
+                    )
+            );
+
+            personRepository.save(assignedPerson);
         }
 
         return valueNew;
@@ -186,46 +190,18 @@ public class StatSheetService {
         statValueConstantRepository.save(valueNew);
 
         for (Person assignedPerson : sheet.getAssignedPersons()) {
-            StatValuePersonInstanceConstant instanceNew = StatValuePersonInstanceConstant.fromStatValueAndPerson(valueNew, assignedPerson);
-            statValueInstanceConstantRepository.save(instanceNew);
+            assignedPerson.getStatValues().add(
+                    statValueInstanceService.add(
+                            assignedPerson.getWorld(),
+                            valueNew,
+                            valueNew.getInitalValue()
+                    )
+            );
+
+            personRepository.save(assignedPerson);
         }
 
         return valueNew;
     }
 
-    public StatSheet add(World world, String name) {
-        return add(world, name, null);
-    }
-
-    public StatSheet add(World world, String name, StatSheet parent) {
-        Optional<StatSheet> referenceStatSheet = statSheetRepository.findByWorldAndName(world, name);
-
-        if (referenceStatSheet.isPresent())
-            throw new AlreadyExistingException(name);
-
-        StatSheet sheetNew = new StatSheet(name, world);
-
-        if (parent != null)
-            sheetNew.setParent(parent);
-
-        statSheetRepository.save(sheetNew);
-
-        return sheetNew;
-    }
-
-    public StatValueConstantRepository getStatValueConstantRepository() {
-        return statValueConstantRepository;
-    }
-
-    public StatValueSynthesizedRepository getStatValueSynthesizedRepository() {
-        return statValueSynthesizedRepository;
-    }
-
-    public StatValueInstanceConstantRepository getStatValueInstanceConstantRepository() {
-        return statValueInstanceConstantRepository;
-    }
-
-    public StatValueInstanceSynthesizedRepository getStatValueInstanceSynthesizedRepository() {
-        return statValueInstanceSynthesizedRepository;
-    }
 }

@@ -1,4 +1,4 @@
-package systems.nope.worldseed.security;
+package systems.nope.worldseed.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

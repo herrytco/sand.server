@@ -3,25 +3,23 @@ package systems.nope.worldseed.service.person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.exception.ImpossibleException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.person.PersonNote;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceSynthesized;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.person.PersonNoteRepository;
 import systems.nope.worldseed.repository.person.PersonRepository;
-import systems.nope.worldseed.repository.stat.StatValueInstanceConstantRepository;
-import systems.nope.worldseed.repository.stat.StatValueInstanceSynthesizedRepository;
 import systems.nope.worldseed.service.StatSheetService;
-import systems.nope.worldseed.util.data.DataStack;
+import systems.nope.worldseed.service.StatValueInstanceService;
+import systems.nope.worldseed.util.StatContext;
+import systems.nope.worldseed.util.StatUtils;
 import systems.nope.worldseed.util.Symbol;
 import systems.nope.worldseed.util.data.DataStructure;
 import systems.nope.worldseed.util.expression.ExpressionUtil;
@@ -34,19 +32,18 @@ import java.util.*;
 public class PersonService {
 
     private final PersonRepository personRepository;
-    private final StatSheetService statSheetService;
-    private final StatValueInstanceConstantRepository statValueInstanceConstantRepository;
-    private final StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository;
     private final PersonNoteRepository personNoteRepository;
+    private final StatUtils statUtils;
+    private final StatValueInstanceService statValueInstanceService;
 
     private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
 
-    public PersonService(PersonRepository personRepository, StatSheetService statSheetService, StatValueInstanceConstantRepository statValueInstanceConstantRepository, StatValueInstanceSynthesizedRepository statValueInstanceSynthesizedRepository, PersonNoteRepository personNoteRepository) {
+    public PersonService(PersonRepository personRepository, PersonNoteRepository personNoteRepository,
+                         StatUtils statUtils, StatValueInstanceService statValueInstanceService) {
         this.personRepository = personRepository;
-        this.statSheetService = statSheetService;
-        this.statValueInstanceConstantRepository = statValueInstanceConstantRepository;
-        this.statValueInstanceSynthesizedRepository = statValueInstanceSynthesizedRepository;
         this.personNoteRepository = personNoteRepository;
+        this.statUtils = statUtils;
+        this.statValueInstanceService = statValueInstanceService;
     }
 
     public Optional<Person> find(int id) {
@@ -138,11 +135,11 @@ public class PersonService {
         }
 
         for (StatValue value : sheet.getStatValues()) {
-            StatValuePersonInstance instance = null;
+            StatValueInstance instance = null;
 
             boolean duplicate = false;
 
-            for (StatValuePersonInstance i : person.getStatValues())
+            for (StatValueInstance i : person.getStatValues())
                 if (i.getStatValue().getId() == value.getId()) {
                     duplicate = true;
                     break;
@@ -151,13 +148,17 @@ public class PersonService {
             if (duplicate)
                 continue;
 
-            if (value instanceof StatValueConstant) {
-                instance = new StatValuePersonInstanceConstant(person.getWorld(), value, person, ((StatValueConstant) value).getInitalValue());
-                statValueInstanceConstantRepository.save((StatValuePersonInstanceConstant) instance);
-            } else if (value instanceof StatValueSynthesized) {
-                instance = new StatValuePersonInstanceSynthesized(person.getWorld(), value, person);
-                statValueInstanceSynthesizedRepository.save((StatValuePersonInstanceSynthesized) instance);
-            }
+            if (value instanceof StatValueConstant)
+                instance = statValueInstanceService.add(
+                        person.getWorld(),
+                        value,
+                        ((StatValueConstant) value).getInitalValue()
+                );
+            else if (value instanceof StatValueSynthesized)
+                instance = statValueInstanceService.add(
+                        person.getWorld(),
+                        value
+                );
 
             if (instance != null)
                 person.getStatValues().add(instance);
@@ -167,47 +168,41 @@ public class PersonService {
         personRepository.save(person);
     }
 
+    public void enrichPersonStats(Person person) {
+        if (person.getStatValues().size() == 0)
+            return;
+
+        List<DataStructure<StatSheet>> forest = statUtils.constructSheetForest(person.getStatSheets());
+
+        for (DataStructure<StatSheet> tree : forest) {
+            StatContext context = new StatContext();
+
+            for (StatSheet node : tree) {
+                for (StatValueInstance instance : person.getStatValues()) {
+                    // ignore if the instance is not in the current sheet
+                    if (instance.getStatValue().getSheet().getId() != node.getId())
+                        continue;
+
+                    // if the StatValue needs to be enriched
+                    if (instance instanceof StatValueInstanceSynthesized && instance.getValue() == null)
+                        enrichStatInstance((StatValueInstanceSynthesized) instance, context);
+
+                    context.addSymbol(new Symbol(instance.getStatValue().getNameShort(), instance.getValue()));
+                }
+            }
+        }
+
+    }
+
     /**
      * Enrich the StatValueInstance. Parses the formula based on the assigned character.
      *
      * @param instanceSynthesized - instance to be enriched
      */
-    public void enrichStatInstance(StatValuePersonInstanceSynthesized instanceSynthesized) {
-        Person person = instanceSynthesized.getPerson();
-        List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
-
+    public void enrichStatInstance(StatValueInstanceSynthesized instanceSynthesized, StatContext context) {
         String formula = ((StatValueSynthesized) instanceSynthesized.getStatValue()).getFormula();
 
-        // substitute variables in order of sheet inheritance
-        for (SheetNode tree : sheetForest) {
-            Optional<Stack<SheetNode>> optionalScopeStack = tree.findStackForStatValueInstance(instanceSynthesized);
-
-            if (optionalScopeStack.isPresent()) {
-                Stack<SheetNode> scopeStack = optionalScopeStack.get();
-
-                for (SheetNode scope : scopeStack) {
-                    StatSheet sheet = scope.getSheet();
-
-                    // substitute variables in formula with Persons stats
-                    for (StatValuePersonInstance stati : person.getStatValues()) {
-                        if (stati.getStatValue().getSheet() == sheet) {
-                            if (stati instanceof StatValuePersonInstanceConstant)
-                                formula = formula.replaceAll(stati.getStatValue().getNameShort(),
-                                        ((StatValuePersonInstanceConstant) stati).getValue().toString());
-                            else if (stati instanceof StatValuePersonInstanceSynthesized) {
-                                StatValuePersonInstanceSynthesized s = ((StatValuePersonInstanceSynthesized) stati);
-
-                                if (s.getValue() != null)
-                                    formula = formula.replaceAll(stati.getStatValue().getNameShort(),
-                                            s.getValue().toString());
-                            }
-
-                        }
-                    }
-                }
-                break;
-            }
-        }
+        formula = statUtils.enrichExpression(formula, context.getSymbols());
 
         try {
             double result = ExpressionUtil.parseExpression(formula);
@@ -221,112 +216,9 @@ public class PersonService {
         }
     }
 
-    public void enrichPersonStats(Person person) {
-
-
-
-
-
-        List<SheetNode> sheetForest = constructSheetForest(person.getStatSheets());
-
-        for (StatValuePersonInstance personInstance : person.getStatValues()) {
-
-            if (personInstance instanceof StatValuePersonInstanceSynthesized) {
-                StatValuePersonInstanceSynthesized statInstance = (StatValuePersonInstanceSynthesized) personInstance;
-                StatValueSynthesized stat = (StatValueSynthesized) statInstance.getStatValue();
-
-                String formula = stat.getFormula();
-
-                // substitute variables in order of sheet inheritance
-                for (SheetNode tree : sheetForest) {
-                    Optional<Stack<SheetNode>> optionalScopeStack = tree.findStackForStatValueInstance(personInstance);
-
-                    if (optionalScopeStack.isEmpty())
-                        continue;
-
-                    Stack<SheetNode> scopeStack = optionalScopeStack.get();
-
-                    for (SheetNode scope : scopeStack) {
-                        StatSheet sheet = scope.getSheet();
-
-                        // substitute variables in formula with Persons stats
-                        for (StatValuePersonInstance stati : person.getStatValues()) {
-                            if (stati.getStatValue().getSheet() == sheet) {
-                                if (stati instanceof StatValuePersonInstanceConstant)
-                                    formula = formula.replaceAll(
-                                            " " + stati.getStatValue().getNameShort() + " ",
-                                            " " + stati.getValue().toString() + " "
-                                    );
-                                else if (stati instanceof StatValuePersonInstanceSynthesized) {
-                                    StatValuePersonInstanceSynthesized s = ((StatValuePersonInstanceSynthesized) stati);
-
-                                    if (s.getValue() != null)
-                                        formula = formula.replaceAll(
-                                                " " + stati.getStatValue().getNameShort() + " ",
-                                                " " + s.getValue().toString() + " "
-                                        );
-                                }
-
-                            }
-                        }
-                    }
-                    break;
-
-                }
-
-                try {
-                    double result = ExpressionUtil.parseExpression(formula);
-                    statInstance.setValue((int) result);
-                } catch (IllegalArgumentException e) {
-                    statInstance.setValue(-1);
-                    logger.error(e.getMessage());
-                } catch (IllegalStateException e) {
-                    statInstance.setValue(-1);
-                    logger.error(String.format("Internal Error while parsing formula: '%s'", formula));
-                }
-            }
-
-        }
-    }
-
     public void addItemToPerson(Person person, Item item) {
-        final Set<StatSheet> requiredStatSheets = new HashSet<>();
-
-        item.getActions().forEach((action -> {
-            requiredStatSheets.addAll(action.getRequiredStatSheets());
-        }));
-
-        Set<StatSheet> groundedRequiredStatSheets = statSheetService.groundStatSheets(requiredStatSheets);
-        Set<StatSheet> providedStatSheets = new HashSet<>(item.getStatSheets());
-        providedStatSheets.addAll(person.getStatSheets());
-        providedStatSheets = statSheetService.groundStatSheets(providedStatSheets);
-
-        if (!providedStatSheets.containsAll(groundedRequiredStatSheets))
-            throw new ImpossibleException();
-
         person.getItems().add(item);
         personRepository.save(person);
-    }
-
-    public Collection<Symbol> symbolsOfStatSheet(Person person, StatSheet sheet) {
-        DataStructure<StatSheet> sheetStack = new DataStack<>();
-        HashMap<String, Symbol> symbols = new HashMap<>();
-
-        do {
-            sheetStack.push(sheet);
-            sheet = sheet.getParent();
-        } while (sheet != null);
-
-        for (StatSheet s : sheetStack) {
-            for (StatValuePersonInstance instance : person.getStatValues()) {
-                if (instance.getStatValue().getSheet().getId() != s.getId())
-                    continue;
-
-                symbols.put(instance.getSymbolIdentifier(), new Symbol(instance.getSymbolIdentifier(), instance.getValue()));
-            }
-        }
-
-        return symbols.values();
     }
 
     /**

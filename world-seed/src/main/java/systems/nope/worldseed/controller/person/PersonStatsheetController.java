@@ -4,16 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.exception.NotFoundException;
-import systems.nope.worldseed.model.person.Person;
-import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
-import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstanceConstant;
 import systems.nope.worldseed.dto.request.UpdateConstantStatValueIntanceRequest;
 import systems.nope.worldseed.service.StatSheetService;
-
-import java.util.Optional;
+import systems.nope.worldseed.service.StatValueInstanceService;
+import systems.nope.worldseed.service.person.PersonService;
 
 @RestController
 @RequestMapping("/stat-sheet-mapping")
@@ -21,12 +16,15 @@ public class PersonStatsheetController {
 
     private final PersonService personService;
     private final StatSheetService statSheetService;
+    private final StatValueInstanceService statValueInstanceService;
 
     private final Logger logger = LoggerFactory.getLogger(PersonStatsheetController.class);
 
-    public PersonStatsheetController(PersonService personService, StatSheetService statSheetService) {
+    public PersonStatsheetController(PersonService personService, StatSheetService statSheetService,
+                                     StatValueInstanceService statValueInstanceService) {
         this.personService = personService;
         this.statSheetService = statSheetService;
+        this.statValueInstanceService = statValueInstanceService;
     }
 
     @Operation(summary = "Update a single StatValueInstance identified by its id to a new value.")
@@ -37,12 +35,10 @@ public class PersonStatsheetController {
     ) {
         logger.info(request.toString());
 
-        Optional<StatValuePersonInstanceConstant> instance = statSheetService.getStatValueInstanceConstantRepository().findById(instanceId);
-
-        if (instance.isEmpty())
-            throw new NotFoundException(instanceId);
-
-        statSheetService.updateConstantStatInstance(instance.get(), request.getValueNew());
+        statValueInstanceService.update(
+                statValueInstanceService.getConstant(instanceId),
+                request.getValueNew()
+        );
     }
 
     @Operation(summary = "Add a StatSheet identified by its id to a Character, identified by its id.")
@@ -51,17 +47,11 @@ public class PersonStatsheetController {
             @RequestBody AddResourceToStatSheetRequest request
     ) {
         logger.info(request.toString());
-        Optional<Person> optionalPerson = personService.getPersonRepository().findById(request.getTargetId());
 
-        if (optionalPerson.isEmpty())
-            throw new NotFoundException(request.getTargetId());
-
-        Optional<StatSheet> optionalStatSheet = statSheetService.getStatSheetRepository().findById(request.getStatsheetId());
-
-        if (optionalStatSheet.isEmpty())
-            throw new NotFoundException(request.getStatsheetId());
-
-        personService.addStatSheetToPerson(optionalPerson.get(), optionalStatSheet.get());
+        personService.addStatSheetToPerson(
+                personService.get(request.getTargetId()),
+                statSheetService.get(request.getStatsheetId())
+        );
     }
 
 

@@ -1,7 +1,6 @@
-package systems.nope.worldseed.model.stat.instance.person;
+package systems.nope.worldseed.model.stat.instance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.util.expression.Symbol;
@@ -11,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "stat_value_instance")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class StatValuePersonInstance implements Symbol {
+public class StatValueInstance implements Symbol {
 
     @Id
     @GeneratedValue
@@ -26,21 +25,15 @@ public class StatValuePersonInstance implements Symbol {
     @JoinColumn(name = "stat_value_id")
     private StatValue statValue;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
-
     @Transient
     private String type;
 
-    public StatValuePersonInstance() {
+    public StatValueInstance() {
     }
 
-    public StatValuePersonInstance(World world, StatValue statValue, Person person, String type) {
+    public StatValueInstance(World world, StatValue statValue, String type) {
         this.world = world;
         this.statValue = statValue;
-        this.person = person;
         this.type = type;
     }
 
@@ -66,14 +59,6 @@ public class StatValuePersonInstance implements Symbol {
 
     public void setStatValue(StatValue statValue) {
         this.statValue = statValue;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
     }
 
     public String getType() {

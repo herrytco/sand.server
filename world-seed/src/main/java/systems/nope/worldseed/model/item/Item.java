@@ -5,7 +5,7 @@ import systems.nope.worldseed.model.Action;
 import systems.nope.worldseed.model.Document;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.item.StatValueItemInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -34,8 +34,13 @@ public class Item {
     )
     private Set<StatSheet> statSheets;
 
-    @OneToMany(mappedBy = "item")
-    private List<StatValueItemInstance> statValueInstances;
+    @ManyToMany
+    @JoinTable(
+            name = "item_stat_value_instance",
+            joinColumns = {@JoinColumn(name = "item_id")},
+            inverseJoinColumns = {@JoinColumn(name = "stat_value_instance_id")}
+    )
+    private List<StatValueInstance> statValueInstances;
 
     @ManyToOne
     @JoinColumn(name = "description_document")
@@ -84,12 +89,12 @@ public class Item {
         this.statSheets = statSheets;
     }
 
-    public List<StatValueItemInstance> getStatValueInstances() {
+    public List<StatValueInstance> getStatValueInstances() {
         return statValueInstances;
     }
 
-    public void setStatValueInstances(List<StatValueItemInstance> statValues) {
-        this.statValueInstances = statValues;
+    public void setStatValueInstances(List<StatValueInstance> statValueInstances) {
+        this.statValueInstances = statValueInstances;
     }
 
     public Set<Action> getActions() {

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 
 import javax.persistence.*;
 import java.util.List;
@@ -33,8 +33,13 @@ public class Person {
     )
     private List<StatSheet> statSheets;
 
-    @OneToMany(mappedBy = "person")
-    private List<StatValuePersonInstance> statValues;
+    @ManyToMany
+    @JoinTable(
+            name = "person_stat_value_instance",
+            joinColumns = {@JoinColumn(name = "person_id")},
+            inverseJoinColumns = {@JoinColumn(name = "stat_value_instance_id")}
+    )
+    private List<StatValueInstance> statValues;
 
     @ManyToMany
     @JoinTable(
@@ -96,11 +101,11 @@ public class Person {
         this.statSheets = statSheets;
     }
 
-    public List<StatValuePersonInstance> getStatValues() {
+    public List<StatValueInstance> getStatValues() {
         return statValues;
     }
 
-    public void setStatValues(List<StatValuePersonInstance> statValues) {
+    public void setStatValues(List<StatValueInstance> statValues) {
         this.statValues = statValues;
     }
 

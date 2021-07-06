@@ -4,7 +4,7 @@ import lombok.Data;
 import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.person.PersonNote;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.StatSheet;
 
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public class PersonDto {
                 person.getName(),
                 person.getApiKey(),
                 person.getStatSheets() != null ? person.getStatSheets().stream().map(StatSheet::getId).collect(Collectors.toList()) : new LinkedList<>(),
-                person.getStatValues() != null ? person.getStatValues().stream().map(StatValuePersonInstance::getId).collect(Collectors.toList()) : new LinkedList<>(),
+                person.getStatValues() != null ? person.getStatValues().stream().map(StatValueInstance::getId).collect(Collectors.toList()) : new LinkedList<>(),
                 person.getItems() != null ? person.getItems().stream().map(Item::getId).collect(Collectors.toList()) : new LinkedList<>(),
                 person.getNotes() != null ? person.getNotes().stream().map(PersonNote::getId).collect(Collectors.toList()) : new LinkedList<>()
                 );

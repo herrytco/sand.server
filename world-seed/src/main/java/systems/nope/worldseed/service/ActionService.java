@@ -10,7 +10,7 @@ import systems.nope.worldseed.model.SheetNode;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
+import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.repository.ActionRepository;
 import systems.nope.worldseed.service.person.PersonService;
@@ -109,7 +109,7 @@ public class ActionService {
                 SheetNode workingNode = workingSet.remove(0);
 
                 for (StatValue statValue : workingNode.getSheet().getStatValues())
-                    for (StatValuePersonInstance stat : person.getStatValues())
+                    for (StatValueInstance stat : person.getStatValues())
                         if (stat.getStatValue().getId() == statValue.getId())
                             formula = ExpressionUtil.groundFormula(formula, stat);
 
