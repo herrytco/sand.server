@@ -5,6 +5,7 @@ import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.StatSheet;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "stat_value")
@@ -30,19 +31,23 @@ public class StatValue {
     @JsonIgnore
     private World world;
 
+    @NotNull
+    private Boolean isResource;
+
     @Transient
     private String type;
 
     public StatValue() {
     }
 
-    public StatValue(StatSheet sheet, String name, String nameShort, String unit, World world, String type) {
+    public StatValue(StatSheet sheet, String name, String nameShort, String unit, World world, String type, Boolean isResource) {
         this.sheet = sheet;
         this.name = name;
         this.nameShort = nameShort;
         this.unit = unit;
         this.world = world;
         this.type = type;
+        this.isResource = isResource;
     }
 
     public int getId() {
@@ -99,5 +104,13 @@ public class StatValue {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Boolean getResource() {
+        return isResource;
+    }
+
+    public void setResource(Boolean resource) {
+        isResource = resource;
     }
 }

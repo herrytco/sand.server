@@ -25,6 +25,10 @@ public class StatValueInstance implements Symbol {
     @JoinColumn(name = "stat_value_id")
     private StatValue statValue;
 
+    @OneToOne
+    @JoinColumn(name = "resource_id")
+    private StatValueInstanceResource resource;
+
     @Transient
     private String type;
 
@@ -76,5 +80,13 @@ public class StatValueInstance implements Symbol {
 
     public Integer getValue() {
         return 0;
+    }
+
+    public StatValueInstanceResource getResource() {
+        return resource;
+    }
+
+    public void setResource(StatValueInstanceResource resource) {
+        this.resource = resource;
     }
 }

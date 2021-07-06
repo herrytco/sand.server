@@ -151,15 +151,16 @@ public class StatSheetService {
         return result;
     }
 
-    public StatValueSynthesized addSynthesizedStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, String formula) {
+    public StatValueSynthesized addSynthesizedStatValueToSheet(World world, StatSheet sheet, String name,
+                                                               String nameShort, String unit, String formula,
+                                                               Boolean isResource) {
         Optional<StatValueSynthesized> referenceValue = statValueSynthesizedRepository.findByWorldAndNameAndSheet(world, name, sheet);
 
         if (referenceValue.isPresent())
             throw new AlreadyExistingException(name);
 
-        StatValueSynthesized valueNew = new StatValueSynthesized(
-                sheet, name, nameShort, unit, world, formula
-        );
+        StatValueSynthesized valueNew = new StatValueSynthesized(sheet, name, nameShort, unit, world, formula,
+                isResource);
 
         statValueSynthesizedRepository.save(valueNew);
 
@@ -177,15 +178,15 @@ public class StatSheetService {
         return valueNew;
     }
 
-    public StatValueConstant addConstantStatValueToSheet(World world, StatSheet sheet, String name, String nameShort, String unit, Integer initialValue) {
+    public StatValueConstant addConstantStatValueToSheet(World world, StatSheet sheet, String name, String nameShort,
+                                                         String unit, Integer initialValue, Boolean isResource) {
         Optional<StatValueConstant> referenceValue = statValueConstantRepository.findByWorldAndNameAndSheet(world, name, sheet);
 
         if (referenceValue.isPresent())
             throw new AlreadyExistingException();
 
-        StatValueConstant valueNew = new StatValueConstant(
-                sheet, name, nameShort, unit, world, initialValue
-        );
+        StatValueConstant valueNew = new StatValueConstant(sheet, name, nameShort, unit, world, initialValue,
+                isResource);
 
         statValueConstantRepository.save(valueNew);
 

@@ -79,7 +79,8 @@ public class StatTestCustom {
                                                 statName,
                                                 statNameShort,
                                                 null,
-                                                initialValue
+                                                initialValue,
+                                                false
                                         )
                                 )
                         )
@@ -103,7 +104,8 @@ public class StatTestCustom {
                                                 statName,
                                                 statNameShort,
                                                 null,
-                                                formula
+                                                formula,
+                                                false
                                         )
                                 )
                         )

@@ -3,7 +3,6 @@ package systems.nope.worldseed.service;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
-import systems.nope.worldseed.model.stat.instance.StatValueInstance;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceSynthesized;
 import systems.nope.worldseed.model.stat.value.StatValue;
