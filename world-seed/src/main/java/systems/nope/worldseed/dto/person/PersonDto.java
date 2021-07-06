@@ -1,7 +1,9 @@
-package systems.nope.worldseed.dto;
+package systems.nope.worldseed.dto.person;
 
-import systems.nope.worldseed.model.Person;
+import lombok.Data;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.item.Item;
+import systems.nope.worldseed.model.person.PersonNote;
 import systems.nope.worldseed.model.stat.instance.person.StatValuePersonInstance;
 import systems.nope.worldseed.model.stat.StatSheet;
 
@@ -9,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 public class PersonDto {
     private final int id;
 
@@ -24,7 +27,9 @@ public class PersonDto {
 
     private final List<Integer> items;
 
-    private PersonDto(int id, int world, String name, String apiKey, List<Integer> sheets, List<Integer> stats, List<Integer> items) {
+    private final List<Integer> notes;
+
+    private PersonDto(int id, int world, String name, String apiKey, List<Integer> sheets, List<Integer> stats, List<Integer> items, List<Integer> notes) {
         this.id = id;
         this.world = world;
         this.name = name;
@@ -32,6 +37,7 @@ public class PersonDto {
         this.sheets = sheets;
         this.stats = stats;
         this.items = items;
+        this.notes = notes;
     }
 
     public static PersonDto fromPerson(Person person) {
@@ -42,35 +48,8 @@ public class PersonDto {
                 person.getApiKey(),
                 person.getStatSheets() != null ? person.getStatSheets().stream().map(StatSheet::getId).collect(Collectors.toList()) : new LinkedList<>(),
                 person.getStatValues() != null ? person.getStatValues().stream().map(StatValuePersonInstance::getId).collect(Collectors.toList()) : new LinkedList<>(),
-                person.getItems() != null ? person.getItems().stream().map(Item::getId).collect(Collectors.toList()) : new LinkedList<>()
-        );
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getWorld() {
-        return world;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public List<Integer> getSheets() {
-        return sheets;
-    }
-
-    public List<Integer> getStats() {
-        return stats;
-    }
-
-    public List<Integer> getItems() {
-        return items;
+                person.getItems() != null ? person.getItems().stream().map(Item::getId).collect(Collectors.toList()) : new LinkedList<>(),
+                person.getNotes() != null ? person.getNotes().stream().map(PersonNote::getId).collect(Collectors.toList()) : new LinkedList<>()
+                );
     }
 }

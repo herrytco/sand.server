@@ -2,9 +2,9 @@ package systems.nope.worldseed.person;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
-import systems.nope.worldseed.service.PersonService;
+import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.world.WorldTestUtil;
 
 import java.util.Optional;

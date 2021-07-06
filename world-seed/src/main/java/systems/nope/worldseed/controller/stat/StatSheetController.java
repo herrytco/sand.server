@@ -13,7 +13,7 @@ import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.service.ItemService;
-import systems.nope.worldseed.service.PersonService;
+import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;

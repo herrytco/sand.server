@@ -5,8 +5,10 @@ import systems.nope.worldseed.dto.UserWorldRoleDto;
 import systems.nope.worldseed.exception.AlreadyExistingException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.repository.UserWorldRoleRepository;
 import systems.nope.worldseed.repository.WorldRepository;
+import systems.nope.worldseed.service.person.PersonService;
 
 import java.security.SecureRandom;
 import java.util.Optional;

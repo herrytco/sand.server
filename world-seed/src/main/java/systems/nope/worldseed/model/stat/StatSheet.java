@@ -1,7 +1,7 @@
 package systems.nope.worldseed.model.stat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import systems.nope.worldseed.model.Person;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.value.StatValue;

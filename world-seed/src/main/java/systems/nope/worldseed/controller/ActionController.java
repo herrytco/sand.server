@@ -7,8 +7,7 @@ import systems.nope.worldseed.dto.request.action.UpdateActionRequest;
 import systems.nope.worldseed.exception.DataMissmatchException;
 import systems.nope.worldseed.repository.ActionRepository;
 import systems.nope.worldseed.service.ActionService;
-import systems.nope.worldseed.service.ItemService;
-import systems.nope.worldseed.service.PersonService;
+import systems.nope.worldseed.service.person.PersonService;
 
 import java.util.List;
 import java.util.stream.Collectors;
