@@ -2,13 +2,13 @@ package systems.nope.worldseed.controller.stat;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.dto.request.AddStatSheetRequest;
+import systems.nope.worldseed.dto.request.stat.AddStatSheetRequest;
 import systems.nope.worldseed.dto.stat.StatSheetDto;
 import systems.nope.worldseed.dto.stat.StatValueConstantDto;
 import systems.nope.worldseed.dto.stat.StatValueDto;
 import systems.nope.worldseed.dto.stat.StatValueSynthesizedDto;
-import systems.nope.worldseed.dto.request.AddConstantStatRequest;
-import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
+import systems.nope.worldseed.dto.request.stat.AddConstantStatRequest;
+import systems.nope.worldseed.dto.request.stat.AddSynthesizedStatRequest;
 import systems.nope.worldseed.model.stat.StatSheet;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;

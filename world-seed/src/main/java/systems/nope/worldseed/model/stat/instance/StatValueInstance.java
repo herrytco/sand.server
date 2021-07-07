@@ -6,6 +6,7 @@ import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.util.expression.Symbol;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "stat_value_instance")
@@ -28,6 +29,9 @@ public class StatValueInstance implements Symbol {
     @OneToOne(mappedBy = "statValueInstance", cascade = CascadeType.ALL)
     private StatValueInstanceResource resource;
 
+    @NotNull
+    private Integer modifier;
+
     @Transient
     private String type;
 
@@ -38,6 +42,7 @@ public class StatValueInstance implements Symbol {
         this.world = world;
         this.statValue = statValue;
         this.type = type;
+        this.modifier = 0;
     }
 
     public int getId() {
@@ -87,5 +92,13 @@ public class StatValueInstance implements Symbol {
 
     public void setResource(StatValueInstanceResource resource) {
         this.resource = resource;
+    }
+
+    public Integer getModifier() {
+        return modifier;
+    }
+
+    public void setModifier(Integer modifier) {
+        this.modifier = modifier;
     }
 }
