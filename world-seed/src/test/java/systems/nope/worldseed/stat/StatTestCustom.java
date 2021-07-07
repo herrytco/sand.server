@@ -9,10 +9,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import systems.nope.worldseed.user.UserTestUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
-import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
-import systems.nope.worldseed.dto.request.AddConstantStatRequest;
-import systems.nope.worldseed.dto.request.AddSynthesizedStatRequest;
-import systems.nope.worldseed.dto.request.UpdateConstantStatValueIntanceRequest;
+import systems.nope.worldseed.dto.request.stat.AddResourceToStatSheetRequest;
+import systems.nope.worldseed.dto.request.stat.AddConstantStatRequest;
+import systems.nope.worldseed.dto.request.stat.AddSynthesizedStatRequest;
+import systems.nope.worldseed.dto.request.stat.UpdateConstantStatValueInstanceRequest;
 import systems.nope.worldseed.repository.stat.StatSheetRepository;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.World;
@@ -139,7 +139,7 @@ public class StatTestCustom {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 builder.build().writeValueAsString(
-                                        new UpdateConstantStatValueIntanceRequest(100)
+                                        new UpdateConstantStatValueInstanceRequest(100, 0)
                                 )
                         )
         ).andDo(print());

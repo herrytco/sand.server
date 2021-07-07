@@ -1,4 +1,4 @@
-package systems.nope.worldseed.dto.request;
+package systems.nope.worldseed.dto.request.stat;
 
 public class AddConstantStatRequest extends AddStatRequest {
     private Integer initialValue;

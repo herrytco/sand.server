@@ -1,4 +1,6 @@
-package systems.nope.worldseed.dto.request;
+package systems.nope.worldseed.dto.request.stat;
+
+import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 
 public class AddStatRequest extends AddNamedResourceRequest {
     private String nameShort;

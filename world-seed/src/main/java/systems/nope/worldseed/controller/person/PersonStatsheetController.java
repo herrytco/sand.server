@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
-import systems.nope.worldseed.dto.request.UpdateConstantStatValueIntanceRequest;
+import systems.nope.worldseed.dto.request.stat.AddResourceToStatSheetRequest;
+import systems.nope.worldseed.dto.request.stat.UpdateConstantStatValueInstanceRequest;
+import systems.nope.worldseed.dto.request.stat.UpdateSynthesizedStatValueInstanceRequest;
 import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.service.StatValueInstanceService;
 import systems.nope.worldseed.service.person.PersonService;
@@ -29,15 +30,30 @@ public class PersonStatsheetController {
 
     @Operation(summary = "Update a single StatValueInstance identified by its id to a new value.")
     @PutMapping("/id/{instanceId}/constant-stat")
-    public void updateStatSheetMapping(
+    public void updateConstantStatSheetMapping(
             @PathVariable int instanceId,
-            @RequestBody UpdateConstantStatValueIntanceRequest request
+            @RequestBody UpdateConstantStatValueInstanceRequest request
     ) {
         logger.info(request.toString());
 
         statValueInstanceService.update(
                 statValueInstanceService.getConstant(instanceId),
-                request.getValueNew()
+                request.getValueNew(),
+                request.getModifierNew()
+        );
+    }
+
+    @Operation(summary = "Update a single StatValueInstance identified by its id to a new value.")
+    @PutMapping("/id/{instanceId}/synthesized-stat")
+    public void updateSynthesizedStatSheetMapping(
+            @PathVariable int instanceId,
+            @RequestBody UpdateSynthesizedStatValueInstanceRequest request
+    ) {
+        logger.info(request.toString());
+
+        statValueInstanceService.update(
+                statValueInstanceService.getSynthesized(instanceId),
+                request.getModifierNew()
         );
     }
 

@@ -1,4 +1,4 @@
-package systems.nope.worldseed.dto.request;
+package systems.nope.worldseed.dto.request.stat;
 
 public class AddSynthesizedStatRequest extends AddStatRequest {
     private String formula;

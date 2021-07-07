@@ -2,8 +2,8 @@ package systems.nope.worldseed.controller.item;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
-import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
-import systems.nope.worldseed.dto.request.UpdateConstantStatValueIntanceRequest;
+import systems.nope.worldseed.dto.request.stat.AddResourceToStatSheetRequest;
+import systems.nope.worldseed.dto.request.stat.UpdateConstantStatValueInstanceRequest;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.stat.instance.StatValueInstanceConstant;
@@ -43,7 +43,7 @@ public class ItemStatSheetController {
     public void updateStatValueInstance(
             @PathVariable Integer worldId,
             @PathVariable Integer instanceId,
-            @RequestBody UpdateConstantStatValueIntanceRequest request
+            @RequestBody UpdateConstantStatValueInstanceRequest request
     ) {
         StatValueInstanceConstant target = statValueInstanceService.getConstant(instanceId);
         World world = worldService.get(worldId);
@@ -51,6 +51,6 @@ public class ItemStatSheetController {
         if (world.getId() != target.getWorld().getId())
             throw new NotFoundException(instanceId);
 
-        statValueInstanceService.update(target, request.getValueNew());
+        statValueInstanceService.update(target, request.getValueNew(), request.getModifierNew());
     }
 }

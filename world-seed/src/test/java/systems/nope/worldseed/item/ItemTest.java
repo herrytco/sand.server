@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.request.AddItemRequest;
-import systems.nope.worldseed.dto.request.AddResourceToStatSheetRequest;
+import systems.nope.worldseed.dto.request.stat.AddResourceToStatSheetRequest;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;

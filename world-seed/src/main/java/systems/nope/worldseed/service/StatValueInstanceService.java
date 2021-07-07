@@ -89,8 +89,14 @@ public class StatValueInstanceService {
         return statNew;
     }
 
-    public void update(StatValueInstanceConstant stat, Integer value) {
-        stat.setValue(value);
+    public void update(StatValueInstanceConstant stat, Integer valueNew, Integer modifierNew) {
+        stat.setValue(valueNew);
+        stat.setModifier(modifierNew);
         statValueInstanceConstantRepository.save(stat);
+    }
+
+    public void update(StatValueInstanceSynthesized stat, Integer modifierNew) {
+        stat.setModifier(modifierNew);
+        statValueInstanceSynthesizedRepository.save(stat);
     }
 }
