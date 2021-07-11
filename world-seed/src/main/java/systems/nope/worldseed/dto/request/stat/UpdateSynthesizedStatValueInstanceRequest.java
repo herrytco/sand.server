@@ -5,8 +5,4 @@ import lombok.Data;
 @Data
 public class UpdateSynthesizedStatValueInstanceRequest {
     Integer modifierNew;
-
-    public UpdateSynthesizedStatValueInstanceRequest(Integer modifierNew) {
-        this.modifierNew = modifierNew;
-    }
 }
