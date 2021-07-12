@@ -89,7 +89,6 @@ public class WorldTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
     public void getWorldTest() throws Exception {
         mockMvc.perform(
                 get(WorldConstants.endpoint + "/id/604")

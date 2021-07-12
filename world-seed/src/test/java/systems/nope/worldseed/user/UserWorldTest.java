@@ -16,6 +16,7 @@ import systems.nope.worldseed.model.User;
 import systems.nope.worldseed.model.UserWorldRole;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.repository.UserWorldRoleRepository;
+import systems.nope.worldseed.service.UserService;
 import systems.nope.worldseed.service.WorldService;
 import systems.nope.worldseed.world.*;
 
@@ -47,6 +48,9 @@ public class UserWorldTest {
     @Autowired
     private WorldTestUtil worldTestUtil;
 
+    @Autowired
+    private UserService userService;
+
     @BeforeEach
     public void ensureDataExists() {
         userTestUtil.ensureTestuserExists();
@@ -68,6 +72,7 @@ public class UserWorldTest {
     public void getWorld() throws Exception {
         World testWorld = worldTestUtil.getEnsuredInstance();
         String token = userTestUtil.authenticateTestUser();
+        worldService.join(userTestUtil.getEnsuredUser(), testWorld);
 
         MvcResult result = mockMvc.perform(
                 get(String.format("%s/id/%d", WorldConstants.endpoint, testWorld.getId()))

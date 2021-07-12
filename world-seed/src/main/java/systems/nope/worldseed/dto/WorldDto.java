@@ -1,14 +1,7 @@
 package systems.nope.worldseed.dto;
 
 import lombok.Data;
-import systems.nope.worldseed.model.person.Person;
-import systems.nope.worldseed.model.World;
-import systems.nope.worldseed.model.stat.StatSheet;
-import systems.nope.worldseed.model.tile.Tileset;
-
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 public class WorldDto {
@@ -25,6 +18,9 @@ public class WorldDto {
     private List<UserWorldRoleDto> joinedUsers;
 
     private String seed;
+
+    public WorldDto() {
+    }
 
     public WorldDto(Integer id, String name, String description, String seed) {
         this.id = id;

@@ -36,6 +36,13 @@ public class WorldService {
         this.personService = personService;
     }
 
+    public void join(User user, World world) {
+        Role visitor = roleService.getRoleForType(RoleType.Visitor);
+
+        UserWorldRole userWorldRole = new UserWorldRole(user, world, visitor);
+        userWorldRoleRepository.save(userWorldRole);
+    }
+
     public UserWorldRoleDto add(User creator, String name, String description) {
         return add(creator, name, description, findSeed());
     }

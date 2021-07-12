@@ -79,23 +79,14 @@ public class UserController {
         logger.info(String.format("UserController.joinWorld(userId:%d, worldId:%d)", id, worldId));
 
         Optional<User> optionalRequester = userService.findById(id);
-
         if (optionalRequester.isEmpty())
             throw new NotFoundException(id);
 
         User requester = optionalRequester.get();
 
-
-        Optional<World> optionalWorld = worldService.find(worldId);
-
-        if (optionalWorld.isEmpty())
-            throw new NotFoundException(worldId);
-
-        World worldToJoin = optionalWorld.get();
-
-        Role visitor = roleService.getRoleForType(RoleType.Visitor);
-
-        UserWorldRole userWorldRole = new UserWorldRole(requester, worldToJoin, visitor);
-        userWorldRoleRepository.save(userWorldRole);
+        worldService.join(
+                requester,
+                worldService.get(worldId)
+        );
     }
 }
