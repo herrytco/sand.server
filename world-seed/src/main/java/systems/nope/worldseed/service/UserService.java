@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.model.User;
+import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.repository.UserRepository;
 import systems.nope.worldseed.exception.AlreadyExistingException;
 
@@ -45,9 +46,9 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> optionalCorrespondingUser = userRepository.findByEmail(email);
 
-        if (optionalCorrespondingUser.isPresent())
-            return optionalCorrespondingUser.get();
+        if (optionalCorrespondingUser.isEmpty())
+            throw new UsernameNotFoundException(String.format("Username '%s' not found!", email));
 
-        throw new UsernameNotFoundException(String.format("Username '%s' not found!", email));
+        return optionalCorrespondingUser.get();
     }
 }

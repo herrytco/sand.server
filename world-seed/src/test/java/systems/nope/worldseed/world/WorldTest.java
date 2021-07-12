@@ -90,6 +90,15 @@ public class WorldTest {
     }
 
     @Test
+    public void getWorldTest() throws Exception {
+        mockMvc.perform(
+                get(WorldConstants.endpoint + "/id/604")
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+        ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void repeatedlyCreateWorldTest() throws Exception {
         mockMvc.perform(
                 post(WorldConstants.endpoint)

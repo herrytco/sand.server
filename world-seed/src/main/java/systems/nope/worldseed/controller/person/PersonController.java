@@ -1,18 +1,25 @@
 package systems.nope.worldseed.controller.person;
 
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.person.PersonDto;
 import systems.nope.worldseed.dto.person.PersonNoteDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.dto.request.UpdateControllingUserRequest;
+import systems.nope.worldseed.exception.DataMissmatchException;
+import systems.nope.worldseed.model.User;
 import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.service.ItemService;
+import systems.nope.worldseed.service.UserService;
 import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.WorldService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,11 +31,28 @@ public class PersonController {
     private final PersonService personService;
     private final WorldService worldService;
     private final ItemService itemService;
+    private final UserService userService;
 
-    public PersonController(PersonService personService, WorldService worldService, ItemService itemService) {
+    public PersonController(PersonService personService, WorldService worldService, ItemService itemService,
+                            UserService userService) {
         this.personService = personService;
         this.worldService = worldService;
         this.itemService = itemService;
+        this.userService = userService;
+    }
+
+    @Transactional
+    @Operation(summary = "Get a set of Characters which belong to the given world.")
+    @GetMapping("/world/id/{worldId}")
+    public List<PersonDto> getByWorld(
+            @PathVariable Integer worldId,
+            Principal principal
+    ) throws DataMissmatchException {
+        User user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+
+        return personService.findByWorldAndUser(worldService.get(worldId), user)
+                .stream().map(PersonDto::fromPerson)
+                .collect(Collectors.toList());
     }
 
     ////
@@ -73,14 +97,15 @@ public class PersonController {
         );
     }
 
-    @Operation(summary = "Get a set of Characters which belong to the given world.")
-    @GetMapping("/world/id/{worldId}")
-    public List<PersonDto> getByWorld(
-            @PathVariable Integer worldId
+    @PutMapping("/{personId}/controllingUser")
+    public void updateControllingUserForPerson(
+            @PathVariable Integer personId,
+            @RequestBody UpdateControllingUserRequest request
     ) {
-        return personService.findByWorld(worldService.get(worldId))
-                .stream().map(PersonDto::fromPerson)
-                .collect(Collectors.toList());
+        personService.updateControllingUserOfPerson(
+                personService.get(personId),
+                userService.getUserRepository().getOne(request.getUserId())
+        );
     }
 
     @Operation(summary = "Get a set of Characters identified by their ids.")

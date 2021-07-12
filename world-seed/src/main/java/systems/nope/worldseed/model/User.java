@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import systems.nope.worldseed.exception.DataMissmatchException;
+import systems.nope.worldseed.model.person.Person;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -20,9 +22,6 @@ public class User implements UserDetails {
     @JsonIgnore
     private int id;
 
-    @OneToMany(mappedBy = "user")
-    private List<UserWorldRole> worldRoles;
-
     @NotBlank
     private String name;
 
@@ -38,6 +37,12 @@ public class User implements UserDetails {
     @NotNull
     private Boolean locked;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserWorldRole> worldRoles;
+
+    @OneToMany(mappedBy = "controllingUser", fetch = FetchType.EAGER)
+    private List<Person> persons;
+
     public User() {
     }
 
@@ -47,6 +52,16 @@ public class User implements UserDetails {
         this.password = password;
         this.activated = false;
         this.locked = false;
+    }
+
+    public UserWorldRole getRoleForWorld(World world) throws DataMissmatchException {
+
+        for (UserWorldRole r2 : world.getWorldUsers()) {
+            if (r2.getWorld().getId() == world.getId() && r2.getUser().getId() == getId())
+                return r2;
+        }
+
+        throw new DataMissmatchException("You are not allowed to view this world!");
     }
 
     public int getId() {
@@ -134,5 +149,13 @@ public class User implements UserDetails {
 
     public List<UserWorldRole> getWorldRoles() {
         return worldRoles;
+    }
+
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
     }
 }
