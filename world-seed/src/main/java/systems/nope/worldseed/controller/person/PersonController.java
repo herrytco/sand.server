@@ -87,13 +87,15 @@ public class PersonController {
     }
 
     @PostMapping("/{personId}/notes")
-    public void addNoteToPerson(
+    public PersonNoteDto addNoteToPerson(
             @PathVariable Integer personId,
             @RequestBody PersonNoteDto note
     ) {
-        personService.addNoteToPerson(
-                personService.get(personId),
-                note.getContent()
+        return PersonNoteDto.fromNote(
+                personService.addNoteToPerson(
+                        personService.get(personId),
+                        note.getContent()
+                )
         );
     }
 

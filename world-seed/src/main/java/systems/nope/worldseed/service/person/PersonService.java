@@ -129,12 +129,14 @@ public class PersonService {
         return Optional.of(person);
     }
 
-    public void addNoteToPerson(Person person, String content) {
+    public PersonNote addNoteToPerson(Person person, String content) {
         PersonNote noteNew = new PersonNote();
         noteNew.setContent(content);
         noteNew.setPerson(person);
         personNoteRepository.save(noteNew);
         person.getNotes().add(noteNew);
+
+        return noteNew;
     }
 
     public void updateControllingUserOfPerson(Person person, User user) {
