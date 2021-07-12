@@ -119,6 +119,11 @@ public class PersonService {
         person.getNotes().add(noteNew);
     }
 
+    public void updateControllingUserOfPerson(Person person, User user) {
+        person.setControllingUser(user);
+        personRepository.save(person);
+    }
+
     /**
      * Adds the stat sheet including its parents to the person. All StatValues get added as well.
      *

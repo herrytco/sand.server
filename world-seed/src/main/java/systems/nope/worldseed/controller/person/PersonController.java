@@ -6,8 +6,10 @@ import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.person.PersonDto;
 import systems.nope.worldseed.dto.person.PersonNoteDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
+import systems.nope.worldseed.dto.request.UpdateControllingUserRequest;
 import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.service.ItemService;
+import systems.nope.worldseed.service.UserService;
 import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
@@ -24,11 +26,14 @@ public class PersonController {
     private final PersonService personService;
     private final WorldService worldService;
     private final ItemService itemService;
+    private final UserService userService;
 
-    public PersonController(PersonService personService, WorldService worldService, ItemService itemService) {
+    public PersonController(PersonService personService, WorldService worldService, ItemService itemService,
+                            UserService userService) {
         this.personService = personService;
         this.worldService = worldService;
         this.itemService = itemService;
+        this.userService = userService;
     }
 
     ////
@@ -72,6 +77,18 @@ public class PersonController {
                 note.getContent()
         );
     }
+
+    @PutMapping("/{personId}/controllingUser")
+    public void updateControllingUserForPerson(
+            @PathVariable Integer personId,
+            @RequestBody UpdateControllingUserRequest request
+    ) {
+        personService.updateControllingUserOfPerson(
+                personService.get(personId),
+                userService.getUserRepository().getOne(request.getUserId())
+        );
+    }
+
 
     @Operation(summary = "Get a set of Characters which belong to the given world.")
     @GetMapping("/world/id/{worldId}")

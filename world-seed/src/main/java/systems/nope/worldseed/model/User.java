@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import systems.nope.worldseed.model.person.Person;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -37,6 +38,9 @@ public class User implements UserDetails {
 
     @NotNull
     private Boolean locked;
+
+    @OneToMany(mappedBy = "controllingUser")
+    private List<Person> persons;
 
     public User() {
     }
@@ -134,5 +138,13 @@ public class User implements UserDetails {
 
     public List<UserWorldRole> getWorldRoles() {
         return worldRoles;
+    }
+
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
     }
 }
