@@ -25,7 +25,7 @@ public class World {
     @OneToMany(mappedBy = "world")
     private List<Person> persons;
 
-    @OneToMany(mappedBy = "world", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "world")
     private List<Category> categories;
 
     @OneToMany(mappedBy = "world")

@@ -2,8 +2,11 @@ package systems.nope.worldseed.service;
 
 import org.springframework.stereotype.Service;
 import systems.nope.worldseed.exception.AlreadyExistingException;
+import systems.nope.worldseed.exception.DataMissmatchException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.Document;
+import systems.nope.worldseed.model.User;
+import systems.nope.worldseed.model.UserWorldRole;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.model.item.Item;
 import systems.nope.worldseed.model.stat.StatSheet;
@@ -12,7 +15,10 @@ import systems.nope.worldseed.model.stat.value.StatValue;
 import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.item.ItemRepository;
+import systems.nope.worldseed.service.person.PersonService;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,12 +26,37 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final DocumentService documentService;
     private final StatValueInstanceService statValueInstanceService;
+    private final PersonService personService;
 
     public ItemService(ItemRepository itemRepository, DocumentService documentService,
-                       StatValueInstanceService statValueInstanceService) {
+                       StatValueInstanceService statValueInstanceService, PersonService personService) {
         this.itemRepository = itemRepository;
         this.documentService = documentService;
         this.statValueInstanceService = statValueInstanceService;
+        this.personService = personService;
+    }
+
+    public List<Item> forWorld(World world) {
+        return itemRepository.findAllByWorld(world);
+    }
+
+    public List<Item> forWorldAndUser(World world, User user) throws DataMissmatchException {
+        UserWorldRole role = user.getRoleForWorld(world);
+
+        if (role.getRole().getName().equals("Owner"))
+            return forWorld(world);
+
+        if (user.getPersons() == null)
+            return new LinkedList<>();
+
+        List<Item> result = new LinkedList<>();
+
+        user.getPersons().stream()
+                .filter(person -> person.getWorld().getId() == world.getId())
+                .map(person -> personService.get(person.getId()))
+                .forEach(person -> result.addAll(person.getItems()));
+
+        return result;
     }
 
     public void delete(Item item) {

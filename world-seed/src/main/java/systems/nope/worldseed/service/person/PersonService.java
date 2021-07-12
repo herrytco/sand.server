@@ -3,6 +3,7 @@ package systems.nope.worldseed.service.person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import systems.nope.worldseed.exception.DataMissmatchException;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.*;
 import systems.nope.worldseed.model.item.Item;
@@ -26,6 +27,7 @@ import systems.nope.worldseed.util.expression.ExpressionUtil;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -66,6 +68,22 @@ public class PersonService {
             enrichPersonStats(person);
 
         return person;
+    }
+
+    public List<Person> findByWorldAndUser(World world, User user) throws DataMissmatchException {
+        UserWorldRole role = user.getRoleForWorld(world);
+
+        if (role.getRole().getName().equals("Owner"))
+            return findByWorld(world);
+
+        if (user.getPersons() == null)
+            return new LinkedList<>();
+
+        return user.getPersons()
+                .stream()
+                .filter(person -> person.getWorld().getId() == world.getId())
+                .map(person -> get(person.getId()))
+                .collect(Collectors.toList());
     }
 
     public List<Person> findByWorld(World world) {
