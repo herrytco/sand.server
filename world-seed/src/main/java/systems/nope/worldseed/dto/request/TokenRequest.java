@@ -1,8 +1,14 @@
 package systems.nope.worldseed.dto.request;
 
+import lombok.Data;
+
+@Data
 public class TokenRequest {
-    public final String username;
-    public final String password;
+    public String username;
+    public String password;
+
+    public TokenRequest() {
+    }
 
     public TokenRequest(String username, String password) {
         this.username = username;

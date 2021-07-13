@@ -49,6 +49,7 @@ public class Config extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/tokens").permitAll()
+                .antMatchers("/data/**").permitAll()
                 .antMatchers("/tile-sets/{\\d+}/tile/{\\d+}/tile.png").permitAll()
                 .antMatchers("/users").permitAll()
                 .antMatchers("/items/**").permitAll()

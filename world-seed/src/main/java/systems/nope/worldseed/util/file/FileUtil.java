@@ -14,14 +14,14 @@ import java.util.Comparator;
 public abstract class FileUtil {
     final String root;
 
-    private final Logger logger = LoggerFactory.getLogger(FileUtil.class);
+    protected final Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
     public FileUtil(String root) {
         this.root = root;
     }
 
     public File root() {
-        File root = new File("_seed-data/");
+        File root = new File("data/");
 
         if (!root.exists()) {
             if (root.mkdirs())

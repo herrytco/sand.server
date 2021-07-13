@@ -17,15 +17,17 @@ import systems.nope.worldseed.model.stat.value.StatValueConstant;
 import systems.nope.worldseed.model.stat.value.StatValueSynthesized;
 import systems.nope.worldseed.repository.person.PersonNoteRepository;
 import systems.nope.worldseed.repository.person.PersonRepository;
-import systems.nope.worldseed.service.StatSheetService;
 import systems.nope.worldseed.service.StatValueInstanceService;
 import systems.nope.worldseed.util.StatContext;
 import systems.nope.worldseed.util.StatUtils;
 import systems.nope.worldseed.util.Symbol;
 import systems.nope.worldseed.util.data.DataStructure;
 import systems.nope.worldseed.util.expression.ExpressionUtil;
+import systems.nope.worldseed.util.file.PortraitFileUtil;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,15 +39,18 @@ public class PersonService {
     private final PersonNoteRepository personNoteRepository;
     private final StatUtils statUtils;
     private final StatValueInstanceService statValueInstanceService;
+    private final PortraitFileUtil portraitFileUtil;
 
     private final Logger logger = LoggerFactory.getLogger(PersonRepository.class);
 
     public PersonService(PersonRepository personRepository, PersonNoteRepository personNoteRepository,
-                         StatUtils statUtils, StatValueInstanceService statValueInstanceService) {
+                         StatUtils statUtils, StatValueInstanceService statValueInstanceService,
+                         PortraitFileUtil portraitFileUtil) {
         this.personRepository = personRepository;
         this.personNoteRepository = personNoteRepository;
         this.statUtils = statUtils;
         this.statValueInstanceService = statValueInstanceService;
+        this.portraitFileUtil = portraitFileUtil;
     }
 
     public Optional<Person> find(int id) {
@@ -68,6 +73,20 @@ public class PersonService {
             enrichPersonStats(person);
 
         return person;
+    }
+
+    public void setPortraitOfPerson(Person person, byte[] portrait) throws IOException {
+        File resolvedFile = portraitFileUtil.putFile(
+                person.getWorld(),
+                person,
+                "portrait.png",
+                portrait
+        );
+
+        String path = resolvedFile.getAbsolutePath().substring(resolvedFile.getAbsolutePath().indexOf("data")).replaceAll("\\\\", "/");
+        person.setPortraitImage(path);
+
+        personRepository.save(person);
     }
 
     public List<Person> findByWorldAndUser(World world, User user) throws DataMissmatchException {

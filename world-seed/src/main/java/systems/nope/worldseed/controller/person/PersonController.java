@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import systems.nope.worldseed.dto.ItemDto;
 import systems.nope.worldseed.dto.person.PersonDto;
 import systems.nope.worldseed.dto.person.PersonNoteDto;
@@ -18,7 +19,10 @@ import systems.nope.worldseed.service.person.PersonService;
 import systems.nope.worldseed.exception.NotFoundException;
 import systems.nope.worldseed.model.World;
 import systems.nope.worldseed.service.WorldService;
+import systems.nope.worldseed.util.file.PortraitFileUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +36,15 @@ public class PersonController {
     private final WorldService worldService;
     private final ItemService itemService;
     private final UserService userService;
+    private final PortraitFileUtil portraitFileUtil;
 
     public PersonController(PersonService personService, WorldService worldService, ItemService itemService,
-                            UserService userService) {
+                            UserService userService, PortraitFileUtil portraitFileUtil) {
         this.personService = personService;
         this.worldService = worldService;
         this.itemService = itemService;
         this.userService = userService;
+        this.portraitFileUtil = portraitFileUtil;
     }
 
     @Transactional
@@ -97,6 +103,24 @@ public class PersonController {
                         note.getContent()
                 )
         );
+    }
+
+    @PostMapping("/{personId}/portrait")
+    public void uploadPortrait(
+            @PathVariable Integer personId,
+            MultipartFile file
+    ) {
+        try {
+            if (file == null || file.getBytes().length == 0)
+                throw new NotFoundException("'file' required");
+
+            personService.setPortraitOfPerson(
+                    personService.get(personId),
+                    file.getBytes()
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @PutMapping("/{personId}/controllingUser")

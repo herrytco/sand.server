@@ -26,6 +26,8 @@ public class Person {
 
     private String apiKey;
 
+    private String portraitImage;
+
     @OneToMany
     @JoinTable(
             name = "person_stat_sheet",
@@ -136,5 +138,13 @@ public class Person {
 
     public void setControllingUser(User controllingUser) {
         this.controllingUser = controllingUser;
+    }
+
+    public String getPortraitImage() {
+        return portraitImage;
+    }
+
+    public void setPortraitImage(String portraitImage) {
+        this.portraitImage = portraitImage;
     }
 }

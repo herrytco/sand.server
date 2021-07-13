@@ -31,8 +31,10 @@ public class PersonDto {
 
     private final Integer controllingUserId;
 
+    private final String portrait;
+
     private PersonDto(int id, int world, String name, String apiKey, List<Integer> sheets, List<Integer> stats,
-                      List<Integer> items, List<Integer> notes, Integer controllingUserId) {
+                      List<Integer> items, List<Integer> notes, Integer controllingUserId, String portrait) {
         this.id = id;
         this.world = world;
         this.name = name;
@@ -42,6 +44,7 @@ public class PersonDto {
         this.items = items;
         this.notes = notes;
         this.controllingUserId = controllingUserId;
+        this.portrait = portrait;
     }
 
     public static PersonDto fromPerson(Person person) {
@@ -54,7 +57,8 @@ public class PersonDto {
                 person.getStatValues() != null ? person.getStatValues().stream().map(StatValueInstance::getId).collect(Collectors.toList()) : new LinkedList<>(),
                 person.getItems() != null ? person.getItems().stream().map(Item::getId).collect(Collectors.toList()) : new LinkedList<>(),
                 person.getNotes() != null ? person.getNotes().stream().map(PersonNote::getId).collect(Collectors.toList()) : new LinkedList<>(),
-                person.getControllingUser() != null ? person.getControllingUser().getId() : null
+                person.getControllingUser() != null ? person.getControllingUser().getId() : null,
+                person.getPortraitImage()
         );
     }
 }
