@@ -7,23 +7,30 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import systems.nope.worldseed.dto.person.PersonDto;
 import systems.nope.worldseed.dto.request.AddNamedResourceRequest;
 import systems.nope.worldseed.model.person.Person;
 import systems.nope.worldseed.repository.person.PersonRepository;
 import systems.nope.worldseed.user.UserTestUtil;
+import systems.nope.worldseed.util.file.PortraitFileUtil;
 import systems.nope.worldseed.world.WorldTestUtil;
 import systems.nope.worldseed.model.World;
 
+import java.nio.file.Files;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,6 +55,9 @@ public class PersonTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PortraitFileUtil portraitFileUtil;
 
     @BeforeEach
     public void ensureData() {
@@ -131,6 +141,41 @@ public class PersonTest {
                         .header("Authorization", String.format("Bearer %s", token))
         ).andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void uploadPortraitTest() throws Exception {
+        World testWorld = worldTestUtil.ensureTestWorldExists();
+        String token = userTestUtil.authenticateTestUser();
+
+        createPerson(PersonConstants.personName);
+
+        Optional<Person> personOptional = personRepository.findByWorldAndName(testWorld, PersonConstants.personName);
+        assert personOptional.isPresent();
+
+        Person person = personOptional.get();
+
+        ClassPathResource r = new ClassPathResource("test/valid_portrait.png");
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "valid_portrait.png",
+                "image/png",
+                Files.readAllBytes(r.getFile().toPath())
+        );
+
+        mockMvc.perform(
+                multipart(
+                        String.format("%s/%d/portrait", PersonConstants.endpoint, person.getId())
+                )
+                        .file(file)
+                        .header("Authorization", String.format("Bearer %s", userTestUtil.authenticateTestUser()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andDo(print())
+                .andExpect(status().isOk());
+
+        portraitFileUtil.deleteFolder(testWorld, person, "");
     }
 
 }
