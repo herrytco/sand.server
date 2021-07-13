@@ -34,6 +34,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - mountPath: /data
+              name: data
         - name: nginx-rerouter
           image: herrykun/nginx.rerouter
           imagePullPolicy: Always
@@ -48,6 +51,9 @@ spec:
         - name: certs
           persistentVolumeClaim:
             claimName: longhorn-cert-claim
+        - name: data
+          persistentVolumeClaim:
+            claimName: longhorn-worldseed-claim
 ---
 apiVersion: v1
 kind: Service
