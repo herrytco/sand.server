@@ -29,7 +29,7 @@ spec:
         app: world-seed-server
     spec:
       containers:
-        - name: pointify-client
+        - name: spring-app
           image: herrykun/world.seed.server
           imagePullPolicy: Always
           ports:
@@ -96,7 +96,7 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: longhorn-cert-claim
+            claimName: longhorn-worldseed-claim
       imagePullSecrets:
         - name: regcred
 ---
